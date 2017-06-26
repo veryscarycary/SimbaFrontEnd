@@ -1,0 +1,309 @@
+{
+  "contract_name": "Escrow",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "seller",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "status",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "trackingNumber",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "purchase",
+      "outputs": [],
+      "payable": true,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "buyer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_trackingNumber",
+          "type": "bytes32"
+        }
+      ],
+      "name": "setTrackingNumber",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "amount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "cancelPurchase",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "confirmPurchase",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_seller",
+          "type": "address"
+        }
+      ],
+      "name": "setSeller",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_buyer",
+          "type": "address"
+        },
+        {
+          "name": "_seller",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Purchase",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "trackingNumber",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Shipped",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "PurchaseConfirmation",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "CancelPurchase",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b6040516040806105878339810160405280516020909101515b60028054600160a060020a03808416600160a060020a031992831617909255600380548584169083161790556000805433909316929091169190911790555b50505b610511806100766000396000f300606060405236156100935763ffffffff60e060020a60003504166308551a538114610095578063200d2ed2146100c1578063526ff16f146100f557806364edfbf0146101175780637150d8ae146101215780638da5cb5b1461014d578063aa519c0f14610179578063aa8c217c1461018e578063ab460a26146101b0578063d6960697146101c2578063e99d2866146101d4575bfe5b341561009d57fe5b6100a56101f2565b60408051600160a060020a039092168252519081900360200190f35b34156100c957fe5b6100d1610201565b604051808260038111156100e157fe5b60ff16815260200191505060405180910390f35b34156100fd57fe5b610105610211565b60408051918252519081900360200190f35b61011f610217565b005b341561012957fe5b6100a561029c565b60408051600160a060020a039092168252519081900360200190f35b341561015557fe5b6100a56102ab565b60408051600160a060020a039092168252519081900360200190f35b341561018157fe5b61011f6004356102ba565b005b341561019657fe5b610105610345565b60408051918252519081900360200190f35b34156101b857fe5b61011f61034b565b005b34156101ca57fe5b61011f6103f9565b005b34156101dc57fe5b61011f600160a060020a03600435166104a9565b005b600254600160a060020a031681565b60035460a060020a900460ff1681565b60045481565b60035433600160a060020a039081169116146102335760006000fd5b34600155600380546000919060a060020a60ff02191660a060020a835b021790555060408051600160a060020a033316815234602082015281517f2499a5330ab0979cc612135e7883ebc3cd5c9f7a8508f042540c34723348f632929181900390910190a15b5b565b600354600160a060020a031681565b600054600160a060020a031681565b60025433600160a060020a039081169116146102d65760006000fd5b6004819055600380546001919060a060020a60ff02191660a060020a835b021790555060045460408051600160a060020a0333168152602081019290925280517f5227d41ca2ebb72f30ad0cf69a4492710c18ed3ff455f53666a3326a0a0a2dae9281900390910190a15b5b50565b60015481565b60035433600160a060020a039081169116146103675760006000fd5b600354600154604051600160a060020a039092169181156108fc0291906000818181858888f19350505050156102995760038054819060a060020a60ff02191660a060020a825b0217905550600060015560408051600160a060020a033316815290517f2cc74872445169f5b0770398571a7ebf666b6ae4d062b07d39558a7a55b066989181900360200190a15b5b5b565b60035433600160a060020a039081169116146104155760006000fd5b600254600154604051600160a060020a039092169181156108fc0291906000818181858888f1935050505015610299576000600155600380546002919060a060020a60ff02191660a060020a835b021790555060408051600160a060020a033316815290517faf19f5c189f0e14101e357f67a3fc7fd347e237fde2d75036a3957fe4ba5d8c39181900360200190a15b5b5b565b60005433600160a060020a039081169116146104c55760006000fd5b60028054600160a060020a031916600160a060020a0383161790555b5b505600a165627a7a72305820ee304ed6e810a5e336b3fea861c7684bc39404ca9bc1441567e4b91c58009f280029",
+  "networks": {
+    "3": {
+      "events": {
+        "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "_sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposit",
+          "type": "event"
+        },
+        "0x6c0c23bd8d0febef592e55641f5afe18680e5cf3118af2ae864f5f1664695a73": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "TransferToSeller",
+          "type": "event"
+        },
+        "0x2499a5330ab0979cc612135e7883ebc3cd5c9f7a8508f042540c34723348f632": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Purchase",
+          "type": "event"
+        },
+        "0x5227d41ca2ebb72f30ad0cf69a4492710c18ed3ff455f53666a3326a0a0a2dae": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "trackingNumber",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Shipped",
+          "type": "event"
+        },
+        "0xaf19f5c189f0e14101e357f67a3fc7fd347e237fde2d75036a3957fe4ba5d8c3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "PurchaseConfirmation",
+          "type": "event"
+        },
+        "0x2cc74872445169f5b0770398571a7ebf666b6ae4d062b07d39558a7a55b06698": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "CancelPurchase",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x95f5d7bc65e552897828c267b241d4879aaaa3c6",
+      "updated_at": 1498375554257
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1498375554257
+}

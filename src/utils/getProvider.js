@@ -1,6 +1,7 @@
-import Web3 from 'web3'
+//import Web3 from 'web3'
+import Eth from 'ethjs'
 
-let getWeb3 = new Promise(function(resolve, reject) {
+let getProvider = new Promise(function(resolve, reject) {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
   window.addEventListener('load', function() {
     var results
@@ -9,19 +10,18 @@ let getWeb3 = new Promise(function(resolve, reject) {
     if (typeof window.web3 !== 'undefined') {
       console.warn("Using web3 detected from external source like Metamask")
       results = {
-        web3: new Web3(window.web3.currentProvider)
+        Eth: new Eth(window.web3.currentProvider)
       }
       resolve(results)
     } else {
       // Fallback to localhost if no web3 injection.
       console.log('No web3 instance injected, using Local web3.');
-      var provider = new Web3.providers.HttpProvider('http://localhost:8545')
       results = {
-        web3: new Web3(provider)
+        Eth: new Eth(new Eth.HttpProvider('http://localhost:8545'))
       }
       resolve(results)
     }
   })
 })
 
-export default getWeb3
+export default getProvider

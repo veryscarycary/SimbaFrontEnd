@@ -1,0 +1,13 @@
+.product {
+  font-size: 14px;
+}
+
+.product .highlight {
+  font-weight: 700;
+}
+
+.product img {
+  width: 150px;
+  max-height:130px;
+}
+
