@@ -1,0 +1,17 @@
+.sign-in-form {
+  width: 400px;
+  margin: auto;
+}
+
+.register-form {
+  width: 800px;
+  margin: auto;
+}
+
+.register-form .pure-g .pure-u-md-1-2 {
+  width: 48%;
+}
+
+.register-form .pure-g {
+  justify-content: space-between;
+}

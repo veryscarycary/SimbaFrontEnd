@@ -1,0 +1,24 @@
+export const purchaseState = {
+  ERROR: '0',
+  PURCHASED: '1',
+  SHIPPED: '2',
+  COMPLETED: '3',
+  CANCELLED: '4',
+  SELLER_TIMEOUT: '5',
+  BUYER_TIMEOUT: '6',
+  NEW: '-1',
+  PENDING_PURCHASED: '-2',
+  PENDING_SHIPPED: '-3',
+  PENDING_COMPLETED: '-4',
+}
+
+export const activityCategories = {
+  USER_CREATION: 0,
+  ITEM_LISTING: 1,
+  PURCHASE: 2,
+  SHIP_ITEM: 3,
+  CONFIRM_PURCHASE: 4,
+  CANCEL_PURCHASE: 5,
+  BUYER_TIMEOUT: 6,
+  SELLER_TIMEOUT: 7
+}

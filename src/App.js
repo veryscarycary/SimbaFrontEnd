@@ -1,84 +1,92 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Helmet } from 'react-helmet'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-// import { fetchProducts } from './actions/actions_products'
-import logo from './logo.svg'
-import './App.css'
-import Product from './containers/Product'
+import { setCurrentUser } from './actions/actions_users'
 import { fetchProvider } from './actions/actions_provider'
+
+// Shared Containers
+import Navigation from './containers/shared/Navigation'
+import Footer from './containers/shared/Footer'
+import FlashMessages from './containers/shared/FlashMessages'
+
+// Devise Containers
+import RegistrationForm from './containers/users/RegistrationForm'
+import SignInForm from './containers/users/SignInForm'
+
+// Users Containers
+import UserIndex from './containers/users/UserIndex'
+
+// Items Containers
+import ItemNew from './containers/items/ItemNew'
+import ItemIndex from './containers/items/ItemIndex'
+import ItemShow from './containers/items/ItemShow'
+
+// Purchase Containers
+import PurchaseInitialize from './containers/purchases/PurchaseInitialize'
+import PurchaseConfirmation from './containers/purchases/PurchaseConfirmation'
+import PurchaseShipping from './containers/purchases/PurchaseShipping'
+import PurchaseIndex from './containers/purchases/PurchaseIndex'
+import SalesIndex from './containers/purchases/SalesIndex'
+
+// Activities Containers
+import ActivityIndex from './containers/activities/ActivityIndex'
+
+// Reviews Containers
+import ReviewIndex from './containers/reviews/ReviewIndex'
+
+import './App.css'
 
 class App extends Component {
   componentWillMount() {
-    this.props.fetchProvider()
+    this.props.fetchProvider().then(() => {
+      this.props.provider.eth.accounts().then((accounts) => {
+        if (typeof accounts[0] === 'undefined') {
+          this.props.setCurrentUser(this.props.provider, '', localStorage.getItem('simba_token'))
+        } else {
+          this.props.setCurrentUser(this.props.provider, accounts[0], localStorage.getItem('simba_token'))
+        }
+      })
+    })
   }
-
-    // voteForCandidate(name) {
-    // console.log('enter voteForCandidate', name)
-
-    // const contract = require('truffle-contract')
-    // const Voting = contract(votingJSON)
-    // Voting.setProvider(this.state.web3.currentProvider)
-
-    // var votingInstance
-
-    // // Get accounts.
-    // this.state.web3.eth.getAccounts((error, accounts) => {
-    //   Voting.deployed().then((instance) => {
-    //     votingInstance = instance
-    //     console.log("voteForCandidateinstance ", instance)
-    //     votingInstance.voteForCandidate(name, {from: accounts[0]}).then((result) => {
-    //       console.log("voteForCandidate result ", result.toString())
-    //     })
-    //   })
-    // })
-  // }
-
-  // totalVotesFor(name) {
-  //   const contract = require('truffle-contract')
-  //   const Voting = contract(votingJSON)
-  //   Voting.setProvider(this.state.web3.currentProvider)
-
-  //   var votingInstance
-
-  //   // Get accounts.
-  //   this.state.web3.eth.getAccounts((error, accounts) => {
-  //     Voting.deployed().then((instance) => {
-  //       votingInstance = instance
-  //       console.log("totalVoteFor instance ", instance)
-  //       votingInstance.totalVotesFor.call(name).then((result) => {
-  //         console.log("totalVoteFor results ", result.toString())
-  //         this.setState({fabVotes: result.toString()})
-  //       })
-  //     })
-  //   })
-  // }
 
   render() {
     return (
-      <div className="App">
-        <Helmet>
-          <meta charSet="utf-8" />
-          <title>SIMBA</title>
-          <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous" />
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" />
-          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        </Helmet>
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>SIMBA<br /><small>Secure Independent Marketplace By All</small></h2>
-        </div>
-        { this.props.provider.eth ? <Product /> : ''}
+      <Router>
+        <div className='App'>
+          <section className='header'>
+            <Navigation />
+          </section>
+          <section className='main-container'>
+              <FlashMessages />
+              <Route exact path='/' component={ItemIndex} />
+              <Route exact path='/users/register' component={RegistrationForm} />
+              <Route exact path='/users/sign_in' component={SignInForm} />
+              <Route exact path='/users' component={UserIndex} />
+              <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
+              <Route exact path='/listing/create' component={ItemNew} />
+              <Route exact path='/items/:item_id' component={ItemShow} />
+              <Route exact path='/items' component={ItemIndex} />
 
-      </div>
+              <Route exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
+              <Route exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
+              <Route exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
+              <Route exact path='/purchases' component={PurchaseIndex} />
+              <Route exact path='/sales' component={SalesIndex} />
+
+              <Route exact path='/admin/activities' component={ActivityIndex} />
+          </section>
+          <section className='footer'>
+            <Footer />
+          </section>
+        </div>
+      </Router>
     )
   }
 }
 
 function mapStateToProps({ provider }) {
-  return { provider }
+  return { provider: provider }
 }
 
-export default connect(mapStateToProps, { fetchProvider })(App)
-
+export default connect(mapStateToProps, { fetchProvider, setCurrentUser })(App)
