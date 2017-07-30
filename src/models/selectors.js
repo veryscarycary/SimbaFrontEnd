@@ -80,7 +80,8 @@ export const pendingPurchases = createSelector(
         if ((purchase.purchaseState === purchaseState.SHIPPED)
           || (purchase.purchaseState === purchaseState.PURCHASED)
           || (purchase.purchaseState === purchaseState.PENDING_SHIPPED)
-          || (purchase.purchaseState === purchaseState.PENDING_COMPLETED)) {
+          || (purchase.purchaseState === purchaseState.PENDING_COMPLETED)
+          || (purchase.purchaseState === purchaseState.PENDING_CANCELLED)) {
           return true
         }
         return false
@@ -97,6 +98,8 @@ export const completedPurchases = createSelector(
     if (currentUserWallet !== '') {
       return session.User.withId(currentUserWallet).buyer_purchases.filter((purchase) => {
         if ((purchase.purchaseState === purchaseState.COMPLETED)
+          || (purchase.purchaseState === purchaseState.BUYER_CANCELLED)
+          || (purchase.purchaseState === purchaseState.SELLER_CANCELLED)
           || (purchase.purchaseState === purchaseState.SELLER_TIMEOUT)
           || (purchase.purchaseState === purchaseState.BUYER_TIMEOUT)
           || (purchase.purchaseState === purchaseState.ERROR)) {
@@ -118,7 +121,8 @@ export const pendingSales = createSelector(
         if ((purchase.purchaseState === purchaseState.SHIPPED)
           || (purchase.purchaseState === purchaseState.PURCHASED)
           || (purchase.purchaseState === purchaseState.PENDING_SHIPPED)
-          || (purchase.purchaseState === purchaseState.PENDING_COMPLETED)) {
+          || (purchase.purchaseState === purchaseState.PENDING_COMPLETED)
+          || (purchase.purchaseState === purchaseState.PENDING_CANCELLED)) {
           return true
         }
         return false
@@ -135,6 +139,8 @@ export const completedSales = createSelector(
     if (currentUserWallet !== '') {
       return session.User.withId(currentUserWallet).seller_sales.filter((purchase) => {
         if ((purchase.purchaseState === purchaseState.COMPLETED)
+          || (purchase.purchaseState === purchaseState.BUYER_CANCELLED)
+          || (purchase.purchaseState === purchaseState.SELLER_CANCELLED)
           || (purchase.purchaseState === purchaseState.SELLER_TIMEOUT)
           || (purchase.purchaseState === purchaseState.BUYER_TIMEOUT)
           || (purchase.purchaseState === purchaseState.ERROR)) {
