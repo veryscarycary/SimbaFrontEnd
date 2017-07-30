@@ -72,8 +72,8 @@ export function userSignIn(user_params, history) {
            .then((response) => {
             localStorage.setItem('simba_wallet', response.data['wallet'])
             localStorage.setItem('simba_token', response.data['authentication_token'])
-            dispatch({ type: UPDATE_USER, payload: response.data })
             dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
+            dispatch({ type: CREATE_USER, payload: response.data })
             dispatch(setFlashMessage("User has been successfully signed in.", 'success'))
             if (history) {
               history.push('/')
