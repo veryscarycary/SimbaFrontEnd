@@ -3,13 +3,15 @@ export const purchaseState = {
   PURCHASED: '1',
   SHIPPED: '2',
   COMPLETED: '3',
-  CANCELLED: '4',
-  SELLER_TIMEOUT: '5',
-  BUYER_TIMEOUT: '6',
+  BUYER_CANCELLED: '4',
+  SELLER_CANCELLED: '5',
+  SELLER_TIMEOUT: '6',
+  BUYER_TIMEOUT: '7',
   NEW: '-1',
   PENDING_PURCHASED: '-2',
   PENDING_SHIPPED: '-3',
   PENDING_COMPLETED: '-4',
+  PENDING_CANCELLED: '-5'
 }
 
 export const activityCategories = {
@@ -19,6 +21,7 @@ export const activityCategories = {
   SHIP_ITEM: 3,
   CONFIRM_PURCHASE: 4,
   CANCEL_PURCHASE: 5,
-  BUYER_TIMEOUT: 6,
-  SELLER_TIMEOUT: 7
+  CANCEL_SALES: 6,
+  BUYER_TIMEOUT: 7,
+  SELLER_TIMEOUT: 8
 }

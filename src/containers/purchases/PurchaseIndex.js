@@ -5,8 +5,8 @@ import { Panel, Button } from 'react-bootstrap'
 
 import '../../style/purchase.css'
 
-import { fetchProvider } from '../../actions/actions_provider'
 import { fetchAllPurchases } from '../../actions/actions_purchases'
+import { cancelPurchase } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
 
 import { pendingPurchases, completedPurchases } from '../../models/selectors'
@@ -26,10 +26,17 @@ class PurchaseIndex extends Component {
 
   renderPurchasesActions(purchase) {
     switch(purchase.purchaseState) {
-      case purchaseState.PENDING:
-        return <Button bsSize="small" block disabled>Pending Transaction</Button>
+      case purchaseState.PENDING_CANCELLED:
+        return  <Button bsSize="small" block disabled>Pending Cancel</Button>
+      case purchaseState.PENDING_PURCHASED:
+        return  <Button bsSize="small" block disabled>Pending Transaction</Button>
       case purchaseState.PURCHASED:
-        return <Button bsSize="small" block disabled>Awaiting Shipping</Button>
+        return (
+          <div>
+            <Button bsSize="small" block disabled>Awaiting Shipping</Button>
+            <Button bsSize='small' block onClick={() => this.props.cancelPurchase(purchase.id, this.props.provider)}>Cancel Purchase</Button>
+          </div>
+        )
       case purchaseState.SHIPPED:
         return (
           <div>
@@ -39,6 +46,10 @@ class PurchaseIndex extends Component {
           )
       case purchaseState.COMPLETED:
         return <Button bsSize="small" block disabled>Purchase Complete</Button>
+      case purchaseState.BUYER_CANCELLED:
+        return <Button bsSize="small" block disabled>Purchase Cancelled By Buyer</Button>
+      case purchaseState.SELLER_CANCELLED:
+        return <Button bsSize="small" block disabled>Purchase Cancelled By Seller</Button>
       case purchaseState.ERROR:
         return <Button bsSize="small" block disabled>Transaction Error</Button>
       default:
@@ -94,4 +105,4 @@ function mapStateToProps(state) {
   return { pendingPurchases: pendingPurchases(state), completedPurchases: completedPurchases(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { fetchAllPurchases, fetchProvider })(PurchaseIndex)
+export default connect(mapStateToProps, { fetchAllPurchases, cancelPurchase })(PurchaseIndex)

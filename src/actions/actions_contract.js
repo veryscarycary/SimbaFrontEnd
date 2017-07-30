@@ -3,15 +3,15 @@ import Eth from 'ethjs'
 import escrowJSON from '../contract_build/Escrow.json'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
-import { watchPurchaseEvent, watchShippingEvent, watchPurchaseCompleteEvent } from './actions_event_watcher'
+import { watchPurchaseEvent, watchShippingEvent, watchPurchaseCompleteEvent, watchCancelPurchaseEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
 
-// Purchase one item
-// Send the transaction in the smart contract
+// Buyer Purchase an item '_itemId' from Seller (_seller)
+// State of the purchase : "Purchased"
 export function purchase(purchaseId, sellerAddress, itemId, amount, provider, history) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -35,6 +35,9 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, provider, hi
   }
 }
 
+// Seller send the code to Buyer
+  // Code can be a tracking number, a digital code, a coupon
+  // State of the purchase : "Shipped"
 export function sendCode(purchaseId, code, provider) {
   console.log('enter sendCode')
   const escrow = contract(escrowJSON)
@@ -56,8 +59,10 @@ export function sendCode(purchaseId, code, provider) {
   }
 }
 
+// Buyer confirms receive the code from the Seller - Completing the transactions
+  // Seller receives the money
+  // State of the purchase : "Completed"
 export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRating, itemRating, provider) {
-  console.log('enter confirmPurchase')
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
@@ -70,6 +75,27 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
                           dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_COMPLETED } })
                       }).catch(error => {
                           dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
+                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+                      })
+      })
+    })
+  }
+}
+
+export function cancelPurchase(purchaseId, provider) {
+  const escrow = contract(escrowJSON)
+  escrow.setProvider(provider.eth.currentProvider)
+
+  return dispatch => {
+    provider.eth.accounts().then((accounts) => {
+      escrow.deployed().then(instance => {
+        dispatch(watchCancelPurchaseEvent(provider))
+        instance.cancelPurchase.sendTransaction(purchaseId, {from: accounts[0]})
+                        .then(transaction => {
+                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_CANCELLED } })
+                      }).catch(error => {
+                          console.log(error)
+                          dispatch(setFlashMessage("Error: Couldn't cancel the purchase transaction.. please try again later.", 'error'))
                           dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
                       })
       })
