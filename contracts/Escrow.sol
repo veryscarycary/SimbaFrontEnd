@@ -1,7 +1,7 @@
 pragma solidity ^0.4.10; //We have to specify what version of compiler this code will use
 
 contract Escrow {
-  enum Status {Pending, Purchased, Shipped, Completed, Cancelled, SellerTimeOut, BuyerTimeOut}
+  enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerTimeOut, BuyerTimeOut}
   enum Category {Good, Digital, Service, Auction}
 
   struct Purchase {
@@ -36,7 +36,7 @@ contract Escrow {
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
   event PurchaseCompleted(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
-  event PurchaseCancelled(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
+  event PurchaseCancelled(bytes32 purchaseId, address sender, address buyer, address seller, bytes32 itemId);
 
   function Escrow() {
     owner = msg.sender;
@@ -117,9 +117,14 @@ contract Escrow {
 
   function cancelPurchase(bytes32 _purchaseId) {
     if (purchases[_purchaseId].buyer.send(purchases[_purchaseId].amount)) {
-      purchases[_purchaseId].status = Status.Cancelled;
+      if (purchases[_purchaseId].buyer == msg.sender) {
+          purchases[_purchaseId].status = Status.BuyerCancelled;
+        } else {
+          purchases[_purchaseId].status = Status.SellerCancelled;
+        }
+
       purchases[_purchaseId].amount = 0;
-      PurchaseCancelled(_purchaseId, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
+      PurchaseCancelled(_purchaseId, msg.sender, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
   }
 
