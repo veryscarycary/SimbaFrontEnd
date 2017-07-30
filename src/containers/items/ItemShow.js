@@ -6,7 +6,6 @@ import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
 
 import ReviewShow from '../reviews/ReviewShow'
-import { fetchProvider } from '../../actions/actions_provider'
 import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
@@ -141,4 +140,4 @@ function mapStateToProps(state) {
   return { item : item(state), provider: state.provider, purchase: purchase(state), itemReviews: itemReviews(state) }
 }
 
-export default connect(mapStateToProps, { selectItem, createPurchase, fetchProvider })(ItemShow)
+export default connect(mapStateToProps, { selectItem, createPurchase })(ItemShow)

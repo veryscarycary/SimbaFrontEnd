@@ -5,7 +5,6 @@ import Rating from 'react-rating'
 
 import '../../style/item.css'
 
-import { fetchProvider } from '../../actions/actions_provider'
 import { fetchAllItems } from '../../actions/actions_items'
 import { items } from '../../models/selectors'
 
@@ -77,4 +76,4 @@ function mapStateToProps(state) {
   return { items: items(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { fetchProvider, fetchAllItems })(ItemIndex)
+export default connect(mapStateToProps, { fetchAllItems })(ItemIndex)

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 
 import ReviewShow from './ReviewShow'
 import { selectUser } from '../../actions/actions_users'
-import { fetchProvider } from '../../actions/actions_provider'
 import { fetchUserRating } from '../../actions/actions_contract'
 import { userReviews, user } from '../../models/selectors'
 
@@ -46,4 +45,4 @@ function mapStateToProps(state) {
   return { userReviews: userReviews(state), provider: state.provider, user: user(state) }
 }
 
-export default connect(mapStateToProps, { fetchProvider, selectUser, fetchUserRating })(ReviewIndex)
+export default connect(mapStateToProps, { selectUser, fetchUserRating })(ReviewIndex)
