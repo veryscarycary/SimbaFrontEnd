@@ -13,15 +13,29 @@ import { item, purchase, itemReviews } from '../../models/selectors'
 
 
 class ItemShow extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      finalPrice: ''
+    }
+  }
+
   componentWillMount() {
     if (this.props.provider.eth) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id)
+      this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
+        const finalPrice = this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
+        this.setState({finalPrice: finalPrice})
+      })
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.provider.eth && !this.props.provider.eth) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id)
+      this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
+        const finalPrice = this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
+        this.setState({finalPrice: finalPrice})
+      })
     }
   }
 
@@ -64,6 +78,31 @@ class ItemShow extends Component {
     )
   }
 
+  renderFinalPrice() {
+    return (
+      <div>Total : { this.state.finalPrice } ETH</div>
+    )
+  }
+
+  renderShippingFee() {
+    return (
+      <div>Shipping Fee : { this.props.item.shipping_fee } ETH</div>
+    )
+  }
+
+  renderItemPrice() {
+    if (!this.props.item.discount || this.props.item.discount === 0) {
+      return <div className='item-price'>Price : { this.props.item.price } ETH</div>
+    }
+    const discountedPrice = this.props.item.price * (this.props.item.discount / 100)
+    return (
+      <div className=''>Price :
+        <span className='item-original-price'>{ this.props.item.price } </span>
+        <span className='item-discounted-price'> { discountedPrice } ETH ({ this.props.item.discount } %)</span>
+      </div>
+    )
+  }
+
   renderItem() {
     return (
       <div className='pure-g item-show'>
@@ -88,7 +127,9 @@ class ItemShow extends Component {
           <div className='item-show-price'>
             { this.renderRating() }
             { this.renderSalesNumber() }
-            Price : { this.props.item.price } ETH
+            { this.renderItemPrice() }
+            { this.renderShippingFee() }
+            { this.renderFinalPrice() }
           </div>
           <Button bsStyle="success" block onClick={(event) => this.purchaseItem(event)}><i className="fa fa-shopping-cart" aria-hidden="true"></i> BUY</Button>
         </div>

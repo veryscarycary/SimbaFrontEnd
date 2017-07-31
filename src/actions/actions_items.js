@@ -39,16 +39,16 @@ export function fetchAllItems(provider) {
 
 export function selectItem(provider, itemId) {
   return dispatch => {
-    axios.get(`${ITEMS_URL}/${itemId}`, headers)
-         .then((request) => {
-            const normalizeRequest = normalize(request.data, itemNormalizr)
-            dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
-            dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
-            dispatch({type: SELECT_ITEM, payload: request.data.id})
-            dispatch(fetchItemRating(provider, request.data.id))
-            dispatch(fetchItemSalesNumber(provider, itemId))
-            dispatch(fetchUserRating(provider, request.data.user.wallet))
-         })
+    return axios.get(`${ITEMS_URL}/${itemId}`, headers)
+                .then((request) => {
+                    const normalizeRequest = normalize(request.data, itemNormalizr)
+                    dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
+                    dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+                    dispatch({type: SELECT_ITEM, payload: request.data.id})
+                    dispatch(fetchItemRating(provider, request.data.id))
+                    dispatch(fetchItemSalesNumber(provider, itemId))
+                    dispatch(fetchUserRating(provider, request.data.user.wallet))
+                })
   }
 }
 
