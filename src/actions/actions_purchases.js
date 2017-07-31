@@ -18,9 +18,9 @@ export const SELECT_PURCHASE = 'SELECT_PURCHASE'
 // Purchase one item
 // Create locally first a purchase in mongodb
 // Retrieve the purchaseId to send the transaction into the smart contract
-export function createPurchase(item, provider, history) {
+export function createPurchase(item, finalPrice, provider, history) {
   const params = {
-    amount: item.price,
+    amount: finalPrice,
     item_id: item.id,
     address: '155 W Washington Blvd',
     postal_code: '90030',
@@ -38,6 +38,7 @@ export function createPurchase(item, provider, history) {
                   dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
                   dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, provider, history))
               }).catch((error) => {
+                  console.log(error)
                   if (error.response) {
                     dispatch(setFlashMessage(error.response.data.error, 'error'))
                   } else {

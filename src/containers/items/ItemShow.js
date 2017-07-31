@@ -17,7 +17,7 @@ class ItemShow extends Component {
     super(props)
 
     this.state = {
-      finalPrice: ''
+      finalPrice: 0.0
     }
   }
 
@@ -41,7 +41,7 @@ class ItemShow extends Component {
 
   purchaseItem(event) {
     event.preventDefault()
-    this.props.createPurchase(this.props.item, this.props.provider, this.props.history)
+    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider, this.props.history)
   }
 
   renderReviews() {
