@@ -39,6 +39,19 @@ class ItemIndex extends Component {
     )
   }
 
+  renderItemPrice(item) {
+    if (!item.discount || item.discount === 0) {
+      return <span className='item-price'>{ item.price } ETH</span>
+    }
+    const discountedPrice = item.price * (item.discount / 100)
+    return (
+      <div className='item-price'>
+        <span className='item-original-price'>{ item.price } </span>
+        <span className='item-discounted-price'> { discountedPrice } ETH ({ item.discount } %)</span>
+      </div>
+    )
+  }
+
   renderItems() {
     let items = this.props.items.map((item) => {
       return (
@@ -52,7 +65,7 @@ class ItemIndex extends Component {
                 <span className='item-description'>{ item.short_description }</span>
                 { this.renderReview(item) }
                 <span className='item-ratings-sales'>{ item.sales } sold</span>
-                <span className='item-price'>{ item.price } ETH</span>
+                { this.renderItemPrice(item) }
               </div>
             </div>
           </Link>

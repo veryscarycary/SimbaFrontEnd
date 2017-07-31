@@ -18,9 +18,9 @@ class ItemNew extends Component {
       picture: '',
       reference: '',
       price: '',
-      discount: '',
-      shipping_fee: '',
-
+      discount: '0.0',
+      shipping_fee: '0.0',
+      shipping_deadline: 7
     }
   }
 
@@ -65,7 +65,7 @@ class ItemNew extends Component {
           </div>
           <div className='pure-u-1 pure-u-md-1-2'>
             <Input
-              label='Discount %'
+              label='Discount (%)'
               value={this.state.discount}
               name='discount'
               type='text'
@@ -86,6 +86,15 @@ class ItemNew extends Component {
               label='Picture'
               value={this.state.picture}
               name='picture'
+              type='text'
+              onChange={this.handleChange.bind(this)}
+              required />
+          </div>
+          <div className='pure-u-1 pure-u-md-1-2'>
+            <Input
+              label='Shipping Deadline'
+              value={this.state.shipping_deadline}
+              name='shipping_deadline'
               type='text'
               onChange={this.handleChange.bind(this)}
               required />
