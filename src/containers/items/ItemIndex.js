@@ -62,6 +62,7 @@ class ItemIndex extends Component {
               <div className="caption">
                 <span className='item-name'>{ item.name }</span>
                 <span className='item-seller'>Sell by { item.user.fullname } ({ item.user.rating })</span>
+                <div className='item-description'>Ship within { item.shipping_deadline } days</div>
                 <span className='item-description'>{ item.short_description }</span>
                 { this.renderReview(item) }
                 <span className='item-ratings-sales'>{ item.sales } sold</span>

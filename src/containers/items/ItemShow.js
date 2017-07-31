@@ -92,14 +92,20 @@ class ItemShow extends Component {
 
   renderItemPrice() {
     if (!this.props.item.discount || this.props.item.discount === 0) {
-      return <div className='item-price'>Price : { this.props.item.price } ETH</div>
+      return <div>Price : { this.props.item.price } ETH</div>
     }
     const discountedPrice = this.props.item.price * (this.props.item.discount / 100)
     return (
-      <div className=''>Price :
+      <div>Price :
         <span className='item-original-price'>{ this.props.item.price } </span>
         <span className='item-discounted-price'> { discountedPrice } ETH ({ this.props.item.discount } %)</span>
       </div>
+    )
+  }
+
+  renderShippingDeadline() {
+    return (
+      <div>Guarantee Shipping in { this.props.item.shipping_deadline } days or get refunded</div>
     )
   }
 
@@ -115,7 +121,7 @@ class ItemShow extends Component {
           <hr />
           <p className='item-show-seller'>Sell by
             <Link to={`/users/${this.props.item.user.wallet}/reviews`}>
-              { this.props.item.user.fullname } ({ this.props.item.user.rating } from {this.props.item.user.number_reviews} reviews)
+               { this.props.item.user.fullname } ({ this.props.item.user.rating } from {this.props.item.user.number_reviews} reviews)
             </Link>
           </p>
           <p><strong>Description</strong></p>
@@ -130,6 +136,8 @@ class ItemShow extends Component {
             { this.renderItemPrice() }
             { this.renderShippingFee() }
             { this.renderFinalPrice() }
+            <hr/>
+            { this.renderShippingDeadline() }
           </div>
           <Button bsStyle="success" block onClick={(event) => this.purchaseItem(event)}><i className="fa fa-shopping-cart" aria-hidden="true"></i> BUY</Button>
         </div>
