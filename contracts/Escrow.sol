@@ -12,6 +12,12 @@ contract Escrow {
     bytes32 code;
     bytes32 itemId;
     Category category;
+    uint shippingDaysDeadline;
+    uint purchasedTime;
+    // uint shippedTime;
+    // uint cancelTime;
+    // uint completedTime;
+    // uint timeoutTime;
   }
 
   struct Review {
@@ -26,17 +32,13 @@ contract Escrow {
   mapping(address => uint) public userSales;
   mapping(address => Review) public userReviews;
   mapping(bytes32 => Review) public itemReviews;
-
-  // uint public shippedTime;
-  // uint public cancelTime;
-  // uint public purchasedTime;
-  // uint public completedTime;
-  // uint public timeoutTime;
+  bytes32[] pendingPurchases;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
   event PurchaseCompleted(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
   event PurchaseCancelled(bytes32 purchaseId, address sender, address buyer, address seller, bytes32 itemId);
+  event ShippingTimeout(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
 
   function Escrow() {
     owner = msg.sender;
@@ -47,24 +49,27 @@ contract Escrow {
     _;
   }
 
-  //   modifier onlyBuyer() {
+  // modifier onlyBuyer(buyer) {
   //   require(msg.sender == buyer);
   //   _;
   // }
 
-  // modifier onlySeller() {
+  // modifier onlySeller(seller) {
   //   require(msg.sender == seller);
   //   _;
   // }
 
   // Buyer Purchase an item '_itemId' from Seller (_seller)
   // State of the purchase : "Purchased"
-  function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId) payable {
+  function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId, uint _shippingDaysDeadline) payable {
     purchases[_purchaseId].itemId = _itemId;
     purchases[_purchaseId].seller = _seller;
     purchases[_purchaseId].buyer = msg.sender;
     purchases[_purchaseId].status = Status.Purchased;
     purchases[_purchaseId].amount = msg.value;
+    purchases[_purchaseId].purchasedTime = now;
+    purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 days;
+    pendingPurchases.push(_purchaseId);
     ItemPurchased(_purchaseId, msg.sender, _seller, _itemId, msg.value);
   }
 
@@ -92,6 +97,7 @@ contract Escrow {
       // Set user's review & rating + total number of sales
       userSales[purchases[_purchaseId].seller] += 1;
       setReview(true, _purchaseId, _userReviewId, _userRating);
+      deletePurchaseFromPending(IndexOf(_purchaseId));
     }
   }
 
@@ -124,6 +130,7 @@ contract Escrow {
         }
 
       purchases[_purchaseId].amount = 0;
+      deletePurchaseFromPending(IndexOf(_purchaseId));
       PurchaseCancelled(_purchaseId, msg.sender, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
   }
@@ -138,13 +145,23 @@ contract Escrow {
   }
 
   // Get Purchase (_purchaseId) infos
-  function getPurchase(bytes32 _purchaseId) constant returns(uint, address, address, Status, bytes32, bytes32) {
-    return (purchases[_purchaseId].amount,
-            purchases[_purchaseId].seller,
-            purchases[_purchaseId].buyer,
-            purchases[_purchaseId].status,
-            purchases[_purchaseId].code,
-            purchases[_purchaseId].itemId);
+  // function getPurchase(bytes32 _purchaseId) constant returns(uint, address, address, Status, bytes32, bytes32, uint, uint) {
+  //   return (purchases[_purchaseId].amount,
+  //           purchases[_purchaseId].seller,
+  //           purchases[_purchaseId].buyer,
+  //           purchases[_purchaseId].status,
+  //           purchases[_purchaseId].code,
+  //           purchases[_purchaseId].itemId,
+  //           purchases[_purchaseId].shippingDaysDeadline,
+  //           purchases[_purchaseId].purchasedTime);
+  // }
+
+  function getPurchaseTimes(bytes32 _purchaseId) constant returns (uint, uint) {
+    return (purchases[_purchaseId].shippingDaysDeadline, purchases[_purchaseId].purchasedTime);
+  }
+
+  function getPurchaseState(bytes32 _purchaseId) constant returns (Status) {
+    return purchases[_purchaseId].status;
   }
 
   // Get seller total number of sales he made
@@ -175,6 +192,43 @@ contract Escrow {
 
   function getItemReviewComment(bytes32 _itemId, uint _index) constant returns (bytes32) {
     return itemReviews[_itemId].comments[_index];
+  }
+
+  function deletePurchaseFromPending(uint index) {
+    // Index == -1 means that the item doesn't exist in the array
+    require((index !=  uint(-1)) && (index < pendingPurchases.length));
+
+    delete pendingPurchases[index];
+    if (pendingPurchases.length >= 2) {
+      pendingPurchases[index] = pendingPurchases[pendingPurchases.length - 1];
+      delete pendingPurchases[pendingPurchases.length - 1];
+    }
+    pendingPurchases.length--;
+  }
+
+   /** Finds the index of a given value in an array. */
+  function IndexOf(bytes32 _purchaseId) returns(uint) {
+    for (uint i = 0; i < pendingPurchases.length; i++) {
+      if (pendingPurchases[i] == _purchaseId) {
+        return i;
+      }
+    }
+    // Index not found
+    return uint(-1);
+  }
+
+  function cancelShippingTimeoutPurchases() {
+    for (uint i = 0; i < pendingPurchases.length; i++) {
+      if ((purchases[pendingPurchases[i]].shippingDaysDeadline <  now)
+          && (purchases[pendingPurchases[i]].status == Status.Purchased)) {
+        if (purchases[pendingPurchases[i]].buyer.send(purchases[pendingPurchases[i]].amount)) {
+          purchases[pendingPurchases[i]].status = Status.SellerTimeOut;
+          purchases[pendingPurchases[i]].amount = 0;
+          deletePurchaseFromPending(i);
+          ShippingTimeout(pendingPurchases[i], purchases[pendingPurchases[i]].buyer, purchases[pendingPurchases[i]].seller, purchases[pendingPurchases[i]].itemId);
+        }
+      }
+    }
   }
 
   // function fee(){
