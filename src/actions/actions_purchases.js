@@ -4,7 +4,7 @@ import { normalize } from 'normalizr'
 import { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../api_url'
 
 import { setFlashMessage } from './actions_flash_messages'
-import { purchase, fetchPurchaseState } from './actions_contract'
+import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
 import { CREATE_USERS } from './actions_users'
 import { CREATE_ITEMS } from './actions_items'
 
@@ -27,7 +27,8 @@ export function createPurchase(item, finalPrice, provider, history) {
     city: 'Los Angeles',
     us_state: 'CA',
     country: 'USA',
-    seller_id: item.user.id
+    seller_id: item.user.id,
+    shipping_deadline: item.shipping_deadline
   }
 
   return dispatch => {
@@ -36,7 +37,7 @@ export function createPurchase(item, finalPrice, provider, history) {
                   const normalizeRequest = normalize(request.data, purchaseNormalizr)
                   dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
                   dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
-                  dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, provider, history))
+                  dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline, provider, history))
               }).catch((error) => {
                   console.log(error)
                   if (error.response) {
@@ -74,6 +75,7 @@ export function fetchAllPurchases(provider, isBuyer) {
           dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
           request.data.forEach((purchase) => {
             dispatch(fetchPurchaseState(purchase, provider))
+            dispatch(fetchPurchaseTimes(purchase, provider))
           })
        }).catch((error) => {
         console.log(error)

@@ -12,7 +12,7 @@ import { fetchOneReview } from './actions_reviews'
 
 // Buyer Purchase an item '_itemId' from Seller (_seller)
 // State of the purchase : "Purchased"
-export function purchase(purchaseId, sellerAddress, itemId, amount, provider, history) {
+export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider, history) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
@@ -23,6 +23,7 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, provider, hi
         instance.purchase.sendTransaction(purchaseId,
                                           sellerAddress,
                                           itemId,
+                                          shippingDeadline,
                                           {from: accounts[0], value: Eth.toWei(amount, 'ether')})
                          .then(transaction => {
                             dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_PURCHASED } })
@@ -113,9 +114,28 @@ export function fetchPurchaseState(purchase, provider) {
   return dispatch => {
     provider.eth.accounts().then((accounts) => {
       escrow.deployed().then(instance => {
-        instance.getPurchase(purchase.id)
+        instance.getPurchaseState(purchase.id)
                 .then(transaction => {
-                  dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction[3].valueOf(), id: purchase.id }})
+                  dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
+              }).catch(error => {
+                  console.log(error)
+                  dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
+              })
+      })
+    })
+  }
+}
+
+export function fetchPurchaseTimes(purchase, provider) {
+  const escrow = contract(escrowJSON)
+  escrow.setProvider(provider.eth.currentProvider)
+
+  return dispatch => {
+    provider.eth.accounts().then((accounts) => {
+      escrow.deployed().then(instance => {
+        instance.getPurchaseTimes(purchase.id)
+                .then(transaction => {
+                  dispatch({type: UPDATE_PURCHASE, payload: { shipping_deadline: transaction[0].valueOf(), id: purchase.id }})
               }).catch(error => {
                   console.log(error)
                   dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
