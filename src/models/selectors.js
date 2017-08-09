@@ -100,8 +100,8 @@ export const completedPurchases = createSelector(
         if ((purchase.purchaseState === purchaseState.COMPLETED)
           || (purchase.purchaseState === purchaseState.BUYER_CANCELLED)
           || (purchase.purchaseState === purchaseState.SELLER_CANCELLED)
-          || (purchase.purchaseState === purchaseState.SELLER_TIMEOUT)
-          || (purchase.purchaseState === purchaseState.BUYER_TIMEOUT)
+          || (purchase.purchaseState === purchaseState.SELLER_SHIPPING_TIMEOUT)
+          || (purchase.purchaseState === purchaseState.BUYER_CONFIRMATION_TIMEOUT)
           || (purchase.purchaseState === purchaseState.ERROR)) {
           return true
         }
@@ -141,8 +141,8 @@ export const completedSales = createSelector(
         if ((purchase.purchaseState === purchaseState.COMPLETED)
           || (purchase.purchaseState === purchaseState.BUYER_CANCELLED)
           || (purchase.purchaseState === purchaseState.SELLER_CANCELLED)
-          || (purchase.purchaseState === purchaseState.SELLER_TIMEOUT)
-          || (purchase.purchaseState === purchaseState.BUYER_TIMEOUT)
+          || (purchase.purchaseState === purchaseState.SELLER_SHIPPING_TIMEOUT)
+          || (purchase.purchaseState === purchaseState.BUYER_CONFIRMATION_TIMEOUT)
           || (purchase.purchaseState === purchaseState.ERROR)) {
           return true
         }
