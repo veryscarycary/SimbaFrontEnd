@@ -24,8 +24,7 @@ class ItemShow extends Component {
   componentWillMount() {
     if (this.props.provider.eth) {
       this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
-        const finalPrice = this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
-        this.setState({finalPrice: finalPrice})
+        this.setFinalPrice()
       })
     }
   }
@@ -33,10 +32,20 @@ class ItemShow extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.provider.eth && !this.props.provider.eth) {
       this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
-        const finalPrice = this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
-        this.setState({finalPrice: finalPrice})
+        this.setFinalPrice()
       })
     }
+  }
+
+  setFinalPrice() {
+    var finalPrice = 0
+    if (this.props.item.discount === 0) {
+      finalPrice = this.props.item.price + this.props.item.shipping_fee
+    } else {
+      finalPrice = this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
+    }
+
+    this.setState({finalPrice: finalPrice})
   }
 
   purchaseItem(event) {

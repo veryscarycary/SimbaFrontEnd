@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Panel, Button } from 'react-bootstrap'
+import Timestamp from 'react-timestamp'
 
 import '../../style/purchase.css'
 
@@ -68,6 +69,7 @@ class PurchaseIndex extends Component {
             </div>
             <div className='pure-u-1 pure-u-md-3-5'>
               <Link to={`/items/${purchase.item.id}`}>{ purchase.item.name }</Link> <br/>
+              <strong>Guarantee Shipping Before : <Timestamp time={purchase.shipping_deadline} format='date' includeDay /></strong><br />
               { purchase.item.short_description }<br/>
               <span className='text-danger'><strong>{ purchase.amount } ETH</strong></span>
             </div>
