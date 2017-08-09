@@ -5196,6 +5196,10 @@ react-spinkit@^3.0.0:
     object-assign "^4.1.0"
     prop-types "^15.5.8"
 
+react-timestamp@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-timestamp/-/react-timestamp-4.2.1.tgz#e143819cfd9072ef37fc1717ecba215eef78cb82"
+
 react-truncate@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/react-truncate/-/react-truncate-2.1.4.tgz#58126a199c8afdac87873986e08210fd7305ef43"
