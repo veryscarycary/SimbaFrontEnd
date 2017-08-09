@@ -43,6 +43,7 @@ Item.fields = {
   rating: attr(),
   number_rating: attr(),
   number_reviews: attr(),
+  shipping_deadline: attr(),
   user: fk('User', 'items'),
 }
 

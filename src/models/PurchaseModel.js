@@ -37,6 +37,7 @@ Purchase.fields = {
   country: attr(),
   us_state: attr(),
   purchaseState: attr(),
+  shipping_deadline: attr(),
   buyer: fk('User', 'buyer_purchases'),
   seller: fk('User', 'seller_sales'),
   item: fk('Item', 'purchases')
