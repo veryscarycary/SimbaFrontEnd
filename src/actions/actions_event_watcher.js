@@ -6,7 +6,8 @@ import { UPDATE_PURCHASE } from './actions_purchases'
 import { createLogActivity } from './actions_activities'
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
 
-// Watch block chain event : Item purchase
+// Watch block chain event
+// Buyer purchases an Item
 export function watchPurchaseEvent(provider, history) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -35,7 +36,8 @@ export function watchPurchaseEvent(provider, history) {
   }
 }
 
-// Watch block chain event : User shipped item and send code (i.e : tracking number)
+// Watch block chain event
+// User shipped item and send code (i.e : tracking number)
 export function watchShippingEvent(provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -63,7 +65,8 @@ export function watchShippingEvent(provider) {
   }
 }
 
-// Watch block chain event : User confirm the purchase closing the transaction and paying the seller
+// Watch block chain event
+// User confirm the purchase closing the transaction and paying the seller
 export function watchPurchaseCompleteEvent(provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -91,6 +94,8 @@ export function watchPurchaseCompleteEvent(provider) {
   }
 }
 
+// Watch block chain event
+// When a buyer cancel a purchases before the item was shipped
 export function watchCancelPurchaseEvent(provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -115,6 +120,35 @@ export function watchCancelPurchaseEvent(provider) {
                                      result.args.seller)
           )
           dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: cancelPurchaseState}})
+        } else {
+          console.log(error)
+          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+        }
+      })
+    })
+  }
+}
+
+// Watch block chain event
+// Purchases is automatically cancelled if Item hasn't been shipped before the Shipping Deadline
+export function watchShippingTimeoutEvent(provider) {
+  const escrow = contract(escrowJSON)
+  escrow.setProvider(provider.eth.currentProvider)
+
+  return dispatch => {
+    escrow.deployed().then(instance => {
+      instance.ShippingTimeout().watch(function(error, result) {
+        if (!error) {
+          const newLog = `[${result.args.purchaseId}] orders automatically cancelled for item ${Eth.toUtf8(result.args.itemId)}. Funds have been refunded to ${result.args.buyer}.`
+          console.log('[Event - CancelPurchase] : ', newLog)
+          dispatch(createLogActivity(activityCategories.SELLER_SHIPPING_TIMEOUT,
+                                     Eth.toUtf8(result.args.purchaseId),
+                                     Eth.toUtf8(result.args.itemId),
+                                     '',
+                                     result.args.buyer,
+                                     result.args.seller)
+          )
+          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SELLER_SHIPPING_TIMEOUT}})
         } else {
           console.log(error)
           dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})

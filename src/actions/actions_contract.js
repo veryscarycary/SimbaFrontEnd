@@ -3,15 +3,16 @@ import Eth from 'ethjs'
 import escrowJSON from '../contract_build/Escrow.json'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
-import { watchPurchaseEvent, watchShippingEvent, watchPurchaseCompleteEvent, watchCancelPurchaseEvent } from './actions_event_watcher'
+import { watchPurchaseEvent, watchShippingEvent, watchPurchaseCompleteEvent, watchCancelPurchaseEvent, watchShippingTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
 
+// Block chain transaction
 // Buyer Purchase an item '_itemId' from Seller (_seller)
-// State of the purchase : "Purchased"
+// State of the purchase : "PURCHASED"
 export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider, history) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -36,9 +37,10 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
   }
 }
 
+// Block chain transaction
 // Seller send the code to Buyer
-  // Code can be a tracking number, a digital code, a coupon
-  // State of the purchase : "Shipped"
+// Code can be a tracking number, a digital code, a coupon
+// State of the purchase : "SHIPPED"
 export function sendCode(purchaseId, code, provider) {
   console.log('enter sendCode')
   const escrow = contract(escrowJSON)
@@ -60,9 +62,10 @@ export function sendCode(purchaseId, code, provider) {
   }
 }
 
+// Block chain transaction
 // Buyer confirms receive the code from the Seller - Completing the transactions
-  // Seller receives the money
-  // State of the purchase : "Completed"
+// Seller receives the money
+// State of the purchase : "COMPLETED"
 export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRating, itemRating, provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -83,6 +86,10 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
   }
 }
 
+// Block chain transaction
+// Buyer cancels his purchases (before the shipping happened) - State Purchase : BUYER_CANCELLED
+// or
+// Seller cancels his orders (before he shipped the item) - State Purchase : SELLER_CANCELLED
 export function cancelPurchase(purchaseId, provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -104,9 +111,10 @@ export function cancelPurchase(purchaseId, provider) {
   }
 }
 
+// Block chain transaction
 // Get Purchases State from the blockchain and sort them between two arrays
 // PENDING => PENDING,PURCHASED,SHIPPED states
-// FINALIZED => COMPLETED, CANCELLED, SELLER_TIMEOUT, BUYER_TIMEOUT, ERROR
+// FINALIZED => COMPLETED, CANCELLED, SELLER_SHIPPING_TIMEOUT, BUYER_CONFIRMATION_TIMEOUT, ERROR
 export function fetchPurchaseState(purchase, provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -126,6 +134,9 @@ export function fetchPurchaseState(purchase, provider) {
   }
 }
 
+// Block chain transaction
+// Retrieve Purchases Shipping Deadlines
+// getPurchaseTimes returns (shippingDaysDeadline):
 export function fetchPurchaseTimes(purchase, provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -145,6 +156,7 @@ export function fetchPurchaseTimes(purchase, provider) {
   }
 }
 
+// Block chain transaction
 // Retrieve a User total # of sales
 export function fetchUserSalesNumber(provider, wallet) {
   const escrow = contract(escrowJSON)
@@ -165,6 +177,8 @@ export function fetchUserSalesNumber(provider, wallet) {
   }
 }
 
+// Block chain transaction
+// Retrieve total number of sales for an Item
 export function fetchItemSalesNumber(provider, itemId) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -184,7 +198,7 @@ export function fetchItemSalesNumber(provider, itemId) {
   }
 }
 
-
+// Block chain transaction
 // Retrieve a User rating and # of reviews
 export function fetchUserRating(provider, wallet) {
   const escrow = contract(escrowJSON)
@@ -210,6 +224,7 @@ export function fetchUserRating(provider, wallet) {
   }
 }
 
+// Block chain transaction
 // Retrieve a User rating and # of reviews
 export function fetchItemRating(provider, itemId) {
   const escrow = contract(escrowJSON)
@@ -235,6 +250,8 @@ export function fetchItemRating(provider, itemId) {
   }
 }
 
+// Block chain transaction
+// Retrieve list of Items reviews ID
 export function fetchItemReviewIds(provider, itemId, numberReviews) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -256,6 +273,8 @@ export function fetchItemReviewIds(provider, itemId, numberReviews) {
   }
 }
 
+// Block chain transaction
+// Retrieve list of Users reviews ID
 export function fetchUserReviewIds(provider, wallet, numberReviews) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
@@ -277,4 +296,26 @@ export function fetchUserReviewIds(provider, wallet, numberReviews) {
   }
 }
 
+// block chain transaction
+// Automatically cancels orders if seller hasn't shipped the items before the shipping deadlines - State of the purchase : "SELLER_SHIPPING_TIMEOUT"
+// and
+// Automatically confirms orders if buyer hasn't confirmed the reception of the item before the confirmation deadlines - State of the purchase : "BUYER_CONFIRMATION_TIMEOUT"
+export function cancelTimeoutOrders(provider) {
+  console.log('enter cancelTimeoutOrders')
+  const escrow = contract(escrowJSON)
+  escrow.setProvider(provider.eth.currentProvider)
+
+  return dispatch => {
+    provider.eth.accounts().then((accounts) => {
+      escrow.deployed().then(instance => {
+        dispatch(watchShippingTimeoutEvent(provider))
+        instance.cancelTimeoutOrders.sendTransaction({from: accounts[0]})
+                                               .catch(error => {
+                                                  console.log('error cancelTimeoutOrders', error)
+                                                  dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
+                                               })
+      })
+    })
+  }
+}
 

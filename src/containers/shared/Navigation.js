@@ -6,6 +6,7 @@ import { LinkContainer } from 'react-router-bootstrap'
 
 import { setCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
+import { cancelTimeoutOrders } from '../../actions/actions_contract'
 
 import '../../style/navigation.css'
 
@@ -15,6 +16,11 @@ class Navigation extends Component {
     localStorage.removeItem('simba_wallet')
     localStorage.removeItem('simba_token')
     this.props.setCurrentUser(this.props.provider, this.props.current_user.wallet, '')
+  }
+
+  checkTimeout(event) {
+    event.preventDefault()
+    this.props.cancelTimeoutOrders(this.props.provider)
   }
 
   render() {
@@ -44,6 +50,7 @@ class Navigation extends Component {
                   <MenuItem divider />
                   <MenuItem header>Admin</MenuItem>
                   <LinkContainer to='/admin/activities'><MenuItem>Manage Activities</MenuItem></LinkContainer>
+                  <MenuItem onClick={(e) => this.checkTimeout(e)}>Check Timeout</MenuItem>
                 </DropdownButton>
               </ButtonToolbar>
             ) : (
@@ -90,4 +97,4 @@ function mapStateToProps(state) {
   return { current_user : current_user(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { setCurrentUser })(Navigation)
+export default connect(mapStateToProps, { setCurrentUser, cancelTimeoutOrders })(Navigation)
