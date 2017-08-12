@@ -124,7 +124,6 @@ class PurchaseShipping extends Component {
     if (!this.props.purchase.buyer) {
       return <div></div>
     }
-    console.log('PurchaseShipping ', this.props)
     return (
       <div>
         { this.renderByShippingState() }
