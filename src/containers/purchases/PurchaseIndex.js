@@ -51,6 +51,10 @@ class PurchaseIndex extends Component {
         return <Button bsSize="small" block disabled>Purchase Cancelled By Buyer</Button>
       case purchaseState.SELLER_CANCELLED:
         return <Button bsSize="small" block disabled>Purchase Cancelled By Seller</Button>
+      case purchaseState.SELLER_SHIPPING_TIMEOUT:
+        return <Button bsSize="small" block disabled>Shipping Timeout</Button>
+      case purchaseState.BUYER_CONFIRMATION_TIMEOUT:
+        return <Button bsSize="small" block disabled>Confirmation Timeout</Button>
       case purchaseState.ERROR:
         return <Button bsSize="small" block disabled>Transaction Error</Button>
       default:
