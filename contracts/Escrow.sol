@@ -1,7 +1,7 @@
 pragma solidity ^0.4.10; //We have to specify what version of compiler this code will use
 
 contract Escrow {
-  enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerTimeOut, BuyerTimeOut}
+  enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerShippingTimeOut, BuyerConfirmationTimeOut}
   enum Category {Good, Digital, Service, Auction}
 
   struct Purchase {
@@ -14,7 +14,7 @@ contract Escrow {
     Category category;
     uint shippingDaysDeadline;
     uint purchasedTime;
-    // uint shippedTime;
+    uint shippedTime;
     // uint cancelTime;
     // uint completedTime;
     // uint timeoutTime;
@@ -33,12 +33,14 @@ contract Escrow {
   mapping(address => Review) public userReviews;
   mapping(bytes32 => Review) public itemReviews;
   bytes32[] pendingPurchases;
+  uint public confirmationDaysDeadline;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
   event PurchaseCompleted(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
   event PurchaseCancelled(bytes32 purchaseId, address sender, address buyer, address seller, bytes32 itemId);
   event ShippingTimeout(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
+  event ConfirmationTimeout(bytes32 purchaseId, address buyer, address seller, bytes32 itemId);
 
   function Escrow() {
     owner = msg.sender;
@@ -68,7 +70,7 @@ contract Escrow {
     purchases[_purchaseId].status = Status.Purchased;
     purchases[_purchaseId].amount = msg.value;
     purchases[_purchaseId].purchasedTime = now;
-    purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 days;
+    purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 minutes;
     pendingPurchases.push(_purchaseId);
     ItemPurchased(_purchaseId, msg.sender, _seller, _itemId, msg.value);
   }
@@ -79,6 +81,7 @@ contract Escrow {
   function setCode(bytes32 _purchaseId, bytes32 _code) {
     purchases[_purchaseId].code = _code;
     purchases[_purchaseId].status = Status.Shipped;
+    purchases[_purchaseId].shippedTime = now;
     ItemShipped(_purchaseId, purchases[_purchaseId].buyer, msg.sender, purchases[_purchaseId].itemId, _code);
   }
 
@@ -217,18 +220,40 @@ contract Escrow {
     return uint(-1);
   }
 
-  function cancelShippingTimeoutPurchases() {
+  function cancelTimeoutOrders() {
     for (uint i = 0; i < pendingPurchases.length; i++) {
+      // Automatically cancel orders that haven't been shipped before the deadline
       if ((purchases[pendingPurchases[i]].shippingDaysDeadline <  now)
           && (purchases[pendingPurchases[i]].status == Status.Purchased)) {
         if (purchases[pendingPurchases[i]].buyer.send(purchases[pendingPurchases[i]].amount)) {
-          purchases[pendingPurchases[i]].status = Status.SellerTimeOut;
+          purchases[pendingPurchases[i]].status = Status.SellerShippingTimeOut;
           purchases[pendingPurchases[i]].amount = 0;
           deletePurchaseFromPending(i);
           ShippingTimeout(pendingPurchases[i], purchases[pendingPurchases[i]].buyer, purchases[pendingPurchases[i]].seller, purchases[pendingPurchases[i]].itemId);
         }
       }
+
+      // Automatically confirm orders that haven't been confirmed by the users before the deadline
+      // if (((purchases[pendingPurchases[i]].shippedTime + confirmationDaysDeadline * 1.days) <  now)
+      //     && (purchases[pendingPurchases[i]].status == Status.Shipped)) {
+      //   if (purchases[pendingPurchases[i]].seller.send(purchases[pendingPurchases[i]].amount)) {
+      //     purchases[pendingPurchases[i]].status = Status.BuyerConfirmationTimeOut;
+      //     purchases[pendingPurchases[i]].amount = 0;
+      //     deletePurchaseFromPending(i);
+      //     ConfirmationTimeout(pendingPurchases[i], purchases[pendingPurchases[i]].buyer, purchases[pendingPurchases[i]].seller, purchases[pendingPurchases[i]].itemId);
+      //   }
+      // }
     }
+  }
+
+
+  function setConfirmationDaysDeadline(uint _day) {
+    confirmationDaysDeadline = _day;
+  }
+
+  function getOnePendingPurchase(uint _index) constant returns(bytes32, uint) {
+    return (pendingPurchases[_index],
+            pendingPurchases.length);
   }
 
   // function fee(){
