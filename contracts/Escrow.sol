@@ -230,18 +230,21 @@ contract Escrow {
   //   -- cancel shipping Timeout orders
   //   -- cancel confirmation timeout orders
   function cancelTimeoutOrders() {
-    bytes32[] tmpPendingPurchases;
+    bytes32[] pendingPurchasesToDelete;
 
     for (uint i = 0; i < pendingPurchases.length; i++) {
       // Automatically cancel orders that haven't been shipped before the deadline
       if (cancelShippingTimeoutOrders(pendingPurchases[i])) {
-        tmpPendingPurchases.push(pendingPurchases[i]);
+        pendingPurchasesToDelete.push(pendingPurchases[i]);
       }
     }
 
-    for (uint j = 0; j < tmpPendingPurchases.length; j++) {
-      deletePurchaseFromPending(IndexOf(tmpPendingPurchases[j]));
-    }
+    ItemPurchased(pendingPurchases[0], msg.sender, msg.sender, pendingPurchases[0], pendingPurchasesToDelete.length);
+    ItemPurchased(pendingPurchasesToDelete[0], msg.sender, msg.sender, pendingPurchasesToDelete[0], IndexOf(pendingPurchasesToDelete[0]));
+
+    // for (uint j = 0; j < tmpPendingPurchases.length; j++) {
+    //   deletePurchaseFromPending(IndexOf(tmpPendingPurchases[j]));
+    // }
   }
 
   // Automatically cancel orders that haven't been shipped before the deadline
@@ -252,7 +255,6 @@ contract Escrow {
         purchases[_purchaseId].amount = 0;
         ShippingTimeout(_purchaseId, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
         return true;
-        //
       }
     }
     return false;
