@@ -139,7 +139,7 @@ export function watchShippingTimeoutEvent(provider) {
     escrow.deployed().then(instance => {
       instance.ShippingTimeout().watch(function(error, result) {
         if (!error) {
-          const newLog = `[${result.args.purchaseId}] orders automatically cancelled for item ${Eth.toUtf8(result.args.itemId)}. Funds have been refunded to ${result.args.buyer}.`
+          const newLog = `[${Eth.toUtf8(result.args.purchaseId)}] orders automatically cancelled for item ${Eth.toUtf8(result.args.itemId)}. Funds have been refunded to ${result.args.buyer}.`
           console.log('[Event - CancelPurchase] : ', newLog)
           dispatch(createLogActivity(activityCategories.SELLER_SHIPPING_TIMEOUT,
                                      Eth.toUtf8(result.args.purchaseId),
