@@ -35,7 +35,7 @@ contract Escrow {
   bytes32[] pendingPurchases;
   bytes32[] pendingPurchasesToDelete;
   uint public numPendingPurchasesToDelete = 0;
-  uint public confirmationDaysDeadline;
+  uint public confirmationDaysDeadline = 15;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
