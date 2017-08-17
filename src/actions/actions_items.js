@@ -2,7 +2,7 @@ import axios from 'axios'
 import { normalize } from 'normalizr'
 
 import { itemsNormalizr, itemNormalizr } from '../models/normalizr'
-import { headers, ITEMS_URL } from '../api_url'
+import { headers, ITEMS_URL, SELLER_ITEMS_URL } from '../api_url'
 import { setFlashMessage } from './actions_flash_messages'
 import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './actions_contract'
 
@@ -65,6 +65,27 @@ export function createItem(item_params) {
             dispatch(setFlashMessage(error.request.data.error, 'error'))
           } else {
             dispatch(setFlashMessage("Error: Item couldn't be created, please try again later.", 'error'))
+          }
+       })
+  }
+}
+
+export function fetchSellerItems(provider) {
+  return dispatch => {
+    axios.get(SELLER_ITEMS_URL, headers)
+         .then((request) => {
+          const normalizeRequest = normalize(request.data, itemsNormalizr)
+          dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+
+          request.data.forEach((item) => {
+            dispatch(fetchItemSalesNumber(provider, item.id))
+          })
+       }).catch((error) => {
+          console.log(error)
+          if (error.response) {
+            dispatch(setFlashMessage(error.response.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Failed to retrieve items.. please try again later.", 'error'))
           }
        })
   }

@@ -23,6 +23,17 @@ export const items = createSelector(
   })
 )
 
+export const sellerItems = createSelector(
+  ormSelector,
+  state => state.currentUserWallet,
+  ormCreateSelector(orm, (session, currentUserWallet) => {
+    if (currentUserWallet !== '') {
+      return session.User.withId(currentUserWallet).items.all().toModelArray()
+    }
+    return []
+  })
+)
+
 export const item = createSelector(
   ormSelector,
   state => state.selectedItemId,

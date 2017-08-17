@@ -20,6 +20,7 @@ import UserIndex from './containers/users/UserIndex'
 // Items Containers
 import ItemNew from './containers/items/ItemNew'
 import ItemIndex from './containers/items/ItemIndex'
+import SellerItemsIndex from './containers/items/SellerItemsIndex'
 import ItemShow from './containers/items/ItemShow'
 
 // Purchase Containers
@@ -73,6 +74,7 @@ class App extends Component {
               <Route exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
               <Route exact path='/purchases' component={PurchaseIndex} />
               <Route exact path='/sales' component={SalesIndex} />
+              <Route exact path='/my_items' component={SellerItemsIndex} />
 
               <Route exact path='/admin/activities' component={ActivityIndex} />
           </section>

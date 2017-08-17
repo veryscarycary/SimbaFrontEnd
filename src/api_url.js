@@ -13,7 +13,7 @@ export const USERS_URL = `${ROOT_URL}/users`
 
 // ITEMS URLS
 export const ITEMS_URL = `${ROOT_URL}/items`
-
+export const SELLER_ITEMS_URL = `${ROOT_URL}/items/seller_items`
 // PURCHASES URLS
 export const PURCHASES_URL = `${ROOT_URL}/purchases`
 export const BUYER_PURCHASES_URL = `${ROOT_URL}/purchases/buyer_purchases`

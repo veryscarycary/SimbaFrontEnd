@@ -41,6 +41,7 @@ class Navigation extends Component {
                   <MenuItem header>Seller</MenuItem>
                   <LinkContainer to='/listing/create'><MenuItem>Create a Listing</MenuItem></LinkContainer>
                   <LinkContainer to='/sales'><MenuItem>My Sales</MenuItem></LinkContainer>
+                  <LinkContainer to='/my_items'><MenuItem>My Items</MenuItem></LinkContainer>
                   <MenuItem divider />
                   <MenuItem header>Buyer</MenuItem>
                   <LinkContainer to='/purchases'><MenuItem>My Purchases</MenuItem></LinkContainer>
