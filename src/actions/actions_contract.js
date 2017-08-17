@@ -3,7 +3,12 @@ import Eth from 'ethjs'
 import escrowJSON from '../contract_build/Escrow.json'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
-import { watchPurchaseEvent, watchShippingEvent, watchPurchaseCompleteEvent, watchCancelPurchaseEvent, watchShippingTimeoutEvent } from './actions_event_watcher'
+import { watchPurchaseEvent,
+        watchShippingEvent,
+        watchPurchaseCompleteEvent,
+        watchCancelPurchaseEvent,
+        watchShippingTimeoutEvent,
+        watchConfirmationTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
@@ -146,7 +151,18 @@ export function fetchPurchaseTimes(purchase, provider) {
       escrow.deployed().then(instance => {
         instance.getPurchaseTimes(purchase.id)
                 .then(transaction => {
-                  dispatch({type: UPDATE_PURCHASE, payload: { shipping_deadline: transaction[0].valueOf(), id: purchase.id }})
+                  dispatch({
+                    type: UPDATE_PURCHASE,
+                    payload: {
+                      shipping_deadline: transaction[0].valueOf(),
+                      purchased_time: transaction[1].valueOf(),
+                      shipped_time: transaction[2].valueOf(),
+                      cancel_time: transaction[3].valueOf(),
+                      completed_time: transaction[4].valueOf(),
+                      timeout_time: transaction[5].valueOf(),
+                      id: purchase.id
+                    }
+                  })
               }).catch(error => {
                   console.log(error)
                   dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
@@ -301,7 +317,6 @@ export function fetchUserReviewIds(provider, wallet, numberReviews) {
 // and
 // Automatically confirms orders if buyer hasn't confirmed the reception of the item before the confirmation deadlines - State of the purchase : "BUYER_CONFIRMATION_TIMEOUT"
 export function cancelTimeoutOrders(provider) {
-  console.log('enter cancelTimeoutOrders')
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
@@ -309,6 +324,7 @@ export function cancelTimeoutOrders(provider) {
     provider.eth.accounts().then((accounts) => {
       escrow.deployed().then(instance => {
         dispatch(watchShippingTimeoutEvent(provider))
+        dispatch(watchConfirmationTimeoutEvent(provider))
         instance.cancelTimeoutOrders.sendTransaction({from: accounts[0]})
                                                .catch(error => {
                                                   console.log('error cancelTimeoutOrders', error)
