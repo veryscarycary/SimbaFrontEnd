@@ -15,9 +15,9 @@ contract Escrow {
     uint shippingDaysDeadline;
     uint purchasedTime;
     uint shippedTime;
-    // uint cancelTime;
-    // uint completedTime;
-    // uint timeoutTime;
+    uint cancelTime;
+    uint completedTime;
+    uint timeoutTime;
   }
 
   struct Review {
@@ -94,7 +94,6 @@ contract Escrow {
     if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
       purchases[_purchaseId].amount = 0;
       purchases[_purchaseId].status = Status.Completed;
-      PurchaseCompleted(_purchaseId, msg.sender, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
       // Set item's review & rating + total number of item sales
       itemSales[purchases[_purchaseId].itemId] += 1;
       setReview(false, _purchaseId, _itemReviewId, _itemRating);
@@ -103,6 +102,8 @@ contract Escrow {
       userSales[purchases[_purchaseId].seller] += 1;
       setReview(true, _purchaseId, _userReviewId, _userRating);
       deleteOnePurchaseFromPending(IndexOfPurchase(_purchaseId));
+      purchases[_purchaseId].completedTime = now;
+      PurchaseCompleted(_purchaseId, msg.sender, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
   }
 
@@ -139,6 +140,7 @@ contract Escrow {
         }
 
       purchases[_purchaseId].amount = 0;
+      purchases[_purchaseId].cancelTime = now;
       deleteOnePurchaseFromPending(IndexOfPurchase(_purchaseId));
       PurchaseCancelled(_purchaseId, msg.sender, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
@@ -156,8 +158,13 @@ contract Escrow {
 
 
   // Get Shipping Date Deadline for a purchase
-  function getPurchaseTimes(bytes32 _purchaseId) constant returns (uint, uint) {
-    return (purchases[_purchaseId].shippingDaysDeadline, purchases[_purchaseId].purchasedTime);
+  function getPurchaseTimes(bytes32 _purchaseId) constant returns (uint, uint, uint, uint, uint, uint) {
+    return (purchases[_purchaseId].shippingDaysDeadline,
+            purchases[_purchaseId].purchasedTime,
+            purchases[_purchaseId].shippedTime,
+            purchases[_purchaseId].cancelTime,
+            purchases[_purchaseId].completedTime,
+            purchases[_purchaseId].timeoutTime);
   }
 
   // Get current state of a purchase
@@ -235,6 +242,8 @@ contract Escrow {
     for (uint i = 0; i < pendingPurchases.length; i++) {
       // Automatically cancel orders that haven't been shipped before the deadline
       cancelShippingTimeoutOrders(pendingPurchases[i]);
+      // Automatically cancel orders that haven't been shipped before the deadline
+      cancelConfirmationTimeoutOrders(pendingPurchases[i]);
     }
     clearPendingPurchases();
   }
@@ -245,7 +254,6 @@ contract Escrow {
     for (uint i = 0; i < numPendingPurchasesToDelete; i++) {
       deleteOnePurchaseFromPending(IndexOfPurchase(pendingPurchasesToDelete[i]));
     }
-
     numPendingPurchasesToDelete = 0;
   }
 
@@ -260,23 +268,27 @@ contract Escrow {
         }
         pendingPurchasesToDelete[numPendingPurchasesToDelete] = _purchaseId;
         numPendingPurchasesToDelete += 1;
+        purchases[_purchaseId].timeoutTime = now;
         ShippingTimeout(_purchaseId, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
       }
     }
   }
 
   // Automatically confirm orders that haven't been confirmed by the users before the deadline
-  function cancelConfirmationTimeoutOrders(bytes32 purchaseId) {
-    // Automatically confirm orders that haven't been confirmed by the users before the deadline
-      // if (((purchases[pendingPurchases[i]].shippedTime + confirmationDaysDeadline * 1.days) <  now)
-      //     && (purchases[pendingPurchases[i]].status == Status.Shipped)) {
-      //   if (purchases[pendingPurchases[i]].seller.send(purchases[pendingPurchases[i]].amount)) {
-      //     purchases[pendingPurchases[i]].status = Status.BuyerConfirmationTimeOut;
-      //     purchases[pendingPurchases[i]].amount = 0;
-      //     deletePurchaseFromPending(i);
-      //     ConfirmationTimeout(pendingPurchases[i], purchases[pendingPurchases[i]].buyer, purchases[pendingPurchases[i]].seller, purchases[pendingPurchases[i]].itemId);
-      //   }
-      // }
+  function cancelConfirmationTimeoutOrders(bytes32 _purchaseId) {
+    if (((purchases[_purchaseId].shippedTime + confirmationDaysDeadline * 1 minutes) <  now) && (purchases[_purchaseId].status == Status.Shipped)) {
+      if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
+        purchases[_purchaseId].status = Status.BuyerConfirmationTimeOut;
+        purchases[_purchaseId].amount = 0;
+        if (numPendingPurchasesToDelete == pendingPurchasesToDelete.length) {
+          pendingPurchasesToDelete.length += 1;
+        }
+        pendingPurchasesToDelete[numPendingPurchasesToDelete] = _purchaseId;
+        numPendingPurchasesToDelete += 1;
+        purchases[_purchaseId].timeoutTime = now;
+        ConfirmationTimeout(_purchaseId, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
+      }
+    }
   }
 
   // Set a global number of days limitation to confirm a purchase after shipping before it gets automatically confirmed
