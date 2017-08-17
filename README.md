@@ -1,6 +1,7 @@
 Prerequesites to run this project :
 1) `git clone https://github.com/Simba-Market/SimbaFrontEnd.git`
-2) `cd simba-market && yarn # Installs all dependencies`
+2) `cd SimbaFrontEnd`
+3) `yarn install # Installs all dependencies`
 3) `cp the `.env.example` file to `.env # Create your own configuration file` - update your `.env` file as needed
 3) `yarn start`
 
