@@ -2,8 +2,8 @@ Prerequesites to run this project :
 1) `git clone https://github.com/Simba-Market/SimbaFrontEnd.git`
 2) `cd SimbaFrontEnd`
 3) `yarn install # Installs all dependencies`
-3) `cp the `.env.example` file to `.env # Create your own configuration file` - update your `.env` file as needed
-3) `yarn start`
+4) `cp the `.env.example` file to `.env # Create your own configuration file` - update your `.env` file as needed
+5) `yarn start`
 
 Connect Simba to Ethereum blockchain :
 In order to interact with Ethereum blockchain, Simba will need a provider. You have the following options :
