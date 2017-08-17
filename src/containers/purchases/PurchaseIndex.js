@@ -62,11 +62,22 @@ class PurchaseIndex extends Component {
     }
   }
 
+  renderTime(label, time) {
+    if (time == 0) {
+      return <div></div>
+    }
+    return (
+      <div>
+        {label} : <Timestamp time={time} format='full' includeDay />
+      </div>
+    )
+  }
+
   renderPurchases(isPending) {
     const _purchases = (isPending ? this.props.pendingPurchases : this.props.completedPurchases)
     let purchases = _purchases.map((purchase) => {
       return (
-        <Panel key={purchase.id} header={`Order ${purchase.created_at}`}>
+        <Panel key={purchase.id} header={`Order ${purchase.id}`}>
           <div className='pure-g one-purchase'>
             <div className='pure-u-1 pure-u-md-1-5'>
               <Link to={`/items/${purchase.item.id}`}><img src={purchase.item.picture} alt={purchase.item.name} /></Link>
@@ -76,6 +87,15 @@ class PurchaseIndex extends Component {
               <strong>Guarantee Shipping Before : <Timestamp time={purchase.shipping_deadline} format='date' includeDay /></strong><br />
               { purchase.item.short_description }<br/>
               <span className='text-danger'><strong>{ purchase.amount } ETH</strong></span>
+              <hr/>
+              <div>
+                <strong>History</strong><br/>
+                { this.renderTime('Purchased', purchase.purchased_time) }
+                { this.renderTime('Shipped', purchase.shipped_time) }
+                { this.renderTime('Cancelled', purchase.cancel_time) }
+                { this.renderTime('Timeout', purchase.timeout_time) }
+                { this.renderTime('Completed', purchase.completed_time) }
+              </div>
             </div>
             <div className='pure-u-1 pure-u-md-1-5'>
               { this.renderPurchasesActions(purchase) }
