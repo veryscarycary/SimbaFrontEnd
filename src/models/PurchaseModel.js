@@ -38,6 +38,11 @@ Purchase.fields = {
   us_state: attr(),
   purchaseState: attr(),
   shipping_deadline: attr(),
+  purchased_time: attr(),
+  shipped_time: attr(),
+  cancel_time: attr(),
+  timeout_time: attr(),
+  completed_time: attr(),
   buyer: fk('User', 'buyer_purchases'),
   seller: fk('User', 'seller_sales'),
   item: fk('Item', 'purchases')
