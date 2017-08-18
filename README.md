@@ -1,10 +1,9 @@
 Prerequesites to run this project :
-1) git clone https://github.com/Simba-Market/SimbaFrontEnd.git (Front-End Interface)
-2) git clone https://github.com/Simba-Market/SimbaAPI.git (Back-end)
-3) cd simba-market-api && bundle install
-4) cd simba-market && yarn
-5) cd simba-market-api && rails s -p 3001 (if you change the port, modify the port from $ROOT_URL in simba-market/src/api_url.js)
-6) cd simba-market && yarn start
+1) `git clone https://github.com/Simba-Market/SimbaFrontEnd.git`
+2) `cd SimbaFrontEnd`
+3) `yarn install # Installs all dependencies`
+4) `cp the `.env.example` file to `.env # Create your own configuration file` - update your `.env` file as needed
+5) `yarn start`
 
 Connect Simba to Ethereum blockchain :
 In order to interact with Ethereum blockchain, Simba will need a provider. You have the following options :

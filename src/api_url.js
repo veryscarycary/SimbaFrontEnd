@@ -2,7 +2,7 @@ const wallet = localStorage.getItem('simba_wallet')
 const token = localStorage.getItem('simba_token')
 export const headers = { headers: { 'X-User-Wallet': wallet, 'X-User-Token': token } }
 
-export const ROOT_URL = 'http://localhost:3001'
+export const ROOT_URL = process.env.REACT_APP_API_HOST || 'http://localhost:3001'
 
 // DEVISE URLS
 export const SIGN_UP_URL = `${ROOT_URL}/users`
