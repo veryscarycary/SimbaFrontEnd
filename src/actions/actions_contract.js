@@ -335,3 +335,18 @@ export function cancelTimeoutOrders(provider) {
   }
 }
 
+// block chain call
+// Fetch Total Balance of Escrow smart contract
+export function fetchEscrowBalance(provider) {
+  const escrow = contract(escrowJSON)
+  escrow.setProvider(provider.eth.currentProvider)
+
+  return dispatch => {
+    return provider.eth.accounts().then((accounts) => {
+      return escrow.deployed().then(instance => {
+        return instance.getBalance()
+      })
+    })
+  }
+}
+

@@ -147,7 +147,7 @@ contract Escrow {
   }
 
   // Get total balance of the Escrow contract
-  function getBalance() constant onlyOwner returns (uint) {
+  function getBalance() constant returns (uint) {
     return this.balance;
   }
 

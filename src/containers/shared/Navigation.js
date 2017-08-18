@@ -3,14 +3,39 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
+import Eth from 'ethjs'
 
 import { setCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
-import { cancelTimeoutOrders } from '../../actions/actions_contract'
+import { cancelTimeoutOrders, fetchEscrowBalance } from '../../actions/actions_contract'
 
 import '../../style/navigation.css'
 
 class Navigation extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      escrowBalance: 0
+    }
+  }
+
+  componentWillMount() {
+    if (this.props.provider.eth) {
+      this.props.fetchEscrowBalance(this.props.provider).then(transaction => {
+        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
+      })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.provider.eth && !this.props.provider.eth) {
+      this.props.fetchEscrowBalance(nextProps.provider).then(transaction => {
+        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
+      })
+    }
+  }
+
   signOut(event) {
     event.preventDefault()
     localStorage.removeItem('simba_wallet')
@@ -30,7 +55,7 @@ class Navigation extends Component {
           <span>
             { this.props.current_user.wallet ? (
               <span>
-                <strong>Balance</strong> : {this.props.current_user.balance} ETH
+                <strong>User Balance</strong> : {this.props.current_user.balance} ETH | <strong>Escrow Balance</strong> : {this.state.escrowBalance} ETH
               </span>
               ) : 'No Wallet detected - Install Metamask or run local node'
             }
@@ -97,4 +122,4 @@ function mapStateToProps(state) {
   return { current_user : current_user(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { setCurrentUser, cancelTimeoutOrders })(Navigation)
+export default connect(mapStateToProps, { setCurrentUser, cancelTimeoutOrders, fetchEscrowBalance })(Navigation)
