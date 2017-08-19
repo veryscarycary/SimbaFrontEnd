@@ -34,8 +34,8 @@ contract Escrow {
   mapping(bytes32 => Review) public itemReviews;
   bytes32[] pendingPurchases;
   bytes32[] pendingPurchasesToDelete;
-  uint public numPendingPurchasesToDelete = 0;
-  uint public confirmationDaysDeadline = 15;
+  uint numPendingPurchasesToDelete = 0;
+  uint confirmationDaysDeadline = 15;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
@@ -72,7 +72,7 @@ contract Escrow {
     purchases[_purchaseId].status = Status.Purchased;
     purchases[_purchaseId].amount = msg.value;
     purchases[_purchaseId].purchasedTime = now;
-    purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 minutes;
+    purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 days;
     pendingPurchases.push(_purchaseId);
     ItemPurchased(_purchaseId, msg.sender, _seller, _itemId, msg.value);
   }
@@ -276,7 +276,7 @@ contract Escrow {
 
   // Automatically confirm orders that haven't been confirmed by the users before the deadline
   function cancelConfirmationTimeoutOrders(bytes32 _purchaseId) {
-    if (((purchases[_purchaseId].shippedTime + confirmationDaysDeadline * 1 minutes) <  now) && (purchases[_purchaseId].status == Status.Shipped)) {
+    if (((purchases[_purchaseId].shippedTime + confirmationDaysDeadline * 1 days) <  now) && (purchases[_purchaseId].status == Status.Shipped)) {
       if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
         purchases[_purchaseId].status = Status.BuyerConfirmationTimeOut;
         purchases[_purchaseId].amount = 0;
@@ -294,6 +294,10 @@ contract Escrow {
   // Set a global number of days limitation to confirm a purchase after shipping before it gets automatically confirmed
   function setConfirmationDaysDeadline(uint _day) {
     confirmationDaysDeadline = _day;
+  }
+
+  function getConfirmationDaysDeadline() constant returns(uint) {
+    return confirmationDaysDeadline;
   }
 
   function getOnePendingPurchase(uint _index) constant returns(bytes32, uint) {
