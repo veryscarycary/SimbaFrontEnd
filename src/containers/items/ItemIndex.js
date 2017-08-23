@@ -39,37 +39,44 @@ class ItemIndex extends Component {
     )
   }
 
-  renderItemPrice(item) {
+  renderDiscountPrice(item) {
     if (!item.discount || item.discount === 0) {
-      return <span className='item-price'>{ item.price } ETH</span>
+      return <span className='price'>{ item.price } ETH</span>
     }
     const discountedPrice = item.price * (item.discount / 100)
     return (
-      <div className='item-price'>
-        <span className='item-original-price'>{ item.price } </span>
-        <span className='item-discounted-price'> { discountedPrice } ETH ({ item.discount } %)</span>
-      </div>
+      <span className="price">
+        <span className="before">
+          { item.price } ETH
+        </span>
+
+        <span className="from">from </span>
+        { discountedPrice } ETH
+      </span>
     )
   }
 
   renderItems() {
     let items = this.props.items.map((item) => {
       return (
-        <div key={item.id} className='pure-u-1 pure-u-md-1-3'>
+        <div key={item.id}  className="col-lg-3 col-md-4 col-sm-6 store-product">
           <Link to={`/items/${item.id}`}>
-            <div className='thumbnail'>
-              <img src={ item.picture } alt={ item.name } />
-              <div className="caption">
-                <span className='item-name'>{ item.name }</span>
-                <span className='item-seller'>Sell by { item.user.fullname } ({ item.user.rating })</span>
-                <div className='item-description'>Ship within { item.shipping_deadline } days</div>
-                <span className='item-description'>{ item.short_description }</span>
-                { this.renderReview(item) }
-                <span className='item-ratings-sales'>{ item.sales } sold</span>
-                { this.renderItemPrice(item) }
-              </div>
-            </div>
+            { item.discount != 0 ? <span className="flag">{ item.discount }% off</span> : '' }
+            <img src={ item.picture } alt={ item.name } className="img-fluid" />
           </Link>
+          <span className="info">
+            <Link to={`/items/${item.id}`} className='name'>
+              { item.name } <span className="vendor">- { item.user.fullname }</span>
+            </Link>
+            { this.renderDiscountPrice(item) }
+          </span>
+          <div className="rating">
+            <i className="fa fa-star"></i>
+            <i className="fa fa-star"></i>
+            <i className="fa fa-star"></i>
+            <i className="fa fa-star"></i>
+            <i className="fa fa-star-half-o"></i>
+          </div>
         </div>
       )
     })
@@ -79,8 +86,14 @@ class ItemIndex extends Component {
 
   render() {
     return (
-      <div className="pure-g list-items">
-        { this.props.items ? this.renderItems() : '' }
+      <div className="featured-products">
+        <div className="container">
+          <h3>Featured products</h3>
+
+          <div className="row">
+            { this.renderItems() }
+          </div>
+        </div>
       </div>
     )
   }

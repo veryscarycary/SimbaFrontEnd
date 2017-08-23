@@ -1,112 +1,152 @@
-.list-items .pure-u-md-1-3 {
-  padding: 10px;
+@import "./modules/variables";
+@import "./modules/mixins";
+
+.featured-products {
+  margin-top: 90px;
+
+  @media(max-width: 767px) {
+    margin-top: 70px;
+  }
+
+  .container {
+    padding-bottom: 60px;
+    border-bottom: 1px solid #e7e7e7;
+
+    @media(max-width: 991px) {
+      padding-bottom: 30px;
+    }
+  }
+
+  h3 {
+    text-align: center;
+    margin-bottom: 60px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 17px;
+    font-weight: 500;
+    color: #555;
+    padding-top: 70px;
+    border-top: 1px solid #e7e7e7;
+  }
 }
 
-.list-items .thumbnail img {
-  height: 100px;
-}
+/* single product view as grid */
+.store-product {
+  margin-bottom: 50px;
+  min-height: 400px;
 
-.list-items a {
-  text-decoration: none;
-}
+  @media(max-width: 991px) {
+    min-height: 340px;
+    margin-bottom: 40px;
+  }
 
-.list-items a:hover {
-  text-decoration: none;
-}
+  @media(max-width: 767px) {
+    min-height: auto;
+    margin-bottom: 20px;
+  }
 
-.item-description {
-  color: grey;
-  font-style: italic;
-  display: block;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
+  a {
+    display: block;
+    text-decoration: none;
+    position: relative;
 
+    .flag {
+      position: absolute;
+      display: inline-block;
+      color: #fff;
+      background: #92B270;
+      left: -8px;
+      top: 19px;
+      text-transform: uppercase;
+      font-family: $lato;
+      font-weight: 600;
+      padding: 2px 11px;
+      letter-spacing: 1px;
 
-.item-name {
-  font-size: 16px;
-  font-weight: 700;
-  display: block;
-}
+      &:after {
+        content: '';
+        position: absolute;
+        width: 11px;
+        height: 9px;
+        background: #57930D;
+        bottom: -5px;
+        left: 2px;
+        z-index: -1;
 
-.item-seller {
-  font-size: 14px;
-  display: block;
-  margin-bottom: 10px;
-}
+        @include transform(rotate(45deg));
+      }
+    }
 
-.item-price {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 16px;
-  font-weight: 800;
-  color: #2da806;
-}
+    .img-fluid {
+      margin: 0 auto;
+      display: block;
 
+      @media(max-width: 767px) {
+        max-height: 210px;
+      }
+    }
+  }
 
-.item-form {
-  width: 800px;
-  margin: auto;
-}
+  .info {
+    margin-top: 20px;
+    display: block;
 
-.item-form .pure-g .pure-u-md-1-2 {
-  width: 48%;
-}
+    @media(max-width: 767px) {
+      text-align: center;
+    }
 
-.item-form .pure-g {
-  justify-content: space-between;
-}
+    .name {
+      display: block;
+      font-family: $georgia;
+      font-size: 16px;
+      color: #222;
+      text-decoration: none;
 
-.item-show-picture {
-  width: 100%;
-  margin: auto;
-  text-align: center;
-}
+      .vendor {
+        color: #666;
+        font-size: 15px;
+      }
+    }
 
-.item-show-picture img {
-  max-width: 400px;
-}
+    .price {
+      display: block;
+      font-size: 22px;
+      color: #70a90f;
+      margin-top: 5px;
+      font-family: $georgia;
 
-.item-show-seller {
-  font-size: 18px;
-  color: grey;
-}
+      @media(max-width: 991px) {
+        font-size: 19px;
+      }
 
-.item-show-description {
-  margin-top: 30px;
-  font-size: 14px;
-  color: black;
-  white-space: pre-wrap;
-}
+      @media(max-width: 767px) {
+        font-size: 22px;
+      }
 
-.item-show .pure-u-md-2-3 {
-  border-right: 1px solid #E3E3E3;
-}
+      .from {
+        font-size: 15px;
+      }
 
-.item-show .pure-u-md-1-3 {
-  padding-left: 10px;
-  padding-top: 30px;
-}
+      .before {
+        color: #a3a3a3;
+        display: inline-block;
+        font-size: 18px;
+        margin-right: 8px;
+        text-decoration: line-through;
+      }
+    }
+  }
 
-.item-show-price {
-  font-size: 26px;
-  color: black;
-  text-align: center;
-  margin-bottom: 20px;
-}
+  .rating {
+    margin-top: 6px;
 
-.item-pending-purchase {
-  min-height: 100px;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  text-align: center;
-  font-size: 16px;
-}
+    @media(max-width: 767px) {
+      text-align: center;
+    }
 
-
-.item-original-price {
-  text-decoration: line-through;
-  margin-right: 5px;
-  color: orange;
+    i {
+      margin-right: 2px;
+      color: #64B1CD;
+    }
+  }
 }
