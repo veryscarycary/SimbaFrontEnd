@@ -26,7 +26,18 @@ class RegistrationForm extends Component {
 
   submit(model) {
     var user_params = { user: { ...this.state, wallet: this.props.current_user.wallet } }
-    this.props.userRegistration(user_params, this.props.history)
+
+    this.props.userRegistration(user_params)
+      .then(() => this.props.history.push(this.getNextRoute()))
+  }
+
+  /**
+   * Returns the path the user will be redirected to
+   * @return {String}
+   */
+  getNextRoute() {
+    const next = (this.props.location.state && this.props.location.state.from) || '/'
+    return next
   }
 
   renderForm() {

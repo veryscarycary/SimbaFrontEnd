@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import Eth from 'ethjs'
 
-import { setCurrentUser } from '../../actions/actions_users'
+import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, fetchEscrowBalance } from '../../actions/actions_contract'
 
@@ -38,9 +38,9 @@ class Navigation extends Component {
 
   signOut(event) {
     event.preventDefault()
-    localStorage.removeItem('simba_wallet')
-    localStorage.removeItem('simba_token')
-    this.props.setCurrentUser(this.props.provider, this.props.current_user.wallet, '')
+    this.props.deleteCurrentUser(this.props.provider, this.props.current_user.wallet)
+
+    this.props.history.push('/')
   }
 
   checkTimeout(event) {
@@ -122,4 +122,6 @@ function mapStateToProps(state) {
   return { current_user : current_user(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { setCurrentUser, cancelTimeoutOrders, fetchEscrowBalance })(Navigation)
+export default withRouter(
+  connect(mapStateToProps, { deleteCurrentUser, cancelTimeoutOrders, fetchEscrowBalance })(Navigation)
+)
