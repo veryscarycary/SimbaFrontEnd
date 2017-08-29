@@ -58,9 +58,7 @@ class Navigation extends Component {
   renderSearchBarMyAccount() {
     return (
       <div className="section-top clearfix">
-        <a href="index.html" className="logo float-left">
-          Simba
-        </a>
+        <Link to='/' className="logo float-left"> Simba </Link>
 
         <ul className="menu-right float-right">
           <li>
@@ -78,12 +76,20 @@ class Navigation extends Component {
                 My account
               </a>
               <div className="dropdown-menu dropdown-menu-dark" role="menu">
-                <a className="dropdown-item" href="#">Alerts</a>
-                <a className="dropdown-item" href="#">Animations</a>
-                <a className="dropdown-item" href="#">Badges</a>
-                <a className="dropdown-item" href="#">Buttons</a>
-                <a className="dropdown-item" href="#">Navs</a>
-                <a className="dropdown-item" href="#">Tables</a>
+                <span className="dropdown-header">My Profile</span>
+                <a className="dropdown-item" href="#">Information</a>
+                <a className="dropdown-item" href="#" onClick={(event) => this.signOut(event)}>Sign out</a>
+
+                <span className="dropdown-header">Purchases</span>
+                <Link className="dropdown-item" to='/purchases'>Order History</Link>
+
+                <span className="dropdown-header">Sales</span>
+                <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
+                <Link className="dropdown-item" to='/sales'>Sales History</Link>
+
+                <span className="dropdown-header">Admin</span>
+                <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
+                <a className="dropdown-item"  href="#" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
               </div>
             </div>
           </li>
