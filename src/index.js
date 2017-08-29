@@ -6,12 +6,12 @@ import promise from 'redux-promise'
 import thunk from 'redux-thunk'
 import { Helmet } from 'react-helmet'
 
-import App from './App'
-import registerServiceWorker from './registerServiceWorker'
-
 import './style/vendor/bootstrap.css'
 import './style/vendor/font-awesome.min.css'
 import './style/vendor/ionicons.css'
+
+import App from './App'
+import registerServiceWorker from './registerServiceWorker'
 
 import reducers from './reducers/index'
 
