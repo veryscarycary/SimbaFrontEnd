@@ -2,6 +2,7 @@
 @import "./modules/variables";
 @import "./modules/mixins";
 @import "./modules/custom_effects";
+@import './modules/dropdown';
 
 
 .store-navbar {
@@ -331,7 +332,7 @@
 
     .account {
       color: #a6a6a6;
-      font-weight: 500;
+      font-weight: 400;
       text-decoration: none;
 
       @include transition(all .35s);
@@ -344,7 +345,11 @@
         font-size: 17px;
         position: relative;
         top: 1px;
-        margin-right: 3px;
+        margin-right: 8px;
+      }
+
+      &:after {
+        display: none;
       }
     }
   }
@@ -429,25 +434,28 @@
       }
     }
 
-    .nav-link {
-      letter-spacing: 1px;
-      font-size: 13px;
-      padding: 0.7em 1em;
-      text-transform: uppercase;
+    .navbar {
+      .nav-link {
+        letter-spacing: 1px;
+        font-size: 13px;
+        padding: 0.7em 1em;
+        text-transform: uppercase;
 
-      @include transition(all .15s);
+        @include transition(all .15s);
 
-      @media(min-width: 992px) {
-        padding: 25px 30px;
-      }
+        @media(min-width: 992px) {
+          padding: 25px 30px;
+        }
 
-      .ion-chevron-down {
-        font-size: 10px;
-        position: relative;
-        top: -1px;
-        margin-left: 5px;
+        .ion-chevron-down {
+          font-size: 10px;
+          position: relative;
+          top: -1px;
+          margin-left: 5px;
+        }
       }
     }
+
 
     .dropdown-menu {
       margin-top: 0;

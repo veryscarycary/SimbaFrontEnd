@@ -16,7 +16,14 @@ class Navigation extends Component {
     super(props)
 
     this.state = {
-      escrowBalance: 0
+      escrowBalance: 0,
+      isMyAccountHovered: false,
+      isLink1Hovered: false,
+      isLink2Hovered: false,
+      isLink3Hovered: false,
+      isLink4Hovered: false,
+      isLink5Hovered: false,
+      isLink6Hovered: false
     }
   }
 
@@ -63,13 +70,38 @@ class Navigation extends Component {
             </div>
           </li>
           <li>
-            <a href="account-orders.html" className="account">
-              <i className="ion-person"></i>
-              My account
-            </a>
+            <div className={`dropdown ${this.state.isMyAccountHovered ? 'show' : ''}`}
+                 onMouseEnter={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}
+                 onMouseLeave={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}>
+              <a href="account-orders.html" className="account dropdown-toggle" data-toggle="dropdown">
+                <i className="ion-person"></i>
+                My account
+              </a>
+              <div className="dropdown-menu dropdown-menu-dark" role="menu">
+                <a className="dropdown-item" href="#">Alerts</a>
+                <a className="dropdown-item" href="#">Animations</a>
+                <a className="dropdown-item" href="#">Badges</a>
+                <a className="dropdown-item" href="#">Buttons</a>
+                <a className="dropdown-item" href="#">Navs</a>
+                <a className="dropdown-item" href="#">Tables</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
+    )
+  }
+
+  renderHome() {
+    return (
+      <li className={`nav-item dropdown ${this.state.isLink2Hovered ? 'show' : ''}`}
+          onMouseEnter={() => this.setState({ isLink2Hovered: !this.state.isLink2Hovered })}
+          onMouseLeave={() => this.setState({ isLink2Hovered: !this.state.isLink2Hovered })} >
+        <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+          Home
+          <i className="ion-chevron-down"></i>
+        </a>
+      </li>
     )
   }
 
@@ -83,9 +115,12 @@ class Navigation extends Component {
 
           <div className="collapse navbar-collapse justify-content-center" id="navbar-collapse">
             <ul className="navbar-nav">
-              <li className="nav-item dropdown">
+              { this.renderHome() }
+              <li className={`nav-item dropdown ${this.state.isLink1Hovered ? 'show' : ''}`}
+                  onMouseEnter={() => this.setState({ isLink1Hovered: !this.state.isLink1Hovered })}
+                  onMouseLeave={() => this.setState({ isLink1Hovered: !this.state.isLink1Hovered })} >
                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Home pages
+                  Clothes
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu" role="menu">
@@ -107,15 +142,12 @@ class Navigation extends Component {
                   <a className="dropdown-item" href="../intro.html">Intro</a>
                 </div>
               </li>
-              <li className="nav-item dropdown">
+
+              <li className={`nav-item dropdown ${this.state.isLink3Hovered ? 'show' : ''}`}
+                  onMouseEnter={() => this.setState({ isLink3Hovered: !this.state.isLink3Hovered })}
+                  onMouseLeave={() => this.setState({ isLink3Hovered: !this.state.isLink3Hovered })} >
                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Blogs
-                  <i className="ion-chevron-down"></i>
-                </a>
-              </li>
-              <li className="nav-item dropdown">
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Pages
+                  Electronics
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu" role="menu">
@@ -168,9 +200,11 @@ class Navigation extends Component {
                   <a className="dropdown-item" href="../api-docs.html">API docs</a>
                 </div>
               </li>
-              <li className="nav-item dropdown dropdown-extend">
+              <li className={`nav-item dropdown dropdown-extend ${this.state.isLink4Hovered ? 'show' : ''}`}
+                  onMouseEnter={() => this.setState({ isLink4Hovered: !this.state.isLink4Hovered })}
+                  onMouseLeave={() => this.setState({ isLink4Hovered: !this.state.isLink4Hovered })} >
                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Components
+                  Services
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu dropdown-extend-menu">
@@ -212,9 +246,11 @@ class Navigation extends Component {
                   </div>
                 </div>
               </li>
-              <li className="nav-item dropdown">
+              <li className={`nav-item dropdown ${this.state.isLink5Hovered ? 'show' : ''}`}
+                  onMouseEnter={() => this.setState({ isLink5Hovered: !this.state.isLink5Hovered })}
+                  onMouseLeave={() => this.setState({ isLink5Hovered: !this.state.isLink5Hovered })} >
                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Features
+                  Ticket
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu" role="menu">
@@ -282,9 +318,11 @@ class Navigation extends Component {
                   <a className="dropdown-item" href="../docs/typography.html">Typography</a>
                 </div>
               </li>
-              <li className="nav-item active dropdown">
+              <li className={`nav-item dropdown ${this.state.isLink6Hovered ? 'show' : ''}`}
+                  onMouseEnter={() => this.setState({ isLink6Hovered: !this.state.isLink6Hovered })}
+                  onMouseLeave={() => this.setState({ isLink6Hovered: !this.state.isLink6Hovered })} >
                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
-                  Shop
+                  Getaway
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" role="menu">
