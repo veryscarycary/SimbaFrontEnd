@@ -66,9 +66,9 @@ class App extends Component {
     this.props.fetchProvider().then(() => {
       this.props.provider.eth.accounts().then((accounts) => {
         if (typeof accounts[0] === 'undefined') {
-          this.props.setCurrentUser(this.props.provider, '', localStorage.getItem('simba_token'))
+          this.props.setCurrentUser(this.props.provider, '', Auth.token)
         } else {
-          this.props.setCurrentUser(this.props.provider, accounts[0], localStorage.getItem('simba_token'))
+          this.props.setCurrentUser(this.props.provider, accounts[0], Auth.token)
         }
       })
     })
