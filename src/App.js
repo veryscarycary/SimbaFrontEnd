@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Route as RouterRoute, Redirect } from 'react-router-dom'
 
 import { setCurrentUser } from './actions/actions_users'
 import { fetchProvider } from './actions/actions_provider'
@@ -39,18 +39,25 @@ import './App.css'
 
 import Auth from './services/auth'
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => (
-    Auth.isLoggedIn() ? (
-      <Component {...props} />
-    ) : (
-      <Redirect
-        to={{
-          pathname: '/users/sign_in',
-          state: { from: props.location }
-        }}
-      />
-    ))}
+const Route = ({ component: Component, auth, ...rest }) => (
+  <RouterRoute
+    {...rest}
+    render={(props) => (
+      !auth ? (
+        <Component {...props} />
+      ) : (
+        Auth.isLoggedIn() ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/users/sign_in',
+              state: { from: props.location }
+            }}
+          />
+        )
+      )
+    )}
   />
 )
 
@@ -81,17 +88,17 @@ class App extends Component {
               <Route exact path='/users/sign_in' component={SignInForm} />
               <Route exact path='/users' component={UserIndex} />
               <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
-              <PrivateRoute exact path='/listing/create' component={ItemNew} />
+              <Route auth exact path='/listing/create' component={ItemNew} />
               <Route exact path='/items/:item_id' component={ItemShow} />
               <Route exact path='/items' component={ItemIndex} />
 
-              <PrivateRoute exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
-              <PrivateRoute exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
-              <PrivateRoute exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
-              <PrivateRoute exact path='/purchases' component={PurchaseIndex} />
-              <PrivateRoute exact path='/sales' component={SalesIndex} />
+              <Route auth exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
+              <Route auth exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
+              <Route auth exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
+              <Route auth exact path='/purchases' component={PurchaseIndex} />
+              <Route auth exact path='/sales' component={SalesIndex} />
 
-              <PrivateRoute exact path='/admin/activities' component={ActivityIndex} />
+              <Route auth exact path='/admin/activities' component={ActivityIndex} />
           </section>
           <section className='footer'>
             <Footer />
