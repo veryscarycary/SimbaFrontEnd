@@ -67,32 +67,48 @@ class Navigation extends Component {
               <input type="text" className="input-search" placeholder="Search in store..." />
             </div>
           </li>
-          <li>
-            <div className={`dropdown ${this.state.isMyAccountHovered ? 'show' : ''}`}
-                 onMouseEnter={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}
-                 onMouseLeave={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}>
-              <a href="account-orders.html" className="account dropdown-toggle" data-toggle="dropdown">
-                <i className="ion-person"></i>
-                My account
-              </a>
-              <div className="dropdown-menu dropdown-menu-dark" role="menu">
-                <span className="dropdown-header">My Profile</span>
-                <a className="dropdown-item" href="#">Information</a>
-                <a className="dropdown-item" href="#" onClick={(event) => this.signOut(event)}>Sign out</a>
+          {
+            (this.props.current_user.authentication_token && this.props.current_user.wallet) ? (
+              <li>
+                <div className={`dropdown ${this.state.isMyAccountHovered ? 'show' : ''}`}
+                     onMouseEnter={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}
+                     onMouseLeave={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}>
+                  <a href="account-orders.html" className="account dropdown-toggle" data-toggle="dropdown">
+                    <i className="ion-person"></i>
+                    { this.props.current_user.wallet }
+                  </a>
+                  <div className="dropdown-menu dropdown-menu-dark" role="menu">
+                    <span className="dropdown-header">My Profile</span>
+                    <a className="dropdown-item" href="#">Information</a>
+                    <a className="dropdown-item" href="#" onClick={(event) => this.signOut(event)}>Sign out</a>
 
-                <span className="dropdown-header">Purchases</span>
-                <Link className="dropdown-item" to='/purchases'>Order History</Link>
+                    <span className="dropdown-header">Purchases</span>
+                    <Link className="dropdown-item" to='/purchases'>Order History</Link>
 
-                <span className="dropdown-header">Sales</span>
-                <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
-                <Link className="dropdown-item" to='/sales'>Sales History</Link>
+                    <span className="dropdown-header">Sales</span>
+                    <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
+                    <Link className="dropdown-item" to='/sales'>Sales History</Link>
 
-                <span className="dropdown-header">Admin</span>
-                <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
-                <a className="dropdown-item"  href="#" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
-              </div>
-            </div>
-          </li>
+                    <span className="dropdown-header">Admin</span>
+                    <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
+                    <a className="dropdown-item"  href="#" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
+                  </div>
+                </div>
+              </li>
+            ) : (
+              <li>
+                <Link to='/users/sign_in' className="account"> Sign in </Link>
+              </li>
+            )
+           }
+           {
+              (this.props.current_user.authentication_token && this.props.current_user.wallet) ?
+                '' : (
+                  <li>
+                    <Link to='/users/register' className="account"> Register </Link>
+                  </li>
+                )
+           }
         </ul>
       </div>
     )
@@ -364,7 +380,6 @@ class Navigation extends Component {
         <div className='container'>
           { this.renderSearchBarMyAccount() }
           { this.renderNavigationMenu() }
-
         </div>
       </nav>
     )

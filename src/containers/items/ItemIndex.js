@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Rating from 'react-rating'
 
-import '../../style/item.css'
+import '../../style/items_collection.css'
 
 import { fetchAllItems } from '../../actions/actions_items'
 import { items } from '../../models/selectors'
