@@ -11,6 +11,8 @@ import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
 import { item, purchase, itemReviews } from '../../models/selectors'
 
+import '../../style/item.css'
+
 
 class ItemShow extends Component {
   constructor(props) {
@@ -101,13 +103,16 @@ class ItemShow extends Component {
 
   renderItemPrice() {
     if (!this.props.item.discount || this.props.item.discount === 0) {
-      return <div>Price : { this.props.item.price } ETH</div>
+      return <div className="price">{ this.props.item.price } ETH</div>
     }
     const discountedPrice = this.props.item.price * (this.props.item.discount / 100)
     return (
-      <div>Price :
-        <span className='item-original-price'>{ this.props.item.price } </span>
-        <span className='item-discounted-price'> { discountedPrice } ETH ({ this.props.item.discount } %)</span>
+      <div className="price">
+        { discountedPrice } ETH
+
+        <div className="compare-at-price">
+          { this.props.item.price } ETH
+        </div>
       </div>
     )
   }
@@ -182,13 +187,163 @@ class ItemShow extends Component {
     }
   }
 
+  renderPanels() {
+    return (
+      <div className="description">
+        <ul className="nav nav-tabs" role="tablist">
+          <li className="nav-item">
+            <a className="nav-link active" href="#description" role="tab" data-toggle="tab">Description</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="#details" role="tab" data-toggle="tab">Details</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="#requirements" role="tab" data-toggle="tab">Requirements</a>
+          </li>
+        </ul>
+
+        <div className="tab-content">
+          <div role="tabpanel" className="tab-pane active" id="description">
+            <p> { this.props.item.description } </p>
+          </div>
+          <div role="tabpanel" className="tab-pane" id="details">
+            <p> { this.props.item.short_description } </p>
+          </div>
+          <div role="tabpanel" className="tab-pane" id="requirements">
+            <p> { this.props.item.description } </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderInfos() {
+    return (
+      <div className="col-md-6 info">
+        <div className="share">
+          <a href="#" data-toggle="tooltip" title="Share on Twitter">
+            <i className="fa fa-twitter"></i>
+          </a>
+          <a href="#" data-toggle="tooltip" title="Share on Facebook">
+            <i className="fa fa-facebook"></i>
+          </a>
+          <a href="#" data-toggle="tooltip" title="Share on Pinterest">
+            <i className="fa fa-pinterest"></i>
+          </a>
+          <a href="#" data-toggle="tooltip" title="Share on Google Plus">
+            <i className="fa fa-google-plus"></i>
+          </a>
+        </div>
+        <div className="name">
+          { this.props.item.name }
+        </div>
+        <div className="rating">
+          <i className="fa fa-star"></i>
+          <i className="fa fa-star"></i>
+          <i className="fa fa-star"></i>
+          <i className="fa fa-star"></i>
+          <i className="fa fa-star-half-o"></i>
+        </div>
+        { this.renderItemPrice() }
+
+        { this.renderPanels() }
+
+        <form action="#">
+          <div className="variants">
+            <div className="variant">
+              <label className="label-variant-colors">
+                Color:
+              </label>
+              <div className="variant-colors">
+                <div className="variant-color variant-color--grey">
+                </div>
+                <div className="variant-color variant-color--blue">
+                </div>
+                <div className="variant-color variant-color--black selected">
+                </div>
+              </div>
+            </div>
+            <div className="variant">
+              <label>Size: </label>
+              <select className="spacial-select">
+                <option>Large</option>
+                <option>Medium</option>
+                <option>Small</option>
+                <option>Mini</option>
+              </select>
+            </div>
+            <div className="variant">
+              <label>Quantity: </label>
+              <input type="number" min="1" max="99" value="1" className="form-control input-qty" />
+            </div>
+          </div>
+
+          <div className="add-to-cart">
+            <button type="submit" className="btn-shadow btn-shadow-dark">
+              <i className="ion-plus"></i> Buy
+            </button>
+          </div>
+        </form>
+      </div>
+    )
+  }
+
+  renderPictures() {
+    return (
+      <div className="col-md-6">
+        <a href={ this.props.item.picture } className="popup-thumb main-pic" style={ {backgroundImage: `url(${this.props.item.picture})`} }>
+        </a>
+        <div className="thumbs">
+          <a href={ this.props.item.picture } className="popup-thumb thumb" style={ {backgroundImage: `url(${this.props.item.picture})`} }>
+            <div className="mask">
+              <i className="fa fa-search"></i>
+            </div>
+          </a>
+          <a href={ this.props.item.picture } className="popup-thumb thumb" style={ {backgroundImage: `url(${this.props.item.picture})`} }>
+            <div className="mask">
+              <i className="fa fa-search"></i>
+            </div>
+          </a>
+          <a href={ this.props.item.picture } className="popup-thumb thumb" style={ {backgroundImage: `url(${this.props.item.picture})`} }>
+            <div className="mask">
+              <i className="fa fa-search"></i>
+            </div>
+          </a>
+          <a href={ this.props.item.picture } className="popup-thumb thumb" style={ {backgroundImage: `url(${this.props.item.picture})`} }>
+            <div className="mask">
+              <i className="fa fa-search"></i>
+            </div>
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   render() {
     if (!this.props.item.name) {
       return <div>Loading..</div>
     }
     return (
       <div>
-        { this.renderByPendingState() }
+        <div className="store-filters">
+          <div className="container clearfix">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item"><a href="#">Home</a></li>
+              <li className="breadcrumb-item"><a href="#">Collection for Women</a></li>
+              <li className="breadcrumb-item active">{ this.props.item.name }</li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="store-product-details">
+          <div className="container">
+            <div className="row">
+              { this.renderPictures() }
+              { this.renderInfos() }
+            </div>
+          </div>
+        </div>
+
       </div>
     )
   }
