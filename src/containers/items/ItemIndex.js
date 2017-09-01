@@ -21,7 +21,7 @@ class ItemIndex extends Component {
     }
   }
 
-  renderReview(item) {
+  renderRating(item) {
     return (
       <div className="rating">
         <Rating empty={['fa fa-star-o low', 'fa fa-star-o low',
@@ -35,7 +35,6 @@ class ItemIndex extends Component {
                 readonly />
         ({ item.number_rating })
       </div>
-
     )
   }
 
@@ -71,7 +70,7 @@ class ItemIndex extends Component {
             </Link>
             { this.renderDiscountPrice(item) }
           </span>
-          { this.renderReview(item) }
+          { this.renderRating(item) }
         </div>
       )
     })
