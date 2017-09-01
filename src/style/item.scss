@@ -240,12 +240,19 @@
       }
     }
 
+    .variant {
+      display: block;
+      color: #555;
+      margin-top: 3px;
+      font-style: italic;
+    }
+
     .rating {
       margin-top: 4px;
+      color: #64B1CD;
 
-      i {
+      span {
         margin-right: 2px;
-        color: #64B1CD;
       }
     }
 
