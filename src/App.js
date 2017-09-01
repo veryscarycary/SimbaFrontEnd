@@ -21,6 +21,7 @@ import UserIndex from './containers/users/UserIndex'
 import ItemNew from './containers/items/ItemNew'
 import ItemIndex from './containers/items/ItemIndex'
 import ItemShow from './containers/items/ItemShow'
+import ItemCheckOut from './containers/items/ItemCheckOut'
 
 // Purchase Containers
 import PurchaseInitialize from './containers/purchases/PurchaseInitialize'
@@ -58,23 +59,23 @@ class App extends Component {
             <Navigation />
           </section>
           <section className='main-container'>
-              <FlashMessages />
-              <Route exact path='/' component={ItemIndex} />
-              <Route exact path='/users/register' component={RegistrationForm} />
-              <Route exact path='/users/sign_in' component={SignInForm} />
-              <Route exact path='/users' component={UserIndex} />
-              <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
-              <Route exact path='/listing/create' component={ItemNew} />
-              <Route exact path='/items/:item_id' component={ItemShow} />
-              <Route exact path='/items' component={ItemIndex} />
+            <Route exact path='/' component={ItemIndex} />
+            <Route exact path='/users/register' component={RegistrationForm} />
+            <Route exact path='/users/sign_in' component={SignInForm} />
+            <Route exact path='/users' component={UserIndex} />
+            <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
+            <Route exact path='/listing/create' component={ItemNew} />
+            <Route exact path='/items/:item_id' component={ItemShow} />
+            <Route exact path='/items' component={ItemIndex} />
+            <Route exact path='/items/:item_id/checkout' component={ItemCheckOut} />
 
-              <Route exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
-              <Route exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
-              <Route exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
-              <Route exact path='/purchases' component={PurchaseIndex} />
-              <Route exact path='/sales' component={SalesIndex} />
+            <Route exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
+            <Route exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
+            <Route exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
+            <Route exact path='/purchases' component={PurchaseIndex} />
+            <Route exact path='/sales' component={SalesIndex} />
 
-              <Route exact path='/admin/activities' component={ActivityIndex} />
+            <Route exact path='/admin/activities' component={ActivityIndex} />
           </section>
           <section className='footer'>
             <Footer />
