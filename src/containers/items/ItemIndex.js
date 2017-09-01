@@ -23,13 +23,13 @@ class ItemIndex extends Component {
 
   renderReview(item) {
     return (
-      <div>
-        <Rating empty={['fa fa-star-o fa-2x low', 'fa fa-star-o fa-2x low',
-                        'fa fa-star-o fa-2x medium',
-                        'fa fa-star-o fa-2x high', 'fa fa-star-o fa-2x high']}
-                full={['fa fa-star fa-2x low', 'fa fa-star fa-2x low',
-                  'fa fa-star fa-2x medium',
-                  'fa fa-star fa-2x high', 'fa fa-star fa-2x high']}
+      <div className="rating">
+        <Rating empty={['fa fa-star-o low', 'fa fa-star-o low',
+                        'fa fa-star-o medium',
+                        'fa fa-star-o high', 'fa fa-star-o high']}
+                full={['fa fa-star low', 'fa fa-star low',
+                  'fa fa-star medium',
+                  'fa fa-star high', 'fa fa-star high']}
                 fractions={2}
                 initialRate={item.rating}
                 readonly />
@@ -66,17 +66,12 @@ class ItemIndex extends Component {
           </Link>
           <span className="info">
             <Link to={`/items/${item.id}`} className='name'>
-              { item.name } <span className="vendor">- { item.user.fullname }</span>
+              { item.name } <br/>
+              <span className="vendor"> { item.user.fullname }</span>
             </Link>
             { this.renderDiscountPrice(item) }
           </span>
-          <div className="rating">
-            <i className="fa fa-star"></i>
-            <i className="fa fa-star"></i>
-            <i className="fa fa-star"></i>
-            <i className="fa fa-star"></i>
-            <i className="fa fa-star-half-o"></i>
-          </div>
+          { this.renderReview(item) }
         </div>
       )
     })
