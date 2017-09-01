@@ -2,7 +2,7 @@ import axios from 'axios'
 import { normalize } from 'normalizr'
 
 import { itemsNormalizr, itemNormalizr } from '../models/normalizr'
-import { headers, ITEMS_URL, SELLER_ITEMS_URL } from '../api_url'
+import { headers, ITEMS_URL, USERS_URL } from '../api_url'
 import { setFlashMessage } from './actions_flash_messages'
 import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './actions_contract'
 
@@ -12,6 +12,8 @@ export const SELECT_ITEM = 'SELECT_ITEM'
 export const CREATE_ITEM = 'CREATE_ITEM'
 export const CREATE_ITEMS = 'CREATE_ITEMS'
 export const UPDATE_ITEM = 'UPDATE_ITEM'
+
+const token = localStorage.getItem('simba_wallet')
 
 export function fetchAllItems(provider) {
   return dispatch => {
@@ -39,7 +41,7 @@ export function fetchAllItems(provider) {
 
 export function selectItem(provider, itemId) {
   return dispatch => {
-    return axios.get(`${ITEMS_URL}/${itemId}`, headers)
+    return axios.get(`${USERS_URL}/${itemId}`, headers)
                 .then((request) => {
                     const normalizeRequest = normalize(request.data, itemNormalizr)
                     dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -70,9 +72,10 @@ export function createItem(item_params) {
   }
 }
 
-export function fetchSellerItems(provider) {
+export function fetchSellerItems(provider, wallet='') {
   return dispatch => {
-    axios.get(SELLER_ITEMS_URL, headers)
+    let walletId = wallet == '' ? token : wallet
+    axios.get(`${USERS_URL}/${walletId}/items`, headers)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})

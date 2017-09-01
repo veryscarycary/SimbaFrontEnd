@@ -3,19 +3,19 @@ import { connect } from 'react-redux'
 
 import '../../style/item.css'
 
+import { current_user, sellerItems } from '../../models/selectors'
 import { fetchSellerItems } from '../../actions/actions_items'
-import { sellerItems } from '../../models/selectors'
 
 class SellerItemsIndex extends Component {
   componentWillMount() {
     if (this.props.provider.eth) {
-      this.props.fetchSellerItems(this.props.provider)
+      this.props.fetchSellerItems(this.props.provider, this.props.current_user.wallet)
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.provider.eth && !this.props.provider.eth) {
-      this.props.fetchSellerItems(nextProps.provider)
+      this.props.fetchSellerItems(nextProps.provider, this.props.current_user.wallet)
     }
   }
 
@@ -55,7 +55,7 @@ class SellerItemsIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { sellerItems: sellerItems(state), provider: state.provider }
+  return { sellerItems: sellerItems(state), current_user: current_user(state), provider: state.provider }
 }
 
 export default connect(mapStateToProps, { fetchSellerItems })(SellerItemsIndex)
