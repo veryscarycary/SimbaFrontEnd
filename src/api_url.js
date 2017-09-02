@@ -1,6 +1,6 @@
-const wallet = localStorage.getItem('simba_wallet')
-const token = localStorage.getItem('simba_token')
-export const headers = { headers: { 'X-User-Wallet': wallet, 'X-User-Token': token } }
+import Auth from './services/auth'
+
+export const headers = { headers: { 'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token } }
 
 export const ROOT_URL = process.env.REACT_APP_API_HOST || 'http://localhost:3001'
 
