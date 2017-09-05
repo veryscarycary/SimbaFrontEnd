@@ -71,7 +71,7 @@ class SignInForm extends Component {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <div className='ecommerce-sign-up-form'>
+              <div className='ecommerce-form'>
                 <h1>
                   Log in to your account
                 </h1>

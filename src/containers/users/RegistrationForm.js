@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { userRegistration } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 
-import '../../style/sign_in.css'
+import '../../style/registration.css'
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -107,7 +107,7 @@ class RegistrationForm extends Component {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <div className="ecommerce-sign-up-form">
+              <div className="ecommerce-form">
                 <h1>
                   Create your account
                 </h1>
