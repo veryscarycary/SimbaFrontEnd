@@ -31,7 +31,7 @@
 /* single product view as grid */
 .store-product {
   margin-bottom: 50px;
-  min-height: 400px;
+  min-height: 300px;
 
   @media(max-width: 991px) {
     min-height: 340px;
@@ -78,6 +78,7 @@
     .img-fluid {
       margin: 0 auto;
       display: block;
+      height: 150px;
 
       @media(max-width: 767px) {
         max-height: 210px;
