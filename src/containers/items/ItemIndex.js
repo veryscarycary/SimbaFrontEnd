@@ -42,7 +42,7 @@ class ItemIndex extends Component {
     if (!item.discount || item.discount === 0) {
       return <span className='price'>{ item.price } ETH</span>
     }
-    const discountedPrice = item.price * (item.discount / 100)
+    const discountedPrice = item.price - item.price * (item.discount / 100)
     return (
       <span className="price">
         <span className="before">
