@@ -8,7 +8,7 @@ import { purchaseState, activityCategories } from '../containers/shared/Purchase
 
 // Watch block chain event
 // Buyer purchases an Item
-export function watchPurchaseEvent(provider, history) {
+export function watchPurchaseEvent(provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
@@ -26,7 +26,6 @@ export function watchPurchaseEvent(provider, history) {
                                    result.args.seller)
         )
         dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.PURCHASED}})
-        history.push(`/purchases/initialize/${Eth.toUtf8(result.args.purchaseId)}`)
       } else {
         console.log(error)
         dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})

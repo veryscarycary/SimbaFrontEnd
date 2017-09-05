@@ -18,14 +18,14 @@ import { fetchOneReview } from './actions_reviews'
 // Block chain transaction
 // Buyer Purchase an item '_itemId' from Seller (_seller)
 // State of the purchase : "PURCHASED"
-export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider, history) {
+export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider) {
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
   return dispatch => {
     provider.eth.accounts().then((accounts) => {
       escrow.deployed().then(instance => {
-        dispatch(watchPurchaseEvent(provider, history))
+        dispatch(watchPurchaseEvent(provider))
         instance.purchase.sendTransaction(purchaseId,
                                           sellerAddress,
                                           itemId,
