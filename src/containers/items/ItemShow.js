@@ -179,7 +179,7 @@ class ItemShow extends Component {
           <div className="add-to-cart">
             <Link to={`/items/${this.props.item.id}/checkout`}>
               <button type="submit" className="btn-shadow btn-shadow-dark">
-                <i className="ion-plus"></i> Purchase Item
+                Shipping & Payment <i className="ion-chevron-right"></i>
               </button>
             </Link>
           </div>
