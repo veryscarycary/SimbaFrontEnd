@@ -9,7 +9,7 @@ import ReviewShow from '../reviews/ReviewShow'
 import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
-import { item, purchase } from '../../models/selectors'
+import { item, purchase, current_user } from '../../models/selectors'
 
 import '../../style/checkout.css'
 
@@ -52,7 +52,7 @@ class ItemCheckOut extends Component {
 
   purchaseItem(event) {
     event.preventDefault()
-    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider, this.props.history)
+    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
   }
 
   renderDiscount() {
@@ -68,31 +68,63 @@ class ItemCheckOut extends Component {
     )
   }
 
-  renderPendingPurchase() {
+  renderPurchaseConfirmation() {
     return (
-      <div className='pure-g item-pending-purchase'>
-        <div className='pure-u-1'>
-          <Spinner name="line-scale" color="coral" className='purchase-spinner' />
-          <p>Waiting for payment transaction to be processed...</p>
-          <p className="text-danger"><i className="fa fa-exclamation-circle" aria-hidden="true"></i> Do not close the window.</p>
-        </div>
+      <div className="col-md-6">
+        <section>
+          <div id="checkout-order-done">
+            <header>
+              <i className="ion-ios-checkmark-outline"></i>
+              <h1>
+                Your order has been placed successfully!
+              </h1>
+            </header>
+            <p>
+              An e-mail has been sent to <strong>{ this.props.current_user.email }</strong> with a confirmation and a receipt for your order summary, for any doubts you can contact us at support@ecommerce.com.
+            </p>
+            <Link to='/'>
+              Go back to Home Page
+            </Link>
+          </div>
+        </section>
       </div>
     )
   }
 
-  renderByPendingState() {
+  renderErrorPurchase() {
+    return (
+      <div className="col-md-6">
+        <section>
+          <div id="checkout-order-done">
+            <header>
+              <i className="ion-ios-close-outline"></i>
+              <h1>
+                An error occured. Your order hasn't been placed.
+              </h1>
+            </header>
+            <p>
+              Please contact us at support@simba.market if this error persists.
+            </p>
+            <a href="#" onClick={() => window.location.reload()}>
+              Go back to Checkout Page
+            </a>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
+  renderFormOrConfirmation() {
     if (!this.props.purchase.purchaseState) {
-      return this.renderItem()
+      return this.renderShippingForm()
     }
     switch(this.props.purchase.purchaseState) {
-      case purchaseState.NEW:
-        return this.renderItem()
-      case purchaseState.PENDING_PURCHASED:
-        return this.renderPendingPurchase()
+      case purchaseState.PURCHASED:
+        return this.renderPurchaseConfirmation()
       case purchaseState.ERROR:
-        return <div>ERROR : Payment transactions failed</div>
+        return this.renderErrorPurchase()
       default:
-        return this.renderItem()
+        return this.renderShippingForm()
     }
   }
 
@@ -100,7 +132,32 @@ class ItemCheckOut extends Component {
     return (
       <div className="col-md-6">
         <section>
-          <h2>Client information</h2>
+          <h1>Shipping method</h1>
+
+          <div className="field-group">
+            <div className="field field--with-radio">
+              <input type="radio" id="standard-shipping" name="shipping-method" checked="checked" />
+              <label htmlFor="standard-shipping">
+                $10 Standard
+                <strong className="right-note">
+                  5-10 days
+                </strong>
+              </label>
+            </div>
+            <div className="field field--with-radio">
+              <input type="radio" id="ultra-speed" name="shipping-method" />
+              <label htmlFor="ultra-speed">
+                $20 Ultra speed
+                <strong className="right-note">
+                  1-3 days
+                </strong>
+              </label>
+            </div>
+          </div>
+
+          <hr/>
+
+          <h1>Client information</h1>
 
           <div className="field-group">
             <div className="field">
@@ -150,8 +207,8 @@ class ItemCheckOut extends Component {
           </div>
 
           <div className="text-right">
-            <a href="checkout-payment.html" className="checkout-btn-next-step">
-              Shipping & Payment
+            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
+              Place Order
               <i className="ion-chevron-right"></i>
             </a>
           </div>
@@ -211,7 +268,7 @@ class ItemCheckOut extends Component {
       <div id="checkout">
         <div className="container">
           <div className="row">
-            { this.renderShippingForm() }
+            { this.renderFormOrConfirmation() }
             { this.renderOrderSummary() }
           </div>
         </div>
@@ -221,7 +278,7 @@ class ItemCheckOut extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state) }
+  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
 }
 
 export default connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut)
