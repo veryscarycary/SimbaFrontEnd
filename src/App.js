@@ -8,7 +8,6 @@ import { fetchProvider } from './actions/actions_provider'
 // Shared Containers
 import Navigation from './containers/shared/Navigation'
 import Footer from './containers/shared/Footer'
-import FlashMessages from './containers/shared/FlashMessages'
 
 // Devise Containers
 import RegistrationForm from './containers/users/RegistrationForm'
