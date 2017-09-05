@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
-import { LinkContainer } from 'react-router-bootstrap'
 import Eth from 'ethjs'
 
 import { setCurrentUser } from '../../actions/actions_users'

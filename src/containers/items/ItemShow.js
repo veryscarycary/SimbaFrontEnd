@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
 import Spinner from 'react-spinkit'
 import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
