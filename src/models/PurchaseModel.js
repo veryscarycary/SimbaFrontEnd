@@ -1,7 +1,7 @@
 import { Model, fk, attr } from 'redux-orm'
 import propTypesMixin from 'redux-orm-proptypes'
 
-import { CREATE_PURCHASES, UPDATE_PURCHASE } from '../actions/actions_purchases'
+import { CREATE_PURCHASES, UPDATE_PURCHASE, CREATE_PURCHASE } from '../actions/actions_purchases'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
 
@@ -16,6 +16,9 @@ export default class Purchase extends ValidatingModel {
           Purchase.upsert(action.payload[purchaseId])
         })
       }
+      break
+    case CREATE_PURCHASE:
+      Purchase.upsert(action.payload)
       break
     case UPDATE_PURCHASE:
       Purchase.withId(action.payload.id).update(action.payload)

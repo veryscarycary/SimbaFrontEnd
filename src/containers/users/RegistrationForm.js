@@ -6,6 +6,7 @@ import { Alert } from 'react-bootstrap'
 import '../../style/user.css'
 import { userRegistration } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
+import withNextRoute from './withNextRoute'
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -26,7 +27,9 @@ class RegistrationForm extends Component {
 
   submit(model) {
     var user_params = { user: { ...this.state, wallet: this.props.current_user.wallet } }
-    this.props.userRegistration(user_params, this.props.history)
+
+    this.props.userRegistration(user_params)
+      .then(() => this.props.history.push(this.props.nextRoute))
   }
 
   renderForm() {
@@ -119,4 +122,6 @@ function mapStateToProps(state) {
   return { current_user: current_user(state) }
 }
 
-export default connect(mapStateToProps, { userRegistration })(RegistrationForm)
+export default withNextRoute(
+  connect(mapStateToProps, { userRegistration })(RegistrationForm)
+)

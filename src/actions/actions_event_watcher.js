@@ -2,7 +2,7 @@ import { default as contract } from 'truffle-contract'
 import Eth from 'ethjs'
 import escrowJSON from '../contract_build/Escrow.json'
 
-import { UPDATE_PURCHASE } from './actions_purchases'
+import { CREATE_PURCHASE } from './actions_purchases'
 import { createLogActivity } from './actions_activities'
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
 
@@ -25,11 +25,11 @@ export function watchPurchaseEvent(provider, history) {
                                    result.args.buyer,
                                    result.args.seller)
         )
-        dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.PURCHASED}})
+        dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.PURCHASED}})
         history.push(`/purchases/initialize/${Eth.toUtf8(result.args.purchaseId)}`)
       } else {
         console.log(error)
-        dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+        dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
       }
     })
   })
@@ -55,10 +55,10 @@ export function watchShippingEvent(provider) {
                                      result.args.buyer,
                                      result.args.seller)
           )
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SHIPPED}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SHIPPED}})
         } else {
           console.log(error)
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })
     })
@@ -84,10 +84,10 @@ export function watchPurchaseCompleteEvent(provider) {
                                      result.args.buyer,
                                      result.args.seller)
           )
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.COMPLETED}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.COMPLETED}})
         } else {
           console.log(error)
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })
     })
@@ -119,10 +119,10 @@ export function watchCancelPurchaseEvent(provider) {
                                      result.args.buyer,
                                      result.args.seller)
           )
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: cancelPurchaseState}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: cancelPurchaseState}})
         } else {
           console.log(error)
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })
     })
@@ -148,10 +148,10 @@ export function watchShippingTimeoutEvent(provider) {
                                      result.args.buyer,
                                      result.args.seller)
           )
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SELLER_SHIPPING_TIMEOUT}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SELLER_SHIPPING_TIMEOUT}})
         } else {
           console.log(error)
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })
     })
@@ -177,10 +177,10 @@ export function watchConfirmationTimeoutEvent(provider) {
                                      result.args.buyer,
                                      result.args.seller)
           )
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.BUYER_CONFIRMATION_TIMEOUT}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.BUYER_CONFIRMATION_TIMEOUT}})
         } else {
           console.log(error)
-          dispatch({type: UPDATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
+          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })
     })
