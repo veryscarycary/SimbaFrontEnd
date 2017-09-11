@@ -8,7 +8,6 @@ import { fetchProvider } from './actions/actions_provider'
 // Shared Containers
 import Navigation from './containers/shared/Navigation'
 import Footer from './containers/shared/Footer'
-import FlashMessages from './containers/shared/FlashMessages'
 
 // Devise Containers
 import RegistrationForm from './containers/users/RegistrationForm'
@@ -21,6 +20,7 @@ import UserIndex from './containers/users/UserIndex'
 import ItemNew from './containers/items/ItemNew'
 import ItemIndex from './containers/items/ItemIndex'
 import ItemShow from './containers/items/ItemShow'
+import ItemCheckOut from './containers/items/ItemCheckOut'
 
 // Purchase Containers
 import PurchaseInitialize from './containers/purchases/PurchaseInitialize'
@@ -82,23 +82,24 @@ class App extends Component {
             <Navigation />
           </section>
           <section className='main-container'>
-              <FlashMessages />
-              <Route exact path='/' component={ItemIndex} />
-              <Route exact path='/users/register' component={RegistrationForm} />
-              <Route exact path='/users/sign_in' component={SignInForm} />
-              <Route exact path='/users' component={UserIndex} />
-              <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
-              <Route auth exact path='/listing/create' component={ItemNew} />
-              <Route exact path='/items/:item_id' component={ItemShow} />
-              <Route exact path='/items' component={ItemIndex} />
+            <Route exact path='/' component={ItemIndex} />
+            <Route exact path='/users/register' component={RegistrationForm} />
+            <Route exact path='/users/sign_in' component={SignInForm} />
+            <Route exact path='/users' component={UserIndex} />
+            <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
+            <Route auth exact path='/listing/create' component={ItemNew} />
+            <Route exact path='/items/:item_id' component={ItemShow} />
+            <Route exact path='/items' component={ItemIndex} />
+            <Route auth exact path='/items/:item_id/checkout' component={ItemCheckOut} />
 
-              <Route auth exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
-              <Route auth exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
-              <Route auth exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
-              <Route auth exact path='/purchases' component={PurchaseIndex} />
-              <Route auth exact path='/sales' component={SalesIndex} />
 
-              <Route auth exact path='/admin/activities' component={ActivityIndex} />
+            <Route auth exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
+            <Route auth exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
+            <Route auth exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
+            <Route auth exact path='/purchases' component={PurchaseIndex} />
+            <Route auth exact path='/sales' component={SalesIndex} />
+
+            <Route auth exact path='/admin/activities' component={ActivityIndex} />
           </section>
           <section className='footer'>
             <Footer />

@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Form, Input } from 'formsy-react-components'
 import { Alert } from 'react-bootstrap'
-
-import '../../style/user.css'
+import { Link } from 'react-router-dom'
 
 import { current_user } from '../../models/selectors'
 import { userSignIn } from '../../actions/actions_users'
 import withNextRoute from './withNextRoute'
+
+import '../../style/sign_in.css'
 
 class SignInForm extends Component {
   constructor(props) {
@@ -31,7 +32,7 @@ class SignInForm extends Component {
 
   renderForm() {
     return (
-      <Form layout='vertical' className='sign-in-form' onValidSubmit={this.submit.bind(this)}>
+      <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
         <Input
           label='Wallet'
           value={this.props.current_user.wallet}
@@ -46,8 +47,14 @@ class SignInForm extends Component {
           type='password'
           onChange={this.handleChange.bind(this)}
           required />
-        <button className="pure-button pure-button-primary"
-                type='submit'>Sign In</button>
+        <div className="form-action">
+          <button type="submit" className="btn-shadow btn-shadow-dark">Sign in</button>
+        </div>
+        <div className="form-bottom">
+          <a href="sign-up.html" className="btn-forgot-password">Forgot your password?</a>
+          Don't have an account yet? <Link to='/users/register' className="account">Register</Link>
+        </div>
+
       </Form>
     )
   }
@@ -55,7 +62,7 @@ class SignInForm extends Component {
   renderErrorBlockChain() {
     return (
       <Alert bsStyle="danger">
-        <h4>Wallet couldn't be find.</h4>
+        <strong>Wallet couldn't be find.</strong>
         <p>To register to Simba, please make sure you are connected to an Ethereum nodes by installing Metamask plugin (Chrome/Firefox) or using Mist or Parity as your web browser.</p>
       </Alert>
     )
@@ -63,13 +70,22 @@ class SignInForm extends Component {
 
   render() {
     return (
-      <div className='pure-g user'>
-        <div className='pure-u-1'>
-          <h3 className='title'>Sign In</h3>
-          <div className='title-divider'></div>
-          { this.props.current_user.wallet ? this.renderForm() : this.renderErrorBlockChain() }
+      <div className="account-page">
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <div className='ecommerce-form'>
+                <h1>
+                  Log in to your account
+                </h1>
+                { this.props.current_user.wallet ? this.renderForm() : this.renderErrorBlockChain() }
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+
     )
   }
 }

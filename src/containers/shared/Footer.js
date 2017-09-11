@@ -5,38 +5,92 @@ import '../../style/footer.css'
 class Footer extends Component {
   render() {
     return (
-      <div className="container">
-        <div className="row">
-          <br />
-          <div className="col-md-4">
-            <center>
-              <img src="http://oi60.tinypic.com/w8lycl.jpg" className="img-circle" alt="the-brains" />
-              <br />
-              <h4 className="footertext">Programmer</h4>
-              <p className="footertext">You can thank all the crazy programming here to this guy.</p>
-            </center>
+      <footer className="store-footer">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-4">
+              <div className="title">
+                Store Menu
+              </div>
+              <ul className="menu">
+                <li>
+                  <a href="#">Clothes</a>
+                </li>
+                <li>
+                  <a href="#">Electronics</a>
+                </li>
+                <li>
+                  <a href="#">Services</a>
+                </li>
+                <li>
+                  <a href="#">Ticket</a>
+                </li>
+                <li>
+                  <a href="#">Getaway</a>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-4">
+              <div className="title">
+                Connect with us
+              </div>
+              <ul className="menu">
+                <li>
+                  <a href="#">
+                    <i className="fa fa-instagram"></i>
+                    Instagram
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i className="fa fa-twitter"></i>
+                    Twitter
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i className="fa fa-slack"></i>
+                    Slack
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i className="fa fa-facebook"></i>
+                    Facebook
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-4 newsletter">
+              <div className="title">
+                News & Updates
+              </div>
+              <p>
+                Enter your email address for news and product launches in the Awesome Space.
+              </p>
+
+              <form className="newsletter-form">
+                <input type="email" id="mc-email" className="form-control" placeholder="Email address" required />
+
+                <button type="submit">
+                  <i className="fa fa-chevron-right"></i>
+                </button>
+                <label htmlFor="mc-email" className="text-white newsletter-feedback mt-3"></label>
+              </form>
+            </div>
           </div>
-          <div className="col-md-4">
-            <center>
-              <img src="http://oi60.tinypic.com/2z7enpc.jpg" className="img-circle" alt="..." />
-              <br />
-              <h4 className="footertext">Artist</h4>
-              <p className="footertext">All the images here are hand drawn by this man.</p>
-            </center>
-          </div>
-          <div className="col-md-4">
-            <center>
-              <img src="http://oi61.tinypic.com/307n6ux.jpg" className="img-circle" alt="..." />
-              <br />
-              <h4 className="footertext">Designer</h4>
-              <p className="footertext">This pretty site and the copy it holds are all thanks to this guy.</p>
-            </center>
+          <div className="bottom">
+            <span>
+              © 2017 Simba LLC
+            </span>
+            <div className="payment-methods">
+              <img src={require('../../images/bitcoin-logo.png')} />
+              <img src={require('../../images/ethereum-logo.png')} />
+
+            </div>
           </div>
         </div>
-        <div className="row">
-          <center><p  className="footertext">Contact Stuff Here - Copyright 2014</p></center>
-        </div>
-      </div>
+      </footer>
     )
   }
 }
