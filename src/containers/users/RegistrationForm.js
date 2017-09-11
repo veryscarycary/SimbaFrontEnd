@@ -2,11 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Form, Input } from 'formsy-react-components'
 import { Alert } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
-import '../../style/user.css'
 import { userRegistration } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import withNextRoute from './withNextRoute'
+
+import '../../style/registration.css'
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -34,66 +36,61 @@ class RegistrationForm extends Component {
 
   renderForm() {
     return (
-      <Form layout='vertical' className='register-form' onValidSubmit={this.submit.bind(this)}>
-        <div className='pure-g'>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='Wallet'
-              value={this.props.current_user.wallet}
-              name='wallet'
-              type='text'
-              onChange={this.handleChange.bind(this)}
-              required
-              disabled />
-          </div>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='Email'
-              value={this.state.email}
-              name='email'
-              type='email'
-              onChange={this.handleChange.bind(this)}
-              required />
-          </div>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='First Name'
-              value={this.state.first_name}
-              name='first_name'
-              type='text'
-              onChange={this.handleChange.bind(this)}
-              required />
-          </div>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='Last Name'
-              value={this.state.last_name}
-              name='last_name'
-              type='text'
-              onChange={this.handleChange.bind(this)}
-              required />
-          </div>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='Password'
-              value={this.state.password}
-              name='password'
-              type='password'
-              onChange={this.handleChange.bind(this)}
-              required />
-          </div>
-          <div className='pure-u-1 pure-u-md-1-2'>
-            <Input
-              label='Password Confirmation'
-              value={this.state.password_confirmation}
-              name='password_confirmation'
-              type='password'
-              onChange={this.handleChange.bind(this)}
-              required />
-          </div>
+      <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
+        <Input
+          label='Wallet'
+          value={this.props.current_user.wallet}
+          name='wallet'
+          type='text'
+          onChange={this.handleChange.bind(this)}
+          required
+          disabled />
+        <Input
+          label='Email'
+          value={this.state.email}
+          name='email'
+          type='email'
+          onChange={this.handleChange.bind(this)}
+          required />
+        <Input
+          label='First Name'
+          value={this.state.first_name}
+          name='first_name'
+          type='text'
+          onChange={this.handleChange.bind(this)}
+          required />
+        <Input
+          label='Last Name'
+          value={this.state.last_name}
+          name='last_name'
+          type='text'
+          onChange={this.handleChange.bind(this)}
+          required />
+        <Input
+          label='Password'
+          value={this.state.password}
+          name='password'
+          type='password'
+          onChange={this.handleChange.bind(this)}
+          required />
+        <Input
+          label='Password Confirmation'
+          value={this.state.password_confirmation}
+          name='password_confirmation'
+          type='password'
+          onChange={this.handleChange.bind(this)}
+          required />
+        <div className="checkbox">
+          <label>
+            <input type="checkbox" /> I've read & agree with the <a href="#">Terms</a>.
+          </label>
         </div>
-        <button className="pure-button pure-button-primary"
-              type='submit'>Create Account</button>
+        <div className="form-action">
+          <button type="submit" className="btn-shadow btn-shadow-dark">Create account</button>
+        </div>
+        <div className="form-bottom">
+          Already have an account? <Link to='/users/sign_in' className="account">Sign in</Link>
+        </div>
       </Form>
     )
   }
@@ -109,10 +106,19 @@ class RegistrationForm extends Component {
 
   render() {
     return (
-      <div className='user'>
-        <h3 className='title'>Register</h3>
-        <div className='title-divider'></div>
-        { this.props.current_user.wallet ? this.renderForm() : this.renderErrorBlockChain() }
+      <div className="account-page">
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <div className="ecommerce-form">
+                <h1>
+                  Create your account
+                </h1>
+                { this.props.current_user.wallet ? this.renderForm() : this.renderErrorBlockChain() }
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }

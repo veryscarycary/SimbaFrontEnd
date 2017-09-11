@@ -18,7 +18,7 @@ export const SELECT_PURCHASE = 'SELECT_PURCHASE'
 // Purchase one item
 // Create locally first a purchase in mongodb
 // Retrieve the purchaseId to send the transaction into the smart contract
-export function createPurchase(item, finalPrice, provider, history) {
+export function createPurchase(item, finalPrice, provider) {
   const params = {
     amount: finalPrice,
     item_id: item.id,
@@ -37,7 +37,7 @@ export function createPurchase(item, finalPrice, provider, history) {
                   const normalizeRequest = normalize(request.data, purchaseNormalizr)
                   dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
                   dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
-                  dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline, provider, history))
+                  dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline, provider))
               }).catch((error) => {
                   console.log(error)
                   if (error.response) {
