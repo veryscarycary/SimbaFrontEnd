@@ -5,9 +5,6 @@ import { Button, ControlLabel } from 'react-bootstrap'
 import Spinner from 'react-spinkit'
 import Rating from 'react-rating'
 
-
-import '../../style/purchase.css'
-
 import { purchaseState } from '../shared/PurchaseState'
 import { fetchPurchase } from '../../actions/actions_purchases'
 import { createReview } from '../../actions/actions_reviews'

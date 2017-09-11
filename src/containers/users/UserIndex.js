@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import '../../style/user.css'
-
 import { fetchAllUsers } from '../../actions/actions_users'
 
 class UserIndex extends Component {

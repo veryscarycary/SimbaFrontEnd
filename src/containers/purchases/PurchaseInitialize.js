@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import '../../style/purchase.css'
-
 import { fetchPurchase } from '../../actions/actions_purchases'
 import { purchase } from '../../models/selectors'
 
