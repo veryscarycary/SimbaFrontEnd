@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 import { Panel, Button } from 'react-bootstrap'
 import Timestamp from 'react-timestamp'
 
-import '../../style/purchase.css'
-
 import { fetchAllPurchases } from '../../actions/actions_purchases'
 import { cancelPurchase } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'

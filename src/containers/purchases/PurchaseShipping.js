@@ -4,8 +4,6 @@ import { Form, Input } from 'formsy-react-components'
 import { Button } from 'react-bootstrap'
 import Spinner from 'react-spinkit'
 
-import '../../style/purchase.css'
-
 import { purchaseState } from '../shared/PurchaseState'
 import { fetchPurchase } from '../../actions/actions_purchases'
 import { sendCode } from '../../actions/actions_contract'
