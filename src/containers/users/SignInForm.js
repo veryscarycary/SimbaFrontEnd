@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { current_user } from '../../models/selectors'
 import { userSignIn } from '../../actions/actions_users'
+import withNextRoute from './withNextRoute'
 
 import '../../style/sign_in.css'
 
@@ -24,7 +25,9 @@ class SignInForm extends Component {
 
   submit(model) {
     var user_params = { user: { password: this.state.password, wallet: this.props.current_user.wallet } }
-    this.props.userSignIn(user_params, this.props.history)
+
+    this.props.userSignIn(user_params)
+      .then(() => this.props.history.push(this.props.nextRoute))
   }
 
   renderForm() {
@@ -91,4 +94,6 @@ function mapStateToProps(state) {
   return { current_user: current_user(state) }
 }
 
-export default connect(mapStateToProps, { userSignIn })(SignInForm)
+export default withNextRoute(
+  connect(mapStateToProps, { userSignIn })(SignInForm)
+)

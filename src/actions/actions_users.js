@@ -4,6 +4,8 @@ import axios from 'axios'
 import { headers, SIGN_UP_URL, SIGN_IN_URL, USERS_URL } from '../api_url'
 import { setFlashMessage } from './actions_flash_messages'
 
+import Auth from '../services/auth'
+
 export const CREATE_USERS = 'CREATE_USERS'
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 export const SELECT_USER = 'SELECT_USER'
@@ -29,6 +31,12 @@ export function setCurrentUser(provider, wallet, authentication_token) {
   }
 }
 
+export function deleteCurrentUser(provider, wallet) {
+  Auth.deleteAll()
+
+  return setCurrentUser(provider, wallet, '')
+}
+
 export function selectUser(wallet) {
   return dispatch => {
     dispatch({ type: SELECT_USER, payload: wallet })
@@ -44,16 +52,16 @@ export function fetchAllUsers() {
   }
 }
 
-export function userRegistration(user_params, history) {
+export function userRegistration(user_params) {
   return dispatch => {
-    axios.post(SIGN_UP_URL, user_params)
+    return axios.post(SIGN_UP_URL, user_params)
        .then((response) => {
-        localStorage.setItem('simba_wallet', response.data['wallet']);
-        localStorage.setItem('simba_token', response.data['authentication_token']);
+        Auth.setWallet(response.data['wallet'])
+        Auth.setToken(response.data['authentication_token'])
+
         dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
         dispatch({ type: CREATE_USER, payload: response.data })
         dispatch(setFlashMessage("User has been successfully created.", 'success'))
-        history.push('/')
      }).catch((error) => {
         if (error.response) {
           const error_field = Object.keys(error.response.data.errors)[0]
@@ -66,22 +74,21 @@ export function userRegistration(user_params, history) {
   }
 }
 
-export function userSignIn(user_params, history) {
+export function userSignIn(user_params) {
   return dispatch => {
-    axios.post(SIGN_IN_URL, user_params)
+    return axios.post(SIGN_IN_URL, user_params)
            .then((response) => {
-            localStorage.setItem('simba_wallet', response.data['wallet'])
-            localStorage.setItem('simba_token', response.data['authentication_token'])
+            Auth.setToken(response.data['wallet'])
+            Auth.setWallet(response.data['authentication_token'])
+
             dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
             dispatch({ type: CREATE_USER, payload: response.data })
             dispatch(setFlashMessage("User has been successfully signed in.", 'success'))
-            if (history) {
-              history.push('/')
-            }
          }).catch((error) => {
             console.log(error)
-            localStorage.removeItem('simba_wallet')
-            localStorage.removeItem('simba_token')
+
+            Auth.deleteAll()
+
             if (error.response) {
               dispatch(setFlashMessage(error.response.data.error, 'error'))
             } else {

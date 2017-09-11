@@ -7,18 +7,20 @@ import { confirmPurchase } from './actions_contract'
 import { CREATE_USERS } from './actions_users'
 import { CREATE_ITEMS } from './actions_items'
 
+import Auth from '../services/auth'
+
 export const CREATE_REVIEW = 'CREATE_REVIEW'
 
 export function createReview(purchase, params, provider) {
   const user_params = {
-    buyer_wallet: localStorage.getItem('simba_wallet'),
+    buyer_wallet: Auth.wallet,
     seller_wallet: purchase.seller,
     rating: params.seller_rating,
     description: params.seller_review,
     item_id: purchase.item
   }
   const item_params = {
-    buyer_wallet: localStorage.getItem('simba_wallet'),
+    buyer_wallet: Auth.wallet,
     seller_wallet: purchase.seller,
     rating: params.item_rating,
     description: params.item_review,
