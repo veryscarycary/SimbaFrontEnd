@@ -19,6 +19,7 @@ import UserIndex from './containers/users/UserIndex'
 
 // Items Containers
 import ItemNew from './containers/items/ItemNew'
+import ItemEdit from './containers/items/ItemEdit'
 import ItemIndex from './containers/items/ItemIndex'
 import SellerItemsIndex from './containers/items/SellerItemsIndex'
 import ItemShow from './containers/items/ItemShow'
@@ -91,6 +92,7 @@ class App extends Component {
               <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
               <Route auth exact path='/listing/create' component={ItemNew} />
               <Route exact path='/items/:item_id' component={ItemShow} />
+              <Route exact path='/items/:item_id/edit' component={ItemEdit} />
               <Route exact path='/items' component={ItemIndex} />
               <Route exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
               <Route exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />

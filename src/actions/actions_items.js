@@ -41,7 +41,7 @@ export function fetchAllItems(provider) {
 
 export function selectItem(provider, itemId) {
   return dispatch => {
-    return axios.get(`${USERS_URL}/${itemId}`, headers)
+    return axios.get(`${ITEMS_URL}/${itemId}`, headers)
                 .then((request) => {
                     const normalizeRequest = normalize(request.data, itemNormalizr)
                     dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})

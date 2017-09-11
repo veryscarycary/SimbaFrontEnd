@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import '../../style/item.css'
 
@@ -33,12 +34,13 @@ class SellerItemsIndex extends Component {
           <tbody>
             {this.props.sellerItems.map((item) => {
               return(
-              <tr>
-              <td>{item.id}</td>
+              <tr key={item.id}>
+              <Link to={`/items/${item.id}/edit`}><td>{item.id}</td></Link>
               <td>{item.name}</td>
               <td><img src={ item.picture } alt={ item.name } style={{width: '40%'}} /></td>
               <td>{item.sales} sold</td>
-              </tr>)
+              </tr>
+              )
             })}
           </tbody>
         </table>
