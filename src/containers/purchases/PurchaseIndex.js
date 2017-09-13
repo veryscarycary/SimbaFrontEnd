@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Panel, Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import { Tabs, Tab } from 'react-bootstrap-tabs'
+
 import Timestamp from 'react-timestamp'
 
 import '../../style/purchases-collection.css'
@@ -13,6 +15,14 @@ import { purchaseState } from '../shared/PurchaseState'
 import { pendingPurchases, completedPurchases } from '../../models/selectors'
 
 class PurchaseIndex extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activeTab: 1
+    }
+  }
+
   componentWillMount() {
     if (this.props.provider.eth) {
       this.props.fetchAllPurchases(this.props.provider, true)
@@ -109,6 +119,10 @@ class PurchaseIndex extends Component {
     )
   }
 
+  handleSelect(selectedTab) {
+    this.setState({activeTab: selectedTab})
+  }
+
   render() {
     return (
       <div className="account-page">
@@ -121,17 +135,8 @@ class PurchaseIndex extends Component {
           </ol>
 
           <div className="account-wrapper">
-            <ul className="nav nav-tabs" role="tablist">
-              <li role="presentation" className="nav-item">
-                <a className="nav-link active" href="account-orders.html" role="tab">Active Order</a>
-              </li>
-              <li role="presentation" className="nav-item">
-                <a className="nav-link" href="account-wishlist.html" role="tab">Complete Order</a>
-              </li>
-            </ul>
-
-            <div className="tab-content">
-              <div role="tabpanel" className="tab-pane active" id="orders">
+            <Tabs>
+              <Tab eventKey={1} label="Active Order">
                 <div className="tab-header clearfix">
                   <h4 className="float-left">
                     Orders last 6 months
@@ -143,8 +148,21 @@ class PurchaseIndex extends Component {
                   </select>
                 </div>
                 { this.renderPurchases(false) }
-              </div>
-            </div>
+              </Tab>
+              <Tab eventKey={2} label="Complete Order">
+                <div className="tab-header clearfix">
+                  <h4 className="float-left">
+                    Orders last 6 months
+                  </h4>
+                  <select className="custom-select float-right">
+                    <option>Last 6 months</option>
+                    <option>Last 3 months</option>
+                    <option>All orders</option>
+                  </select>
+                </div>
+                { this.renderPurchases(true) }
+              </Tab>
+            </Tabs>
           </div>
         </div>
       </div>
