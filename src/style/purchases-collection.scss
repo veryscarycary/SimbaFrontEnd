@@ -11,6 +11,10 @@
   }
 
   .nav-tabs {
+    li {
+      cursor: pointer;
+    }
+
     li:not(.active) {
       a:hover {
         background: #fdfdfd;
@@ -63,5 +67,9 @@
       border-radius: 5px;
       height: 50px;
     }
+  }
+
+  .btn-sm {
+    margin-right: 5px;
   }
 }

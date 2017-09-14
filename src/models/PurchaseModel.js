@@ -46,6 +46,7 @@ Purchase.fields = {
   cancel_time: attr(),
   timeout_time: attr(),
   completed_time: attr(),
+  created_at: attr(),
   buyer: fk('User', 'buyer_purchases'),
   seller: fk('User', 'seller_sales'),
   item: fk('Item', 'purchases')
