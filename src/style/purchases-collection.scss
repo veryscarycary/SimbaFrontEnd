@@ -11,10 +11,6 @@
   }
 
   .nav-tabs {
-    li {
-      cursor: pointer;
-    }
-
     li:not(.active) {
       a:hover {
         background: #fdfdfd;

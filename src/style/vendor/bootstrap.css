@@ -2603,7 +2603,8 @@ tbody.collapse.show {
   border-bottom: 1px solid #ddd; }
 
 .nav-tabs .nav-item {
-  margin-bottom: -1px; }
+  margin-bottom: -1px;
+  cursor: pointer; }
 
 .nav-tabs .nav-link {
   border: 1px solid transparent;

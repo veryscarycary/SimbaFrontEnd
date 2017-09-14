@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import Spinner from 'react-spinkit'
 import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
+import { Tabs, Tab } from 'react-bootstrap-tabs'
 
 import ReviewShow from '../reviews/ReviewShow'
 import { selectItem } from '../../actions/actions_items'
@@ -82,29 +83,17 @@ class ItemShow extends Component {
   renderPanels() {
     return (
       <div className="description">
-        <ul className="nav nav-tabs" role="tablist">
-          <li className="nav-item">
-            <a className="nav-link active" href="#description" role="tab" data-toggle="tab">Description</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#details" role="tab" data-toggle="tab">Details</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#requirements" role="tab" data-toggle="tab">Requirements</a>
-          </li>
-        </ul>
-
-        <div className="tab-content">
-          <div role="tabpanel" className="tab-pane active" id="description">
-            <p> { this.props.item.description } </p>
-          </div>
-          <div role="tabpanel" className="tab-pane" id="details">
+        <Tabs>
+          <Tab label="Description">
             <p> { this.props.item.short_description } </p>
-          </div>
-          <div role="tabpanel" className="tab-pane" id="requirements">
+          </Tab>
+          <Tab label="Details">
             <p> { this.props.item.description } </p>
-          </div>
-        </div>
+          </Tab>
+          <Tab label="Requirements">
+            <p> { this.props.item.short_description } </p>
+          </Tab>
+        </Tabs>
       </div>
     )
   }
