@@ -51,12 +51,13 @@ export function createPurchase(item, finalPrice, provider) {
 }
 
 // Get one purchase information
-export function fetchPurchase(purchaseId) {
+export function selectPurchase(provider, purchaseId) {
   return dispatch => {
     axios.get(`${PURCHASES_URL}/${purchaseId}`, headers)
          .then((request) => {
             const normalizeRequest = normalize(request.data, purchaseNormalizr)
             dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
+            dispatch({ type: CREATE_ITEMS, payload: normalizeRequest.entities.items })
             dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
          })
   }

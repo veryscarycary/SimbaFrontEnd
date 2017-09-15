@@ -61,7 +61,7 @@ class SalesIndex extends Component {
                     onClick={() => this.props.cancelPurchase(sale.id, this.props.provider)}>
               Cancel
             </button>
-            <Link to={`/purchases/confirmation/${sale.id}`}>
+            <Link to={`/${sale.id}/shipping`}>
               <button className="btn btn-outline-success btn-sm">Ship Item</button>
             </Link>
           </td>

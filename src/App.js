@@ -21,6 +21,7 @@ import ItemNew from './containers/items/ItemNew'
 import ItemIndex from './containers/items/ItemIndex'
 import ItemShow from './containers/items/ItemShow'
 import ItemCheckOut from './containers/items/ItemCheckOut'
+import ItemShipping from './containers/items/ItemShipping'
 
 // Purchase Containers
 import PurchaseIndex from './containers/purchases/PurchaseIndex'
@@ -91,6 +92,7 @@ class App extends Component {
 
             <Route auth exact path='/purchases' component={PurchaseIndex} />
             <Route auth exact path='/sales' component={SalesIndex} />
+            <Route auth exact path='/:purchase_id/shipping' component={ItemShipping} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
           </section>

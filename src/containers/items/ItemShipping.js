@@ -5,56 +5,36 @@ import { Link } from 'react-router-dom'
 
 import PurchaseSummary from '../purchases/PurchaseSummary'
 
-import { createPurchase } from '../../actions/actions_purchases'
-import { selectItem } from '../../actions/actions_items'
+import { selectPurchase } from '../../actions/actions_purchases'
+import { sendCode } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
 import { item, purchase, current_user } from '../../models/selectors'
 
 import '../../style/checkout.css'
 
 
-class ItemCheckOut extends Component {
+class ItemShipping extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      finalPrice: 0.0
+      shippingNumber: ''
     }
   }
 
   componentWillMount() {
     if (this.props.provider.eth) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
+      this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.provider.eth && !this.props.provider.eth) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
+      this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
     }
   }
 
-  setFinalPrice() {
-    var finalPrice = 0
-    if (this.props.item.discount === 0) {
-      finalPrice = this.props.item.price + this.props.item.shipping_fee
-    } else {
-      finalPrice = this.props.item.price - this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
-    }
-
-    this.setState({finalPrice: finalPrice})
-  }
-
-  purchaseItem(event) {
-    event.preventDefault()
-    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
-  }
-
-  renderPurchaseConfirmation() {
+  renderShippingConfirmation() {
     return (
       <div className="col-md-6">
         <section>
@@ -62,11 +42,11 @@ class ItemCheckOut extends Component {
             <header>
               <i className="ion-ios-checkmark-outline"></i>
               <h1>
-                Your order has been placed successfully!
+                Your shipping number has been sent!
               </h1>
             </header>
             <p>
-              An e-mail has been sent to <strong>{ this.props.current_user.email }</strong> with a confirmation and a receipt for your order summary, for any doubts you can contact us at support@ecommerce.com.
+              Once the product has been delivered, the user will have X days to confirm receiving the item and confirm the payment.
             </p>
             <Link to='/'>
               Go back to Home Page
@@ -77,7 +57,7 @@ class ItemCheckOut extends Component {
     )
   }
 
-  renderErrorPurchase() {
+  renderErrorShipping() {
     return (
       <div className="col-md-6">
         <section>
@@ -85,14 +65,14 @@ class ItemCheckOut extends Component {
             <header>
               <i className="ion-ios-close-outline"></i>
               <h1>
-                An error occured. Your order hasn't been placed.
+                An error occured. Your shipping number hasn't been sent.
               </h1>
             </header>
             <p>
               Please contact us at support@simba.market if this error persists.
             </p>
             <a href="#" onClick={() => window.location.reload()}>
-              Go back to Checkout Page
+              Go back to Shipping Page
             </a>
           </div>
         </section>
@@ -105,10 +85,10 @@ class ItemCheckOut extends Component {
       return this.renderShippingForm()
     }
     switch(this.props.purchase.purchaseState) {
-      case purchaseState.PURCHASED:
-        return this.renderPurchaseConfirmation()
+      case purchaseState.SHIPPED:
+        return this.renderShippingConfirmation()
       case purchaseState.ERROR:
-        return this.renderErrorPurchase()
+        return this.renderErrorShipping()
       default:
         return this.renderShippingForm()
     }
@@ -118,31 +98,6 @@ class ItemCheckOut extends Component {
     return (
       <div className="col-md-6">
         <section>
-          <h1>Shipping method</h1>
-
-          <div className="field-group">
-            <div className="field field--with-radio">
-              <input type="radio" id="standard-shipping" name="shipping-method" checked="checked" />
-              <label htmlFor="standard-shipping">
-                $10 Standard
-                <strong className="right-note">
-                  5-10 days
-                </strong>
-              </label>
-            </div>
-            <div className="field field--with-radio">
-              <input type="radio" id="ultra-speed" name="shipping-method" />
-              <label htmlFor="ultra-speed">
-                $20 Ultra speed
-                <strong className="right-note">
-                  1-3 days
-                </strong>
-              </label>
-            </div>
-          </div>
-
-          <hr/>
-
           <h1>Client information</h1>
 
           <div className="field-group">
@@ -192,9 +147,34 @@ class ItemCheckOut extends Component {
             </div>
           </div>
 
+          <hr/>
+
+          <h1>Shipping method</h1>
+
+          <div className="field-group">
+            <div className="field field--with-radio">
+              <input type="radio" id="standard-shipping" name="shipping-method" checked="checked" />
+              <label htmlFor="standard-shipping">
+                $10 Standard
+                <strong className="right-note">
+                  5-10 days
+                </strong>
+              </label>
+            </div>
+            <div className="field field--with-radio">
+              <input type="radio" id="ultra-speed" name="shipping-method" />
+              <label htmlFor="ultra-speed">
+                $20 Ultra speed
+                <strong className="right-note">
+                  1-3 days
+                </strong>
+              </label>
+            </div>
+          </div>
+
           <div className="text-right">
-            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
-              Place Order
+            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.sendCode(this.props.purchase.id, this.state.code, this.props.provider)}>
+              Send Shipping Number
               <i className="ion-chevron-right"></i>
             </a>
           </div>
@@ -212,7 +192,7 @@ class ItemCheckOut extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice}/>
+            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount}/>
           </div>
         </div>
       </div>
@@ -224,4 +204,4 @@ function mapStateToProps(state) {
   return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
 }
 
-export default connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut)
+export default connect(mapStateToProps, { selectPurchase, sendCode })(ItemShipping)
