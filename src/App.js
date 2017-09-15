@@ -23,9 +23,6 @@ import ItemShow from './containers/items/ItemShow'
 import ItemCheckOut from './containers/items/ItemCheckOut'
 
 // Purchase Containers
-import PurchaseInitialize from './containers/purchases/PurchaseInitialize'
-import PurchaseConfirmation from './containers/purchases/PurchaseConfirmation'
-import PurchaseShipping from './containers/purchases/PurchaseShipping'
 import PurchaseIndex from './containers/purchases/PurchaseIndex'
 import SalesIndex from './containers/purchases/SalesIndex'
 
@@ -92,10 +89,6 @@ class App extends Component {
             <Route exact path='/items' component={ItemIndex} />
             <Route auth exact path='/items/:item_id/checkout' component={ItemCheckOut} />
 
-
-            <Route auth exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
-            <Route auth exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
-            <Route auth exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
             <Route auth exact path='/purchases' component={PurchaseIndex} />
             <Route auth exact path='/sales' component={SalesIndex} />
 

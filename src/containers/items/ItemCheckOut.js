@@ -6,6 +6,8 @@ import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
 
 import ReviewShow from '../reviews/ReviewShow'
+import PurchaseSummary from '../purchases/PurchaseSummary'
+
 import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
@@ -53,19 +55,6 @@ class ItemCheckOut extends Component {
   purchaseItem(event) {
     event.preventDefault()
     this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
-  }
-
-  renderDiscount() {
-    if (!this.props.item.discount || this.props.item.discount === 0) {
-      return <div></div>
-    }
-    const discountedPrice = this.props.item.price * (this.props.item.discount / 100)
-    return (
-      <div className="detail clearfix">
-        <p>Discount</p>
-        <span>- { discountedPrice } ETH</span>
-      </div>
-    )
   }
 
   renderPurchaseConfirmation() {
@@ -269,7 +258,7 @@ class ItemCheckOut extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            { this.renderOrderSummary() }
+            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice}/>
           </div>
         </div>
       </div>
