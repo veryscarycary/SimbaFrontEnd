@@ -2,15 +2,16 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { Form, Input, Select } from 'formsy-react-components'
 
 import PurchaseSummary from '../purchases/PurchaseSummary'
 
 import { selectPurchase } from '../../actions/actions_purchases'
 import { sendCode } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
-import { item, purchase, current_user } from '../../models/selectors'
+import { item, purchase, current_user, user } from '../../models/selectors'
 
-import '../../style/checkout.css'
+import '../../style/item-shipping.css'
 
 
 class ItemShipping extends Component {
@@ -18,7 +19,8 @@ class ItemShipping extends Component {
     super(props)
 
     this.state = {
-      shippingNumber: ''
+      shippingNumber: '',
+      shippingCarrier: ''
     }
   }
 
@@ -94,7 +96,22 @@ class ItemShipping extends Component {
     }
   }
 
+  handleChange(name, value) {
+    this.setState({[name]: value})
+  }
+
+  submit(model) {
+    this.sendCode(this.props.purchase.id, this.state.code, this.props.provider)
+  }
+
   renderShippingForm() {
+    const carrierOptions = [
+      {value: '', label: 'Please select a carrier…'},
+      {value: 'UPS', label: 'UPS'},
+      {value: 'FedEx', label: 'FedEx'},
+      {value: 'USPS', label: 'USPS'},
+    ]
+
     return (
       <div className="col-md-6">
         <section>
@@ -102,12 +119,12 @@ class ItemShipping extends Component {
 
           <div className="field-group">
             <div className="field">
-              <label htmlFor="field-name">Your name</label>
-              <input id="field-name" type="text" className="form-control" placeholder="Your full name" />
+              <label htmlFor="field-name">Name</label>
+              <input id="field-name" type="text" className="form-control" placeholder="Client full name" value={this.props.user.fullname} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-email">Email address</label>
-              <input id="field-email" type="email" className="form-control" placeholder="Email address" />
+              <input id="field-email" type="email" className="form-control" placeholder="Email address" value={this.props.user.email} disabled />
             </div>
           </div>
 
@@ -118,28 +135,19 @@ class ItemShipping extends Component {
           <div className="field-group">
             <div className="field">
               <label htmlFor="field-address">Address</label>
-              <input id="field-address" type="text" className="form-control" placeholder="Street, interior number, etc" />
+              <input id="field-address" type="text" className="form-control" placeholder="Street, interior number, etc" value={this.props.purchase.address} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-city">City</label>
-              <input id="field-city" type="text" className="form-control" placeholder="City" />
+              <input id="field-city" type="text" className="form-control" placeholder="City" value={this.props.purchase.city} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-zip">ZIP Code</label>
-              <input id="field-zip" type="text" className="form-control" placeholder="ZIP Code" />
+              <input id="field-zip" type="text" className="form-control" placeholder="ZIP Code" value={this.props.purchase.postal_code} disabled />
             </div>
             <div className="field field--with-dropdown clearfix">
               <label htmlFor="field-country">Country</label>
-              <select id="field-country">
-                <option>Country</option>
-                <option>United States</option>
-                <option>Canada</option>
-                <option>France</option>
-                <option>UK</option>
-                <option>Germany</option>
-                <option>Belgium</option>
-                <option>Australia</option>
-              </select>
+              <input id="field-country" type="text" className="form-control" placeholder="Country Code" value={this.props.purchase.country} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-phone">Phone</label>
@@ -149,35 +157,50 @@ class ItemShipping extends Component {
 
           <hr/>
 
-          <h1>Shipping method</h1>
+          <h1>Shipping Information</h1>
 
-          <div className="field-group">
-            <div className="field field--with-radio">
-              <input type="radio" id="standard-shipping" name="shipping-method" checked="checked" />
-              <label htmlFor="standard-shipping">
-                $10 Standard
-                <strong className="right-note">
-                  5-10 days
-                </strong>
-              </label>
-            </div>
-            <div className="field field--with-radio">
-              <input type="radio" id="ultra-speed" name="shipping-method" />
-              <label htmlFor="ultra-speed">
-                $20 Ultra speed
-                <strong className="right-note">
-                  1-3 days
-                </strong>
-              </label>
-            </div>
-          </div>
+          <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
+            <div className="field-group">
+              <div className="field">
+                <Input
+                  label='Shipping Deadline'
+                  value={this.props.purchase.shipping_deadline}
+                  name='shippingDeadline'
+                  type='text'
+                  required
+                  className='form-control'
+                  disabled />
+              </div>
 
-          <div className="text-right">
-            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.sendCode(this.props.purchase.id, this.state.code, this.props.provider)}>
-              Send Shipping Number
-              <i className="ion-chevron-right"></i>
-            </a>
-          </div>
+              <div className="field field--with-dropdown clearfix">
+                <Select
+                  name="shippingCarrier"
+                  label="Shipping Carrier"
+                  options={carrierOptions}
+                  required
+                  />
+              </div>
+
+              <div className="field">
+                <Input
+                  label='Tracking Number'
+                  value={this.state.shippingNumber}
+                  name='shippingNumber'
+                  type='text'
+                  placeholder='Tracking Number'
+                  onChange={this.handleChange.bind(this)}
+                  required
+                  className='form-control' />
+              </div>
+            </div>
+
+            <div className="text-right">
+              <button type="submit" className="checkout-btn-next-step">
+                Send Shipping Number
+                <i className="ion-chevron-right"></i>
+              </button>
+            </div>
+          </Form>
         </section>
       </div>
     )
@@ -201,7 +224,7 @@ class ItemShipping extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
+  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state), user: user(state) }
 }
 
 export default connect(mapStateToProps, { selectPurchase, sendCode })(ItemShipping)

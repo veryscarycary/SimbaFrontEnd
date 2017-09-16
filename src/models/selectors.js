@@ -49,10 +49,10 @@ export const users = createSelector(
 
 export const user = createSelector(
   ormSelector,
-  state => state.selectedUserId,
-  ormCreateSelector(orm, (session, selectedUserId) => {
-    if (selectedUserId !== 0) {
-      return session.User.withId(selectedUserId).ref;
+  state => state.selectedUserWallet,
+  ormCreateSelector(orm, (session, selectedUserWallet) => {
+    if (selectedUserWallet !== '') {
+      return session.User.withId(selectedUserWallet).ref;
     }
     return {}
   })

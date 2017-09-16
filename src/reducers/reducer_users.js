@@ -10,7 +10,7 @@ export function currentUserWalletReducer(state = '', action) {
 }
 
 
-export function selectedUserIdReducer(state = 0, action) {
+export function selectedUserWalletReducer(state = '', action) {
   switch(action.type) {
   case SELECT_USER:
     return action.payload
