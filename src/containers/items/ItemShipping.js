@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { Form, Input, Select } from 'formsy-react-components'
 
@@ -44,7 +43,7 @@ class ItemShipping extends Component {
             <header>
               <i className="ion-ios-checkmark-outline"></i>
               <h1>
-                Your shipping number has been sent!
+                Your shipping number {this.state.shippingNumber} ({this.state.shippingCarrier}) has been sent!
               </h1>
             </header>
             <p>
@@ -91,6 +90,8 @@ class ItemShipping extends Component {
         return this.renderShippingConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorShipping()
+      case purchaseState.PENDING_SHIPPED:
+        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -101,7 +102,14 @@ class ItemShipping extends Component {
   }
 
   submit(model) {
-    this.sendCode(this.props.purchase.id, this.state.code, this.props.provider)
+    this.props.sendCode(this.props.purchase.id, this.state.shippingNumber, this.props.provider)
+  }
+
+  renderShippingDeadlineDate() {
+    var deadlineDate = new Date(0)
+    // Convert PurchaseTime epoch to Date Object
+    deadlineDate.setUTCSeconds(this.props.purchase.shipping_deadline_time)
+    return deadlineDate.toLocaleString()
   }
 
   renderShippingForm() {
@@ -151,7 +159,7 @@ class ItemShipping extends Component {
             </div>
             <div className="field">
               <label htmlFor="field-phone">Phone</label>
-              <input id="field-phone" type="text" className="form-control" placeholder="Phone" />
+              <input id="field-phone" type="text" className="form-control" placeholder="Phone" disabled />
             </div>
           </div>
 
@@ -164,7 +172,7 @@ class ItemShipping extends Component {
               <div className="field">
                 <Input
                   label='Shipping Deadline'
-                  value={this.props.purchase.shipping_deadline}
+                  value={this.renderShippingDeadlineDate()}
                   name='shippingDeadline'
                   type='text'
                   required
@@ -177,6 +185,8 @@ class ItemShipping extends Component {
                   name="shippingCarrier"
                   label="Shipping Carrier"
                   options={carrierOptions}
+                  value={this.state.shippingCarrier}
+                  onChange={this.handleChange.bind(this)}
                   required
                   />
               </div>
@@ -215,7 +225,7 @@ class ItemShipping extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount}/>
+            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
           </div>
         </div>
       </div>
