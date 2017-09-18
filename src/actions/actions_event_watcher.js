@@ -102,7 +102,7 @@ export function watchCancelPurchaseEvent(provider) {
     escrow.deployed().then(instance => {
       instance.PurchaseCancelled().watch(function(error, result) {
         if (!error) {
-          const newLog = `[${result.args.sender}] cancels his purchase of ${Eth.toUtf8(result.args.itemId)}. The transaction is complete.`
+          const newLog = `[${result.args.sender}] cancels order ${Eth.toUtf8(result.args.itemId)}.`
           console.log('[Event - CancelPurchase] : ', newLog)
           var activityCategory = activityCategories.CANCEL_PURCHASE
           var cancelPurchaseState = purchaseState.BUYER_CANCELLED
