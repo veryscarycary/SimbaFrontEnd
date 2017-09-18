@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Form, Input, Textarea } from 'formsy-react-components'
-
-import { createItem, selectItem, updateItem } from '../../actions/actions_items'
+import { selectItem, updateItem } from '../../actions/actions_items'
 import { item } from '../../models/selectors'
 import '../../style/new-listing.css'
 
@@ -29,7 +28,7 @@ class ItemEdit extends Component {
   }
 
   submit(model) {
-    this.props.updateItem(this.state)
+    this.props.updateItem(model, this.props.item.id)
   }
 
   componentWillMount() {
@@ -113,7 +112,7 @@ class ItemEdit extends Component {
           rows={10}
         />
         <div className="form-action">
-          <button type="submit" className="btn-shadow btn-shadow-dark">Create Listing</button>
+          <button type="submit" className="btn-shadow btn-shadow-dark">Update Listing</button>
         </div>
       </Form>
     )
@@ -126,7 +125,7 @@ class ItemEdit extends Component {
           <div className="col-12">
             <div className="ecommerce-form">
               <h1>
-                Create a listing
+                Update listing
               </h1>
               { this.renderForm() }
             </div>
@@ -141,4 +140,4 @@ function mapStateToProps(state) {
   return { item: item(state), provider: state.provider }
 }
 
-export default connect(mapStateToProps, { selectItem })(ItemEdit)
+export default connect(mapStateToProps, { selectItem, updateItem })(ItemEdit)

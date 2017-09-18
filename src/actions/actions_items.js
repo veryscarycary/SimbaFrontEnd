@@ -72,6 +72,24 @@ export function createItem(item_params) {
   }
 }
 
+export function updateItem(item_params, itemId) {
+  return dispatch => {
+    axios.put(`${ITEMS_URL}/${itemId}`, item_params, headers)
+         .then((request) => {
+          const normalizeRequest = normalize(request.data, itemNormalizr)
+          dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
+          dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+          dispatch(setFlashMessage("Item has been successfully updated.", 'success'))
+       }).catch((error) => {
+          if (error.request) {
+            dispatch(setFlashMessage(error.request.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Item couldn't be updated, please try again later.", 'error'))
+          }
+       })
+  }
+}
+
 export function fetchSellerItems(provider, wallet='') {
   return dispatch => {
     let walletId = wallet == '' ? token : wallet
