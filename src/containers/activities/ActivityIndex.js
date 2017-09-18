@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 
 import { activities } from '../../models/selectors'
 
-import '../../style/activity.css'
-
 import { fetchAllActivities } from '../../actions/actions_activities'
 
 class ActivityIndex extends Component {

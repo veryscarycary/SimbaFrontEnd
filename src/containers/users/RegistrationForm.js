@@ -82,7 +82,7 @@ class RegistrationForm extends Component {
           required />
         <div className="checkbox">
           <label>
-            <input type="checkbox" /> I've read & agree with the <a href="#">Terms</a>.
+            <input type="checkbox" /> I've read & agree with the <a href="/">Terms</a>.
           </label>
         </div>
         <div className="form-action">

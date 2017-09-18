@@ -34,7 +34,7 @@ export function setCurrentUser(provider, wallet, authentication_token) {
 export function deleteCurrentUser(provider, wallet) {
   Auth.deleteAll()
 
-  return setCurrentUser(provider, wallet, '')
+  return setCurrentUser(provider, '', '')
 }
 
 export function selectUser(wallet) {
@@ -78,8 +78,8 @@ export function userSignIn(user_params) {
   return dispatch => {
     return axios.post(SIGN_IN_URL, user_params)
            .then((response) => {
-            Auth.setToken(response.data['wallet'])
-            Auth.setWallet(response.data['authentication_token'])
+            Auth.setWallet(response.data['wallet'])
+            Auth.setToken(response.data['authentication_token'])
 
             dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
             dispatch({ type: CREATE_USER, payload: response.data })

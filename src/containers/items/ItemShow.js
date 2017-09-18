@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import Spinner from 'react-spinkit'
 import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
+import { Tabs, Tab } from 'react-bootstrap-tabs'
 
 import ReviewShow from '../reviews/ReviewShow'
 import { selectItem } from '../../actions/actions_items'
@@ -82,29 +83,17 @@ class ItemShow extends Component {
   renderPanels() {
     return (
       <div className="description">
-        <ul className="nav nav-tabs" role="tablist">
-          <li className="nav-item">
-            <a className="nav-link active" href="#description" role="tab" data-toggle="tab">Description</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#details" role="tab" data-toggle="tab">Details</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#requirements" role="tab" data-toggle="tab">Requirements</a>
-          </li>
-        </ul>
-
-        <div className="tab-content">
-          <div role="tabpanel" className="tab-pane active" id="description">
-            <p> { this.props.item.description } </p>
-          </div>
-          <div role="tabpanel" className="tab-pane" id="details">
+        <Tabs>
+          <Tab label="Description">
             <p> { this.props.item.short_description } </p>
-          </div>
-          <div role="tabpanel" className="tab-pane" id="requirements">
+          </Tab>
+          <Tab label="Details">
             <p> { this.props.item.description } </p>
-          </div>
-        </div>
+          </Tab>
+          <Tab label="Requirements">
+            <p> { this.props.item.short_description } </p>
+          </Tab>
+        </Tabs>
       </div>
     )
   }
@@ -112,16 +101,16 @@ class ItemShow extends Component {
   renderSocialMedia() {
     return (
       <div className="share">
-        <a href="#" data-toggle="tooltip" title="Share on Twitter">
+        <a href="/" data-toggle="tooltip" title="Share on Twitter">
           <i className="fa fa-twitter"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Facebook">
+        <a href="/" data-toggle="tooltip" title="Share on Facebook">
           <i className="fa fa-facebook"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Pinterest">
+        <a href="/" data-toggle="tooltip" title="Share on Pinterest">
           <i className="fa fa-pinterest"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Google Plus">
+        <a href="/" data-toggle="tooltip" title="Share on Google Plus">
           <i className="fa fa-google-plus"></i>
         </a>
       </div>
@@ -145,7 +134,7 @@ class ItemShow extends Component {
         { this.renderItemPrice() }
         { this.renderPanels() }
 
-        <form action="#">
+        <form action="/">
           <div className="variants">
             <div className="variant">
               <label className="label-variant-colors">
@@ -233,8 +222,8 @@ class ItemShow extends Component {
         <div className="store-filters">
           <div className="container clearfix">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="#">Home</a></li>
-              <li className="breadcrumb-item"><a href="#">Collection for Women</a></li>
+              <li className="breadcrumb-item"><a href="/">Home</a></li>
+              <li className="breadcrumb-item"><a href="/">Collection for Women</a></li>
               <li className="breadcrumb-item active">{ this.props.item.name }</li>
             </ol>
           </div>

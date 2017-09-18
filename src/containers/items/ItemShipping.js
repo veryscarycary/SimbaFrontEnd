@@ -10,10 +10,10 @@ import { sendCode } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
 import { item, purchase, current_user, user } from '../../models/selectors'
 
-import '../../style/purchase-shipping.css'
+import '../../style/item-shipping.css'
 
 
-class PurchaseShipping extends Component {
+class ItemShipping extends Component {
   constructor(props) {
     super(props)
 
@@ -237,4 +237,4 @@ function mapStateToProps(state) {
   return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state), user: user(state) }
 }
 
-export default connect(mapStateToProps, { selectPurchase, sendCode })(PurchaseShipping)
+export default connect(mapStateToProps, { selectPurchase, sendCode })(ItemShipping)

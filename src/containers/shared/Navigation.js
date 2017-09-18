@@ -77,8 +77,8 @@ class Navigation extends Component {
                   </a>
                   <div className="dropdown-menu dropdown-menu-dark" role="menu">
                     <span className="dropdown-header">My Profile</span>
-                    <a className="dropdown-item" href="#">Information</a>
-                    <a className="dropdown-item" href="#" onClick={(event) => this.signOut(event)}>Sign out</a>
+                    <a className="dropdown-item" href="/">Information</a>
+                    <a className="dropdown-item" href="/" onClick={(event) => this.signOut(event)}>Sign out</a>
 
                     <span className="dropdown-header">Purchases</span>
                     <Link className="dropdown-item" to='/purchases'>Order History</Link>
@@ -90,7 +90,7 @@ class Navigation extends Component {
 
                     <span className="dropdown-header">Admin</span>
                     <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
-                    <a className="dropdown-item"  href="#" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
+                    <a className="dropdown-item"  href="/" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
                   </div>
                 </div>
               </li>
@@ -118,7 +118,7 @@ class Navigation extends Component {
       <li className={`nav-item dropdown ${this.state.isLink2Hovered ? 'show' : ''}`}
           onMouseEnter={() => this.setState({ isLink2Hovered: !this.state.isLink2Hovered })}
           onMouseLeave={() => this.setState({ isLink2Hovered: !this.state.isLink2Hovered })} >
-        <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+        <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
           Home
           <i className="ion-chevron-down"></i>
         </a>
@@ -130,7 +130,7 @@ class Navigation extends Component {
     return (
       <div className="section-menu clearfix">
         <nav className="navbar navbar-expand-lg navbar-light" role="navigation">
-          <button className="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+          <button className="navbar-toggler" data-toggle="collapse" data-target="/navbar-collapse">
             <span className="navbar-toggler-icon"></span>
           </button>
 
@@ -140,7 +140,7 @@ class Navigation extends Component {
               <li className={`nav-item dropdown ${this.state.isLink1Hovered ? 'show' : ''}`}
                   onMouseEnter={() => this.setState({ isLink1Hovered: !this.state.isLink1Hovered })}
                   onMouseLeave={() => this.setState({ isLink1Hovered: !this.state.isLink1Hovered })} >
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+                <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
                   Clothes
                   <i className="ion-chevron-down"></i>
                 </a>
@@ -167,13 +167,13 @@ class Navigation extends Component {
               <li className={`nav-item dropdown ${this.state.isLink3Hovered ? 'show' : ''}`}
                   onMouseEnter={() => this.setState({ isLink3Hovered: !this.state.isLink3Hovered })}
                   onMouseLeave={() => this.setState({ isLink3Hovered: !this.state.isLink3Hovered })} >
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+                <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
                   Electronics
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu" role="menu">
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       About us
                       <i className="ion-chevron-right"></i>
                     </a>
@@ -183,7 +183,7 @@ class Navigation extends Component {
                     </div>
                   </div>
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       Portfolio
                       <i className="ion-chevron-right"></i>
                     </a>
@@ -194,7 +194,7 @@ class Navigation extends Component {
                     </div>
                   </div>
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       Contact
                       <i className="ion-chevron-right"></i>
                     </a>
@@ -224,7 +224,7 @@ class Navigation extends Component {
               <li className={`nav-item dropdown dropdown-extend ${this.state.isLink4Hovered ? 'show' : ''}`}
                   onMouseEnter={() => this.setState({ isLink4Hovered: !this.state.isLink4Hovered })}
                   onMouseLeave={() => this.setState({ isLink4Hovered: !this.state.isLink4Hovered })} >
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+                <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
                   Services
                   <i className="ion-chevron-down"></i>
                 </a>
@@ -270,13 +270,13 @@ class Navigation extends Component {
               <li className={`nav-item dropdown ${this.state.isLink5Hovered ? 'show' : ''}`}
                   onMouseEnter={() => this.setState({ isLink5Hovered: !this.state.isLink5Hovered })}
                   onMouseLeave={() => this.setState({ isLink5Hovered: !this.state.isLink5Hovered })} >
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+                <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
                   Ticket
                   <i className="ion-chevron-down"></i>
                 </a>
                 <div className="dropdown-menu" role="menu">
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       Headers
                       <i className="ion-chevron-right"></i>
                     </a>
@@ -298,37 +298,37 @@ class Navigation extends Component {
                     </div>
                   </div>
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       Footers
                       <i className="ion-chevron-right"></i>
                     </a>
                     <div className="dropdown-menu">
-                      <a className="dropdown-item" href="../header-light.html#footer">Dark</a>
-                      <a className="dropdown-item" href="../footer-light.html#footer">Light</a>
-                      <a className="dropdown-item" href="../footer-big-menu.html#footer">Big Menu</a>
-                      <a className="dropdown-item" href="../footer-sign-up.html#footer">Sign up</a>
-                      <a className="dropdown-item" href="../footer-agency.html#footer">Agency</a>
+                      <a className="dropdown-item" href="../header-light.html/footer">Dark</a>
+                      <a className="dropdown-item" href="../footer-light.html/footer">Light</a>
+                      <a className="dropdown-item" href="../footer-big-menu.html/footer">Big Menu</a>
+                      <a className="dropdown-item" href="../footer-sign-up.html/footer">Sign up</a>
+                      <a className="dropdown-item" href="../footer-agency.html/footer">Agency</a>
                     </div>
                   </div>
                   <div className="dropdown dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a className="dropdown-item dropdown-toggle" href="/" data-toggle="dropdown">
                       Email templates
                       <i className="ion-chevron-right"></i>
                     </a>
                     <div className="dropdown-menu">
-                      <a className="dropdown-item" href="../email-template-newsletter.html" target="_blank">
+                      <a className="dropdown-item" href="../email-template-newsletter.html" target="_blank" rel="noreferrer noopener">
                         Newsletter
                         <i className="ion-share"></i>
                       </a>
-                      <a className="dropdown-item" href="../email-template-receipt.html" target="_blank">
+                      <a className="dropdown-item" href="../email-template-receipt.html" target="_blank" rel="noreferrer noopener">
                         Receipt
                         <i className="ion-share"></i>
                       </a>
-                      <a className="dropdown-item" href="../email-template-announcement.html" target="_blank">
+                      <a className="dropdown-item" href="../email-template-announcement.html" target="_blank" rel="noreferrer noopener">
                         Simple announcement
                         <i className="ion-share"></i>
                       </a>
-                      <a className="dropdown-item" href="../email-template-text.html" target="_blank">
+                      <a className="dropdown-item" href="../email-template-text.html" target="_blank" rel="noreferrer noopener">
                         Formal text
                         <i className="ion-share"></i>
                       </a>
@@ -342,7 +342,7 @@ class Navigation extends Component {
               <li className={`nav-item dropdown ${this.state.isLink6Hovered ? 'show' : ''}`}
                   onMouseEnter={() => this.setState({ isLink6Hovered: !this.state.isLink6Hovered })}
                   onMouseLeave={() => this.setState({ isLink6Hovered: !this.state.isLink6Hovered })} >
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">
+                <a href="/" className="nav-link dropdown-toggle" data-toggle="dropdown">
                   Getaway
                   <i className="ion-chevron-down"></i>
                 </a>

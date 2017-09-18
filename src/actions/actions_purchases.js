@@ -5,8 +5,8 @@ import { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } fro
 
 import { setFlashMessage } from './actions_flash_messages'
 import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
-import { CREATE_USERS } from './actions_users'
-import { CREATE_ITEMS } from './actions_items'
+import { CREATE_USERS, SELECT_USER } from './actions_users'
+import { CREATE_ITEMS, SELECT_ITEM } from './actions_items'
 
 import { purchasesNormalizr, purchaseNormalizr } from '../models/normalizr'
 
@@ -51,13 +51,19 @@ export function createPurchase(item, finalPrice, provider) {
 }
 
 // Get one purchase information
-export function fetchPurchase(purchaseId) {
+export function selectPurchase(provider, purchaseId) {
   return dispatch => {
     axios.get(`${PURCHASES_URL}/${purchaseId}`, headers)
          .then((request) => {
             const normalizeRequest = normalize(request.data, purchaseNormalizr)
             dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
+            dispatch({ type: CREATE_ITEMS, payload: normalizeRequest.entities.items })
+            dispatch({ type: CREATE_USERS, payload: normalizeRequest.entities.users })
             dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
+            dispatch({ type: SELECT_ITEM, payload: request.data.item.id} )
+            dispatch({ type: SELECT_USER, payload: request.data.buyer.wallet })
+            dispatch(fetchPurchaseState(request.data, provider))
+            dispatch(fetchPurchaseTimes(request.data, provider))
          })
   }
 }

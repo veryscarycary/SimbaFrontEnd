@@ -47,7 +47,6 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
 // Code can be a tracking number, a digital code, a coupon
 // State of the purchase : "SHIPPED"
 export function sendCode(purchaseId, code, provider) {
-  console.log('enter sendCode')
   const escrow = contract(escrowJSON)
   escrow.setProvider(provider.eth.currentProvider)
 
@@ -59,7 +58,6 @@ export function sendCode(purchaseId, code, provider) {
                         .then(transaction => {
                           dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_SHIPPED } })
                       }).catch(error => {
-                          dispatch(setFlashMessage("Error: Sending Tracking Number failed.. please try again later.", 'error'))
                           dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
                       })
       })
@@ -154,7 +152,7 @@ export function fetchPurchaseTimes(purchase, provider) {
                   dispatch({
                     type: UPDATE_PURCHASE,
                     payload: {
-                      shipping_deadline: transaction[0].valueOf(),
+                      shipping_deadline_time: transaction[0].valueOf(),
                       purchased_time: transaction[1].valueOf(),
                       shipped_time: transaction[2].valueOf(),
                       cancel_time: transaction[3].valueOf(),

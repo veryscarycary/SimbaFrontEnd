@@ -22,3 +22,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # because we generate .css out of .scss files
+src/style/*.css

@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
-import Spinner from 'react-spinkit'
-import Rating from 'react-rating'
 import { Link } from 'react-router-dom'
 
-import ReviewShow from '../reviews/ReviewShow'
+import PurchaseSummary from '../purchases/PurchaseSummary'
+
 import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
@@ -53,19 +51,6 @@ class ItemCheckOut extends Component {
   purchaseItem(event) {
     event.preventDefault()
     this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
-  }
-
-  renderDiscount() {
-    if (!this.props.item.discount || this.props.item.discount === 0) {
-      return <div></div>
-    }
-    const discountedPrice = this.props.item.price * (this.props.item.discount / 100)
-    return (
-      <div className="detail clearfix">
-        <p>Discount</p>
-        <span>- { discountedPrice } ETH</span>
-      </div>
-    )
   }
 
   renderPurchaseConfirmation() {
@@ -123,6 +108,8 @@ class ItemCheckOut extends Component {
         return this.renderPurchaseConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorPurchase()
+      case purchaseState.PENDING_PURCHASED:
+        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -207,55 +194,12 @@ class ItemCheckOut extends Component {
           </div>
 
           <div className="text-right">
-            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
+            <a href="/" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
               Place Order
               <i className="ion-chevron-right"></i>
             </a>
           </div>
         </section>
-      </div>
-    )
-  }
-
-  renderOrderSummary() {
-    return (
-      <div className="col-md-6">
-        <div id="checkout-cart-summary" className="clearfix float-right">
-          <h3>Order Summary</h3>
-          <div className="line-items">
-            <div className="item clearfix">
-              <div className="pic">
-                <img src={ this.props.item.picture } className="img-responsive" />
-              </div>
-              <div className="details">
-                <span className="name">
-                  { this.props.item.name }
-                </span>
-                <span className="variant">
-                  Ship within { this.props.item.shipping_deadline } days
-                </span>
-              </div>
-              <div className="price float-right">
-                { this.props.item.price } ETH
-              </div>
-            </div>
-          </div>
-          <div className="price-details">
-            { this.renderDiscount() }
-            <div className="detail clearfix">
-              <p>Shipping</p>
-              <span>{ this.props.item.shipping_fee } ETH</span>
-            </div>
-            <div className="detail clearfix">
-              <p>Taxes</p>
-              <span>$15.00</span>
-            </div>
-            <div className="total-price clearfix">
-              <p>Total payment</p>
-              <span>{ this.state.finalPrice } ETH</span>
-            </div>
-          </div>
-        </div>
       </div>
     )
   }
@@ -269,7 +213,7 @@ class ItemCheckOut extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            { this.renderOrderSummary() }
+            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice} purchase={this.props.purchase} />
           </div>
         </div>
       </div>

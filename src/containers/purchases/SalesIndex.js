@@ -1,26 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Panel, Button } from 'react-bootstrap'
+import { Tabs, Tab } from 'react-bootstrap-tabs'
 import Timestamp from 'react-timestamp'
 
-import '../../style/purchase.css'
+import '../../style/purchases-collection.css'
 
-import { cancelPurchase } from '../../actions/actions_contract'
 import { fetchAllPurchases } from '../../actions/actions_purchases'
+import { cancelPurchase } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
 
 import { pendingSales, completedSales } from '../../models/selectors'
 
 class SalesIndex extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      code: ''
-    }
-  }
-
   componentWillMount() {
     if (this.props.provider.eth) {
       this.props.fetchAllPurchases(this.props.provider, false)
@@ -33,101 +25,145 @@ class SalesIndex extends Component {
     }
   }
 
-  renderPurchasesActions(purchase) {
-    switch(purchase.purchaseState) {
+  renderSaleState(sale) {
+    switch(sale.purchaseState) {
       case purchaseState.PENDING_CANCELLED:
-        return <Button bsSize="small" block disabled>Pending Cancel</Button>
+        return <span className="badge badge-warning">Cancelling...</span>
       case purchaseState.PENDING_PURCHASED:
-        return <Button bsSize="small" block disabled>Pending Transaction</Button>
-      case purchaseState.PENDING_SHIPPED:
-        return <Button bsSize="small" block disabled>Pending Shipping</Button>
+        return <span className="badge badge-warning">Purchasing...</span>
       case purchaseState.PURCHASED:
-        return (
-          <div>
-            <Link to={`/purchases/shipping/${purchase.id}`}><Button bsSize="small" block>Send Tracking Number</Button></Link>
-            <Button bsSize='small' block onClick={() => this.props.cancelPurchase(purchase.id, this.props.provider)}>Cancel Transaction</Button>
-          </div>
-          )
+        return <span className="badge badge-info">Wait for Shipping...</span>
       case purchaseState.SHIPPED:
-        return <Button bsSize="small" block disabled>Awaiting Confirmation</Button>
+        return <span className="badge badge-info">Shipped</span>
       case purchaseState.COMPLETED:
-        return <Button bsSize="small" block disabled>Sales Complete</Button>
-      case purchaseState.ERROR:
-        return <Button bsSize="small" block disabled>Transaction Error</Button>
+        return <span className="badge badge-success">Delivered & Confirmed</span>
       case purchaseState.BUYER_CANCELLED:
-        return <Button bsSize="small" block disabled>Purchase Cancelled By Buyer</Button>
+        return <span className="badge badge-warning">Cancelled</span>
       case purchaseState.SELLER_CANCELLED:
-        return <Button bsSize="small" block disabled>Purchase Cancelled By Seller</Button>
+        return <span className="badge badge-warning">Cancelled by Seller</span>
+      case purchaseState.SELLER_SHIPPING_TIMEOUT:
+        return <span className="badge badge-warning">Cancelled (Not Shipped)</span>
+      case purchaseState.BUYER_CONFIRMATION_TIMEOUT:
+        return <span className="badge badge-success">Confirmed (Auto)</span>
+      case purchaseState.ERROR:
+        return <span className="badge badge-danger">Error</span>
       default:
-        return <div></div>
+        return <span></span>
     }
   }
 
-  renderTime(label, time) {
-    if (time == 0) {
-      return <div></div>
+  renderSaleAction(sale) {
+    switch(sale.purchaseState) {
+      case purchaseState.PURCHASED:
+        return (
+          <td>
+            <Link to={`/purchases/${sale.id}/cancel`}>
+              <button className="btn btn-outline-secondary btn-sm">Cancel</button>
+            </Link>
+            <Link to={`/purchases/${sale.id}/shipping`}>
+              <button className="btn btn-outline-success btn-sm">Ship Item</button>
+            </Link>
+          </td>
+        )
+      default:
+        return null
     }
+  }
+
+  renderTime(sale) {
+    const time = sale.purchased_time || sale.created_at
     return (
       <div>
-        {label} : <Timestamp time={time} format='full' includeDay />
+        <Timestamp time={time} format='full' includeDay />
       </div>
     )
   }
 
-  renderPurchases(isPending) {
-    const _purchases = (isPending ? this.props.pendingSales : this.props.completedSales)
-    let purchases = _purchases.map((purchase) => {
+  renderSales(isActive) {
+    const _sales = (isActive ? this.props.pendingSales : this.props.completedSales)
+    let salesRows = _sales.map((sale) => {
       return (
-        <div key={purchase.id}>
-          {
-            purchase.purchaseState !== purchaseState.ERROR ? (
-              <Panel header={`Order ${purchase.id}`}>
-                <div className='pure-g one-purchase'>
-                  <div className='pure-u-1 pure-u-md-1-5'>
-                    <Link to={`/items/${purchase.item.id}`}><img src={purchase.item.picture} alt={purchase.item.name} /></Link>
-                  </div>
-                  <div className='pure-u-1 pure-u-md-3-5'>
-                    <Link to={`/items/${purchase.item.id}`}>{ purchase.item.name }</Link> <br/>
-                    <strong>Ship Before : <Timestamp time={purchase.shipping_deadline} format='full' includeDay /></strong><br />
-                    { purchase.item.short_description }<br/>
-                    <span className='text-danger'><strong>{ purchase.amount } ETH</strong></span>
-                    <hr/>
-                    <div>
-                      <strong>History</strong><br/>
-                      { this.renderTime('Purchased', purchase.purchased_time) }
-                      { this.renderTime('Shipped', purchase.shipped_time) }
-                      { this.renderTime('Cancelled', purchase.cancel_time) }
-                      { this.renderTime('Timeout', purchase.timeout_time) }
-                      { this.renderTime('Completed', purchase.completed_time) }
-                    </div>
-                  </div>
-                  <div className='pure-u-1 pure-u-md-1-5'>
-                    { this.renderPurchasesActions(purchase) }
-                  </div>
-                </div>
-              </Panel>
-              ) : null
-          }
-        </div>
+        <tr key={sale.id}>
+          <td>{ sale.id }</td>
+          <td>{ this.renderTime(sale) }</td>
+          <td>
+            <a href="product.html" className="product-img">
+              <img src={ sale.item.picture } alt={ sale.item.name } />
+            </a>
+          </td>
+          <td>{ sale.amount } ETH</td>
+          <td>{ this.renderSaleState(sale) }</td>
+          { isActive ? this.renderSaleAction(sale) : null }
+        </tr>
       )
     })
 
-    return purchases
+    return (
+      <table className="table wishlist-table table-responsive">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Purchase Date</th>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Status</th>
+            { isActive ? <th>Action</th> : null }
+          </tr>
+        </thead>
+        <tbody>
+          { salesRows }
+        </tbody>
+      </table>
+    )
+  }
+
+  renderTabs() {
+    return (
+      <Tabs>
+        <Tab label="Active Sales">
+          <div className="tab-header clearfix">
+            <h4 className="float-left">
+              Active Sales
+            </h4>
+            <select className="custom-select float-right">
+              <option>Last 6 months</option>
+              <option>Last 3 months</option>
+              <option>All sales</option>
+            </select>
+          </div>
+          { this.renderSales(true) }
+        </Tab>
+        <Tab label="Complete Sales">
+          <div className="tab-header clearfix">
+            <h4 className="float-left">
+              Complete Sales
+            </h4>
+            <select className="custom-select float-right">
+              <option>Last 6 months</option>
+              <option>Last 3 months</option>
+              <option>All sales</option>
+            </select>
+          </div>
+          { this.renderSales(false) }
+        </Tab>
+      </Tabs>
+    )
   }
 
   render() {
     return (
-      <div className="pure-g list-purchases">
-        <div className='pure-u-1'>
-          <ul>
-            <h3 className='title'>Pending Sales</h3>
-            <div className='title-divider'></div>
-            { this.props.pendingSales ? this.renderPurchases(true) : '' }
-            <hr/>
-            <h3 className='title'>Finalized Sales</h3>
-            <div className='title-divider'></div>
-            { this.props.completedSales ? this.renderPurchases(false) : '' }
-          </ul>
+      <div className="account-page">
+        <div className="container">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <a href="/">Home</a>
+            </li>
+            <li className="breadcrumb-item active">Sales history</li>
+          </ol>
+
+          <div className="account-wrapper">
+            { this.renderTabs() }
+          </div>
         </div>
       </div>
     )

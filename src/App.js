@@ -25,11 +25,10 @@ import ItemShow from './containers/items/ItemShow'
 import ItemCheckOut from './containers/items/ItemCheckOut'
 
 // Purchase Containers
-import PurchaseInitialize from './containers/purchases/PurchaseInitialize'
-import PurchaseConfirmation from './containers/purchases/PurchaseConfirmation'
-import PurchaseShipping from './containers/purchases/PurchaseShipping'
 import PurchaseIndex from './containers/purchases/PurchaseIndex'
 import SalesIndex from './containers/purchases/SalesIndex'
+import PurchaseShipping from './containers/purchases/PurchaseShipping'
+import PurchaseCancel from './containers/purchases/PurchaseCancel'
 
 // Activities Containers
 import ActivityIndex from './containers/activities/ActivityIndex'
@@ -93,16 +92,16 @@ class App extends Component {
             <Route exact path='/items/:item_id' component={ItemShow} />
             <Route exact path='/items' component={ItemIndex} />
             <Route auth exact path='/items/:item_id/checkout' component={ItemCheckOut} />
-            <Route auth exact path='/items/:item_id/edit' component={ItemEdit} />
-            <Route auth exact path='/my_items' component={SellerItemsIndex} />
 
-            <Route auth exact path='/purchases/initialize/:purchase_id' component={PurchaseInitialize} />
-            <Route auth exact path='/purchases/shipping/:purchase_id' component={PurchaseShipping} />
-            <Route auth exact path='/purchases/confirmation/:purchase_id' component={PurchaseConfirmation} />
             <Route auth exact path='/purchases' component={PurchaseIndex} />
             <Route auth exact path='/sales' component={SalesIndex} />
+            <Route auth exact path='/purchases/:purchase_id/shipping' component={PurchaseShipping} />
+            <Route auth exact path='/purchases/:purchase_id/cancel' component={PurchaseCancel} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
+
+            <Route auth exact path='/items/:item_id/edit' component={ItemEdit} />
+            <Route auth exact path='/my_items' component={SellerItemsIndex} />
           </section>
           <section className='footer'>
             <Footer />
