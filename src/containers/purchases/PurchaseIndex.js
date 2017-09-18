@@ -38,7 +38,7 @@ class PurchaseIndex extends Component {
       case purchaseState.COMPLETED:
         return <span className="badge badge-success">Delivered & Confirmed</span>
       case purchaseState.BUYER_CANCELLED:
-        return <span className="badge badge-warning">Cancelled</span>
+        return <span className="badge badge-warning">Cancelled by Buyer</span>
       case purchaseState.SELLER_CANCELLED:
         return <span className="badge badge-warning">Cancelled by Seller</span>
       case purchaseState.SELLER_SHIPPING_TIMEOUT:
@@ -58,10 +58,9 @@ class PurchaseIndex extends Component {
       case purchaseState.PURCHASED:
         return (
           <td>
-            <button className="btn btn-outline-secondary btn-sm"
-                    onClick={() => this.props.cancelPurchase(purchase.id, this.props.provider)}>
-              Cancel
-            </button>
+            <Link to={`/purchases/${purchase.id}/cancel`}>
+              <button className="btn btn-outline-secondary btn-sm">Cancel</button>
+            </Link>
           </td>
         )
       case purchaseState.SHIPPED:

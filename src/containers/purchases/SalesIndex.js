@@ -57,11 +57,10 @@ class SalesIndex extends Component {
       case purchaseState.PURCHASED:
         return (
           <td>
-            <button className="btn btn-outline-secondary btn-sm"
-                    onClick={() => this.props.cancelPurchase(sale.id, this.props.provider)}>
-              Cancel
-            </button>
-            <Link to={`/${sale.id}/shipping`}>
+            <Link to={`/purchases/${sale.id}/cancel`}>
+              <button className="btn btn-outline-secondary btn-sm">Cancel</button>
+            </Link>
+            <Link to={`/purchases/${sale.id}/shipping`}>
               <button className="btn btn-outline-success btn-sm">Ship Item</button>
             </Link>
           </td>
