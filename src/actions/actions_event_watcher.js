@@ -56,7 +56,6 @@ export function watchShippingEvent(provider) {
           )
           dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SHIPPED}})
         } else {
-          console.log(error)
           dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
         }
       })

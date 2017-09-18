@@ -101,16 +101,16 @@ class ItemShow extends Component {
   renderSocialMedia() {
     return (
       <div className="share">
-        <a href="#" data-toggle="tooltip" title="Share on Twitter">
+        <a href="/" data-toggle="tooltip" title="Share on Twitter">
           <i className="fa fa-twitter"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Facebook">
+        <a href="/" data-toggle="tooltip" title="Share on Facebook">
           <i className="fa fa-facebook"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Pinterest">
+        <a href="/" data-toggle="tooltip" title="Share on Pinterest">
           <i className="fa fa-pinterest"></i>
         </a>
-        <a href="#" data-toggle="tooltip" title="Share on Google Plus">
+        <a href="/" data-toggle="tooltip" title="Share on Google Plus">
           <i className="fa fa-google-plus"></i>
         </a>
       </div>
@@ -134,7 +134,7 @@ class ItemShow extends Component {
         { this.renderItemPrice() }
         { this.renderPanels() }
 
-        <form action="#">
+        <form action="/">
           <div className="variants">
             <div className="variant">
               <label className="label-variant-colors">
@@ -222,8 +222,8 @@ class ItemShow extends Component {
         <div className="store-filters">
           <div className="container clearfix">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="#">Home</a></li>
-              <li className="breadcrumb-item"><a href="#">Collection for Women</a></li>
+              <li className="breadcrumb-item"><a href="/">Home</a></li>
+              <li className="breadcrumb-item"><a href="/">Collection for Women</a></li>
               <li className="breadcrumb-item active">{ this.props.item.name }</li>
             </ol>
           </div>

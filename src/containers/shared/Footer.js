@@ -14,19 +14,19 @@ class Footer extends Component {
               </div>
               <ul className="menu">
                 <li>
-                  <a href="#">Clothes</a>
+                  <a href="/">Clothes</a>
                 </li>
                 <li>
-                  <a href="#">Electronics</a>
+                  <a href="/">Electronics</a>
                 </li>
                 <li>
-                  <a href="#">Services</a>
+                  <a href="/">Services</a>
                 </li>
                 <li>
-                  <a href="#">Ticket</a>
+                  <a href="/">Ticket</a>
                 </li>
                 <li>
-                  <a href="#">Getaway</a>
+                  <a href="/">Getaway</a>
                 </li>
               </ul>
             </div>
@@ -36,25 +36,25 @@ class Footer extends Component {
               </div>
               <ul className="menu">
                 <li>
-                  <a href="#">
+                  <a href="/">
                     <i className="fa fa-instagram"></i>
                     Instagram
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="/">
                     <i className="fa fa-twitter"></i>
                     Twitter
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="/">
                     <i className="fa fa-slack"></i>
                     Slack
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="/">
                     <i className="fa fa-facebook"></i>
                     Facebook
                   </a>
@@ -84,8 +84,8 @@ class Footer extends Component {
               © 2017 Simba LLC
             </span>
             <div className="payment-methods">
-              <img src={require('../../images/bitcoin-logo.png')} />
-              <img src={require('../../images/ethereum-logo.png')} />
+              <img src={require('../../images/bitcoin-logo.png')} alt="Bitcoin" />
+              <img src={require('../../images/ethereum-logo.png')} alt="Ethereum" />
 
             </div>
           </div>

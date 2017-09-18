@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import PurchaseSummary from '../purchases/PurchaseSummary'
@@ -109,6 +108,8 @@ class ItemCheckOut extends Component {
         return this.renderPurchaseConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorPurchase()
+      case purchaseState.PENDING_PURCHASED:
+        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -193,7 +194,7 @@ class ItemCheckOut extends Component {
           </div>
 
           <div className="text-right">
-            <a href="#" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
+            <a href="/" className="checkout-btn-next-step" onClick={(event) => this.purchaseItem(event)}>
               Place Order
               <i className="ion-chevron-right"></i>
             </a>
@@ -212,7 +213,7 @@ class ItemCheckOut extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice}/>
+            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice} purchase={this.props.purchase} />
           </div>
         </div>
       </div>
