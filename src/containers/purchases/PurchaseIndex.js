@@ -66,10 +66,10 @@ class PurchaseIndex extends Component {
       case purchaseState.SHIPPED:
         return (
           <td>
-            <Link to={`/purchases/confirmation/${purchase.id}`}>
+            <Link to={`/purchases/${purchase.id}/confirm`}>
               <button className="btn btn-outline-info btn-sm">Track Package</button>
             </Link>
-            <Link to={`/purchases/confirmation/${purchase.id}`}>
+            <Link to={`/purchases/${purchase.id}/confirm`}>
               <button className="btn btn-outline-success btn-sm">Confirm</button>
             </Link>
           </td>

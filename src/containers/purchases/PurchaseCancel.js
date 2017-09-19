@@ -54,7 +54,7 @@ class PurchaseCancel extends Component {
             <header>
               <i className="ion-ios-close-outline"></i>
               <h1>
-                An error occured. Your shipping number hasn't been sent.
+                An error occured while trying to cancel this order.
               </h1>
             </header>
             <p>
