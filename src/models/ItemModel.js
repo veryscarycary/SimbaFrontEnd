@@ -53,4 +53,3 @@ Item.defaultProps = {
     number_rating: 0,
     number_reviews: 0
 };
-

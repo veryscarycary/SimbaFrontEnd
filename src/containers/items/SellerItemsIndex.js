@@ -21,36 +21,56 @@ class SellerItemsIndex extends Component {
   }
 
   renderItems() {
+    const _items = (this.props.sellerItems ? this.props.sellerItems : '')
+    let itemRows = _items.map((item) => {
       return (
-        <table className='pure-u-1 pure-u-md-1-3'>
-          <thead>
-            <tr>
-              <th>Item ID</th>
-              <th>Item Name</th>
-              <th>Item Picture</th>
-              <th>Item Sales #</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.sellerItems.map((item) => {
-              return(
-              <tr key={item.id}>
-              <Link to={`/items/${item.id}/edit`}><td>{item.id}</td></Link>
-              <td>{item.name}</td>
-              <td><img src={ item.picture } alt={ item.name } style={{width: '40%'}} /></td>
-              <td>{item.sales} sold</td>
-              </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <tr key={item.id}>
+          <td><Link to={`/items/${item.id}/edit`}>{item.id}</Link></td>
+          <td>
+            <a href="product.html" className="product-img">
+              <img src={ item.picture } alt={ item.name } />
+            </a>
+          </td>
+          <td>{item.name}</td>
+          <td>{item.price} ETH</td>
+          <td>{item.sales} sold</td>
+        </tr>
       )
+    })
+
+    return (
+      <table className="table wishlist-table table-responsive">
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Item Picture</th>
+            <th>Item Name</th>
+            <th>Price</th>
+            <th># Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          { itemRows }
+        </tbody>
+      </table>
+    )
   }
 
   render() {
     return (
-      <div className="pure-g list-items">
-        { this.props.sellerItems ? this.renderItems() : '' }
+      <div className="account-page">
+        <div className="container">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <a href="/">Home</a>
+            </li>
+            <li className="breadcrumb-item active">My Items</li>
+          </ol>
+
+          <div className="account-wrapper">
+            { this.renderItems() }
+          </div>
+        </div>
       </div>
     )
   }

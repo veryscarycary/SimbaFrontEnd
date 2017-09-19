@@ -29,6 +29,7 @@ class ItemEdit extends Component {
 
   submit(model) {
     this.props.updateItem(model, this.props.item.id)
+    this.props.history.push('/my_items')
   }
 
   componentWillMount() {
