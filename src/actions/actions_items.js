@@ -17,7 +17,7 @@ export const UPDATE_ITEM = 'UPDATE_ITEM'
 
 export function fetchAllItems(provider) {
   return dispatch => {
-    axios.get(ITEMS_URL, headers)
+    return axios.get(ITEMS_URL, headers)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -56,7 +56,7 @@ export function selectItem(provider, itemId) {
 
 export function createItem(item_params) {
   return dispatch => {
-    axios.post(ITEMS_URL, item_params, headers)
+    return axios.post(ITEMS_URL, item_params, headers)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -74,7 +74,7 @@ export function createItem(item_params) {
 
 export function updateItem(item_params, itemId) {
   return dispatch => {
-    axios.put(`${ITEMS_URL}/${itemId}`, item_params, headers)
+    return axios.put(`${ITEMS_URL}/${itemId}`, item_params, headers)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
