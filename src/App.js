@@ -28,6 +28,7 @@ import SalesIndex from './containers/purchases/SalesIndex'
 import PurchaseShipping from './containers/purchases/PurchaseShipping'
 import PurchaseCancel from './containers/purchases/PurchaseCancel'
 import PurchaseConfirm from './containers/purchases/PurchaseConfirm'
+import PurchaseReceipt from './containers/purchases/PurchaseReceipt'
 
 // Activities Containers
 import ActivityIndex from './containers/activities/ActivityIndex'
@@ -97,6 +98,7 @@ class App extends Component {
             <Route auth exact path='/purchases/:purchase_id/shipping' component={PurchaseShipping} />
             <Route auth exact path='/purchases/:purchase_id/cancel' component={PurchaseCancel} />
             <Route auth exact path='/purchases/:purchase_id/confirm' component={PurchaseConfirm} />
+            <Route auth exact path='/purchases/:purchase_id/receipt' component={PurchaseReceipt} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
           </section>
