@@ -87,9 +87,9 @@ class SalesIndex extends Component {
           <td>{ sale.id }</td>
           <td>{ this.renderTime(sale) }</td>
           <td>
-            <a href="product.html" className="product-img">
+            <Link to={`/items/${sale.item.id}`} className="product-img">
               <img src={ sale.item.picture } alt={ sale.item.name } />
-            </a>
+            </Link>
           </td>
           <td>{ sale.amount } ETH</td>
           <td>{ this.renderSaleState(sale) }</td>

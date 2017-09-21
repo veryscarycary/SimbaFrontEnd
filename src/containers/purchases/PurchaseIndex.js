@@ -93,12 +93,12 @@ class PurchaseIndex extends Component {
     let purchasesRows = _purchases.map((purchase) => {
       return (
         <tr key={purchase.id}>
-          <td>{ purchase.id }</td>
+          <td><Link to={`/purchases/${purchase.id}/receipt`}>{ purchase.id }</Link></td>
           <td>{ this.renderTime(purchase) }</td>
           <td>
-            <a href="product.html" className="product-img">
+            <Link to={`/items/${purchase.item.id}`} className="product-img">
               <img src={ purchase.item.picture } alt={ purchase.item.name } />
-            </a>
+            </Link>
           </td>
           <td>{ purchase.amount } ETH</td>
           <td>{ this.renderPurchaseState(purchase) }</td>
