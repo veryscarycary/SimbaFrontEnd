@@ -30,7 +30,7 @@ class RegistrationForm extends Component {
   submit(model) {
     var user_params = { user: { ...this.state, wallet: this.props.current_user.wallet } }
 
-    this.props.userRegistration(this.props.provider, user_params)
+    this.props.userRegistration(user_params)
       .then(() => this.props.history.push(this.props.nextRoute))
   }
 

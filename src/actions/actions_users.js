@@ -21,7 +21,7 @@ export function fetchBalance(provider, wallet) {
   }
 }
 
-export function setCurrentUser(provider, wallet, authentication_token) {
+export function setCurrentUser(wallet, authentication_token) {
   return dispatch => {
     Auth.setWallet(wallet)
     Auth.setToken(authentication_token)
@@ -30,10 +30,10 @@ export function setCurrentUser(provider, wallet, authentication_token) {
   }
 }
 
-export function deleteCurrentUser(provider, wallet) {
+export function deleteCurrentUser(wallet) {
   Auth.deleteAll()
 
-  return setCurrentUser(provider, '', '')
+  return setCurrentUser('', '')
 }
 
 export function selectUser(wallet) {
@@ -51,11 +51,11 @@ export function fetchAllUsers() {
   }
 }
 
-export function userRegistration(user_params, provider) {
+export function userRegistration(user_params) {
   return dispatch => {
     return axios.post(SIGN_UP_URL, user_params)
        .then((response) => {
-        setCurrentUser(provider, response.data['wallet'], response.data['authentication_token'] )
+        setCurrentUser(response.data['wallet'], response.data['authentication_token'] )
      }).catch((error) => {
         Auth.deleteAll()
         if (error.response) {
@@ -69,11 +69,11 @@ export function userRegistration(user_params, provider) {
   }
 }
 
-export function userSignIn(provider, user_params) {
+export function userSignIn(user_params) {
   return dispatch => {
     return axios.post(SIGN_IN_URL, user_params)
            .then((response) => {
-            dispatch(setCurrentUser(provider, response.data['wallet'], response.data['authentication_token']))
+            dispatch(setCurrentUser(response.data['wallet'], response.data['authentication_token']))
          }).catch((error) => {
             Auth.deleteAll()
             if (error.response) {
@@ -82,5 +82,15 @@ export function userSignIn(provider, user_params) {
               dispatch(setFlashMessage("Error while signing you in, please try again later.", 'error'))
             }
          })
+  }
+}
+
+export function getUserProfile(wallet, isCurrentUser) {
+  var apiProfileUrl = isCurrentUser ? MY_PROFILE_URL : `${USERS_URL}/${wallet}`
+  return dispatch => {
+    return axios.get(apiProfileUrl, headers)
+                .then((response) => {
+                  dispatch(setCurrentUser(response.data['wallet'], response.data['authentication_token']))
+                })
   }
 }

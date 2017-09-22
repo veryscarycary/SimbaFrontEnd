@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import { Form, Input, Textarea, Select } from 'formsy-react-components'
 import { Tabs, Tab } from 'react-bootstrap-tabs'
 
-import { fetchAllUsers } from '../../actions/actions_users'
+import { getUserProfile } from '../../actions/actions_users'
+import Auth from '../..//services/auth'
 
 import '../../style/user-profile.css'
 
@@ -26,7 +27,7 @@ class UserProfile extends Component {
   }
 
   componentWillMount() {
-    //this.props.fetchAllUsers()
+    this.props.getUserProfile(Auth.wallet, true)
   }
 
   handleChange(name, value) {
@@ -133,10 +134,10 @@ class UserProfile extends Component {
       <div className="description">
         <Tabs>
           <Tab label="Information">
-            <p> { this.renderInformationForm() } </p>
+            { this.renderInformationForm() }
           </Tab>
           <Tab label="Reviews">
-            <p> { this.renderReviews() } </p>
+            { this.renderReviews() }
           </Tab>
         </Tabs>
       </div>
@@ -167,4 +168,4 @@ function mapStateToProps({ users }) {
   return { users }
 }
 
-export default connect(mapStateToProps, { fetchAllUsers })(UserProfile)
+export default connect(mapStateToProps, { getUserProfile })(UserProfile)

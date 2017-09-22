@@ -26,7 +26,7 @@ class SignInForm extends Component {
   submit(model) {
     var user_params = { user: { password: this.state.password, wallet: this.props.current_user.wallet } }
 
-    this.props.userSignIn(this.props.provider, user_params)
+    this.props.userSignIn(user_params)
       .then(() => this.props.history.push(this.props.nextRoute))
   }
 

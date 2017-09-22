@@ -43,7 +43,7 @@ class Navigation extends Component {
 
   signOut(event) {
     event.preventDefault()
-    this.props.deleteCurrentUser(this.props.provider, this.props.current_user.wallet)
+    this.props.deleteCurrentUser(this.props.current_user.wallet)
 
     this.props.history.push('/')
   }
