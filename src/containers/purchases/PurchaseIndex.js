@@ -14,13 +14,13 @@ import { pendingPurchases, completedPurchases } from '../../models/selectors'
 
 class PurchaseIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchAllPurchases(this.props.provider, true)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchAllPurchases(nextProps.provider, true)
     }
   }

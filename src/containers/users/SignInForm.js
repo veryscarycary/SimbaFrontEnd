@@ -26,7 +26,7 @@ class SignInForm extends Component {
   submit(model) {
     var user_params = { user: { password: this.state.password, wallet: this.props.current_user.wallet } }
 
-    this.props.userSignIn(user_params)
+    this.props.userSignIn(this.props.provider, user_params)
       .then(() => this.props.history.push(this.props.nextRoute))
   }
 
@@ -78,7 +78,7 @@ class SignInForm extends Component {
                 <h1>
                   Log in to your account
                 </h1>
-                { this.props.current_user.wallet ? this.renderForm() : this.renderErrorBlockChain() }
+                { this.props.provider.isConnected ? this.renderForm() : this.renderErrorBlockChain() }
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@ class SignInForm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { current_user: current_user(state) }
+  return { current_user: current_user(state), provider: state.provider }
 }
 
 export default withNextRoute(

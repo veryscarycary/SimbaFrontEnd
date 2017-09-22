@@ -26,7 +26,7 @@ class Navigation extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchEscrowBalance(this.props.provider).then(transaction => {
         this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
       })
@@ -34,7 +34,7 @@ class Navigation extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchEscrowBalance(nextProps.provider).then(transaction => {
         this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
       })
@@ -77,7 +77,7 @@ class Navigation extends Component {
                   </a>
                   <div className="dropdown-menu dropdown-menu-dark" role="menu">
                     <span className="dropdown-header">My Profile</span>
-                    <a className="dropdown-item" href="/">Information</a>
+                    <Link className="dropdown-item" to='/users/me'>Information</Link>
                     <a className="dropdown-item" href="/" onClick={(event) => this.signOut(event)}>Sign out</a>
 
                     <span className="dropdown-header">Purchases</span>

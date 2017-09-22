@@ -24,13 +24,13 @@ class PurchaseShipping extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
     }
   }

@@ -1,7 +1,7 @@
 import Eth from 'ethjs'
 import axios from 'axios'
 
-import { headers, SIGN_UP_URL, SIGN_IN_URL, USERS_URL } from '../api_url'
+import { headers, SIGN_UP_URL, SIGN_IN_URL, USERS_URL, MY_PROFILE_URL } from '../api_url'
 import { setFlashMessage } from './actions_flash_messages'
 
 import Auth from '../services/auth'
@@ -14,7 +14,7 @@ export const UPDATE_USER = 'UPDATE_USER'
 
 export function fetchBalance(provider, wallet) {
   return dispatch => {
-    provider.eth.getBalance(wallet, 'latest').then(result => {
+    provider.Eth.getBalance(wallet, 'latest').then(result => {
       const balance = Eth.fromWei(result, 'ether').toString()
       dispatch({type: UPDATE_USER, payload: { wallet: wallet, balance: balance}});
     })
@@ -23,11 +23,10 @@ export function fetchBalance(provider, wallet) {
 
 export function setCurrentUser(provider, wallet, authentication_token) {
   return dispatch => {
+    Auth.setWallet(wallet)
+    Auth.setToken(authentication_token)
     dispatch({ type: CREATE_USER, payload: { wallet, authentication_token }})
     dispatch({ type: SET_CURRENT_USER, payload: wallet })
-    if (wallet !== '') {
-      dispatch(fetchBalance(provider, wallet))
-    }
   }
 }
 
@@ -52,17 +51,13 @@ export function fetchAllUsers() {
   }
 }
 
-export function userRegistration(user_params) {
+export function userRegistration(user_params, provider) {
   return dispatch => {
     return axios.post(SIGN_UP_URL, user_params)
        .then((response) => {
-        Auth.setWallet(response.data['wallet'])
-        Auth.setToken(response.data['authentication_token'])
-
-        dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
-        dispatch({ type: CREATE_USER, payload: response.data })
-        dispatch(setFlashMessage("User has been successfully created.", 'success'))
+        setCurrentUser(provider, response.data['wallet'], response.data['authentication_token'] )
      }).catch((error) => {
+        Auth.deleteAll()
         if (error.response) {
           const error_field = Object.keys(error.response.data.errors)[0]
           const error_message = error.response.data.errors[error_field]
@@ -74,21 +69,13 @@ export function userRegistration(user_params) {
   }
 }
 
-export function userSignIn(user_params) {
+export function userSignIn(provider, user_params) {
   return dispatch => {
     return axios.post(SIGN_IN_URL, user_params)
            .then((response) => {
-            Auth.setWallet(response.data['wallet'])
-            Auth.setToken(response.data['authentication_token'])
-
-            dispatch({ type: SET_CURRENT_USER, payload: response.data.wallet })
-            dispatch({ type: CREATE_USER, payload: response.data })
-            dispatch(setFlashMessage("User has been successfully signed in.", 'success'))
+            dispatch(setCurrentUser(provider, response.data['wallet'], response.data['authentication_token']))
          }).catch((error) => {
-            console.log(error)
-
             Auth.deleteAll()
-
             if (error.response) {
               dispatch(setFlashMessage(error.response.data.error, 'error'))
             } else {

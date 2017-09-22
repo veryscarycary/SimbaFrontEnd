@@ -14,13 +14,13 @@ import { pendingSales, completedSales } from '../../models/selectors'
 
 class SalesIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchAllPurchases(this.props.provider, false)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchAllPurchases(nextProps.provider, false)
     }
   }
