@@ -81,7 +81,7 @@ class App extends Component {
             <Route exact path='/users/sign_in' component={SignInForm} />
             <Route exact path='/users' component={UserIndex} />
             <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
-            <Route exact path='/users/me' component={UserProfile} />
+            <Route auth exact path='/users/me' component={UserProfile} />
 
             <Route auth exact path='/listing/create' component={ItemNew} />
             <Route exact path='/items/:item_id' component={ItemShow} />
