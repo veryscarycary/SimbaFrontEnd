@@ -5,7 +5,7 @@ import { Form, Input, Textarea, Select } from 'formsy-react-components'
 import { Tabs, Tab } from 'react-bootstrap-tabs'
 
 import { getUserProfile } from '../../actions/actions_users'
-import Auth from '../..//services/auth'
+import Auth from '../../services/auth'
 
 import { current_user } from '../../models/selectors'
 

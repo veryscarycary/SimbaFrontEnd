@@ -90,10 +90,16 @@ export function userSignIn(user_params) {
 export function getUserProfile(wallet, isCurrentUser) {
   var apiProfileUrl = isCurrentUser ? MY_PROFILE_URL : `${USERS_URL}/${wallet}`
   return dispatch => {
-    return axios.get(apiProfileUrl, headers)
+    return axios.get(apiProfileUrl, { headers: { 'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token } })
                 .then((response) => {
-                  console.log(response)
                   dispatch(setCurrentUser(response.data))
-                })
+              }).catch((error) => {
+                Auth.deleteAll()
+                if (error.response) {
+                  dispatch(setFlashMessage(error.response.data.error, 'error'))
+                } else {
+                  dispatch(setFlashMessage("Error, please try again later.", 'error'))
+                }
+              })
   }
 }
