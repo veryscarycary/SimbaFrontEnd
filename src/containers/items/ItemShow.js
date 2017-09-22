@@ -222,8 +222,8 @@ class ItemShow extends Component {
         <div className="store-filters">
           <div className="container clearfix">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="/">Home</a></li>
-              <li className="breadcrumb-item"><a href="/">Collection for Women</a></li>
+              <li className="breadcrumb-item"><Link to="/">Home</Link></li>
+              <li className="breadcrumb-item"><a href="/">XXXXXX</a></li>
               <li className="breadcrumb-item active">{ this.props.item.name }</li>
             </ol>
           </div>

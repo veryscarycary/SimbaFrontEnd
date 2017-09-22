@@ -163,7 +163,7 @@ class PurchaseReceipt extends Component {
       <div className="account-page">
         <div className="container">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li className="breadcrumb-item"><Link to="/">Home</Link></li>
             <li className="breadcrumb-item active">Order {this.props.purchase.id} Invoice</li>
           </ol>
 
