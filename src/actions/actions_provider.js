@@ -11,10 +11,10 @@ export function fetchProvider() {
     return getProvider.then(provider => {
       provider.Eth.accounts().then((accounts) => {
         if (typeof accounts[0] === 'undefined') {
-          dispatch(setCurrentUser('', Auth.token))
+          Auth.setWallet('')
           dispatch({type: FETCH_PROVIDER, payload: {eth: provider.Eth, isConnected: false}})
         } else {
-          dispatch(setCurrentUser(accounts[0], Auth.token))
+          dispatch(setCurrentUser({wallet: accounts[0], authentication_token: Auth.token}))
           dispatch({type: FETCH_PROVIDER, payload: {eth: provider.Eth, isConnected: true}})
           dispatch(fetchBalance(provider, accounts[0]))
         }

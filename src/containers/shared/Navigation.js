@@ -7,6 +7,8 @@ import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, fetchEscrowBalance } from '../../actions/actions_contract'
 
+import Auth from '../../services/auth'
+
 import '../../style/navigation.css'
 
 class Navigation extends Component {
@@ -66,7 +68,7 @@ class Navigation extends Component {
             </div>
           </li>
           {
-            (this.props.current_user.authentication_token && this.props.current_user.wallet) ? (
+            Auth.isLoggedIn() ? (
               <li>
                 <div className={`dropdown ${this.state.isMyAccountHovered ? 'show' : ''}`}
                      onMouseEnter={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}
@@ -100,7 +102,7 @@ class Navigation extends Component {
             )
            }
            {
-              (this.props.current_user.authentication_token && this.props.current_user.wallet) ?
+              Auth.isLoggedIn() ?
                 '' : (
                   <li>
                     <Link to='/users/register' className="account"> Register </Link>

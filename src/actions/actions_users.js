@@ -21,19 +21,21 @@ export function fetchBalance(provider, wallet) {
   }
 }
 
-export function setCurrentUser(wallet, authentication_token) {
+export function setCurrentUser(user) {
   return dispatch => {
-    Auth.setWallet(wallet)
-    Auth.setToken(authentication_token)
-    dispatch({ type: CREATE_USER, payload: { wallet, authentication_token }})
-    dispatch({ type: SET_CURRENT_USER, payload: wallet })
+    Auth.setWallet(user['wallet'])
+    Auth.setToken(user['authentication_token'])
+    dispatch({ type: CREATE_USER, payload: user})
+    dispatch({ type: SET_CURRENT_USER, payload: user['wallet'] })
   }
 }
 
 export function deleteCurrentUser(wallet) {
   Auth.deleteAll()
 
-  return setCurrentUser('', '')
+  return dispatch => {
+    dispatch({ type: SET_CURRENT_USER, payload: '' })
+  }
 }
 
 export function selectUser(wallet) {
@@ -55,7 +57,7 @@ export function userRegistration(user_params) {
   return dispatch => {
     return axios.post(SIGN_UP_URL, user_params)
        .then((response) => {
-        setCurrentUser(response.data['wallet'], response.data['authentication_token'] )
+        setCurrentUser(response.data)
      }).catch((error) => {
         Auth.deleteAll()
         if (error.response) {
@@ -73,7 +75,7 @@ export function userSignIn(user_params) {
   return dispatch => {
     return axios.post(SIGN_IN_URL, user_params)
            .then((response) => {
-            dispatch(setCurrentUser(response.data['wallet'], response.data['authentication_token']))
+            dispatch(setCurrentUser(response.data))
          }).catch((error) => {
             Auth.deleteAll()
             if (error.response) {
@@ -90,7 +92,8 @@ export function getUserProfile(wallet, isCurrentUser) {
   return dispatch => {
     return axios.get(apiProfileUrl, headers)
                 .then((response) => {
-                  dispatch(setCurrentUser(response.data['wallet'], response.data['authentication_token']))
+                  console.log(response)
+                  dispatch(setCurrentUser(response.data))
                 })
   }
 }
