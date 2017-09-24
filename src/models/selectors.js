@@ -43,7 +43,7 @@ export const users = createSelector(
   ormSelector,
   ormCreateSelector(orm, session => {
       console.log('Running users selector')
-      return session.User.all().toRefArray()
+      return session.User.all().toModelArray()
   })
 )
 
@@ -52,7 +52,7 @@ export const user = createSelector(
   state => state.selectedUserWallet,
   ormCreateSelector(orm, (session, selectedUserWallet) => {
     if (selectedUserWallet !== '') {
-      return session.User.withId(selectedUserWallet).ref;
+      return session.User.withId(selectedUserWallet);
     }
     return {}
   })
@@ -63,7 +63,7 @@ export const current_user = createSelector(
   state => state.currentUserWallet,
   ormCreateSelector(orm, (session, currentUserWallet) => {
       if (currentUserWallet !== '') {
-        return session.User.withId(currentUserWallet).ref
+        return session.User.withId(currentUserWallet)
       }
       return {}
   })
@@ -158,7 +158,7 @@ export const purchase = createSelector(
   state => state.selectedPurchaseId,
   ormCreateSelector(orm, (session, selectedPurchaseId) => {
     if (selectedPurchaseId !== 0) {
-      return session.Purchase.withId(selectedPurchaseId).ref
+      return session.Purchase.withId(selectedPurchaseId)
     }
     return {}
   })

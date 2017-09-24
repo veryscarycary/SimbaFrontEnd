@@ -9,7 +9,7 @@ import PurchaseSummary from '../purchases/PurchaseSummary'
 import { selectPurchase } from '../../actions/actions_purchases'
 import { createReview } from '../../actions/actions_reviews'
 import { purchaseState } from '../shared/PurchaseState'
-import { item, purchase, current_user, user } from '../../models/selectors'
+import { purchase } from '../../models/selectors'
 
 import '../../style/purchase-confirm.css'
 
@@ -45,7 +45,7 @@ class PurchaseConfirm extends Component {
             <header>
               <i className="ion-ios-checkmark-outline"></i>
               <h1>
-                Thank you for confirming the reception of {this.props.item.name} (Order {this.props.purchase.id}).
+                Thank you for confirming the reception of {this.props.purchase.item.name} (Order {this.props.purchase.id}).
               </h1>
             </header>
             <p>
@@ -203,7 +203,7 @@ class PurchaseConfirm extends Component {
   }
 
   render() {
-    if (!this.props.item.name) {
+    if (!this.props.purchase.id) {
       return <div>Loading..</div>
     }
     return (
@@ -211,7 +211,7 @@ class PurchaseConfirm extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
+            <PurchaseSummary item={this.props.purchase.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@ class PurchaseConfirm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state), user: user(state) }
+  return { provider: state.provider, purchase: purchase(state) }
 }
 
 export default connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm)

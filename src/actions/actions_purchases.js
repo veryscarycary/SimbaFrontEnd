@@ -60,8 +60,6 @@ export function selectPurchase(provider, purchaseId) {
             dispatch({ type: CREATE_USERS, payload: normalizeRequest.entities.users })
             dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
             dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
-            dispatch({ type: SELECT_ITEM, payload: request.data.item.id} )
-            dispatch({ type: SELECT_USER, payload: request.data.buyer.wallet })
             dispatch(fetchPurchaseState(request.data, provider))
             dispatch(fetchPurchaseTimes(request.data, provider))
          })

@@ -34,7 +34,7 @@ class SalesIndex extends Component {
       case purchaseState.PURCHASED:
         return <span className="badge badge-info">Wait for Shipping...</span>
       case purchaseState.SHIPPED:
-        return <span className="badge badge-info">Shipped</span>
+        return <span className="badge badge-info">Waiting for Confirmation...</span>
       case purchaseState.COMPLETED:
         return <span className="badge badge-success">Delivered & Confirmed</span>
       case purchaseState.BUYER_CANCELLED:
