@@ -14,13 +14,13 @@ import { pendingSales, completedSales } from '../../models/selectors'
 
 class SalesIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchAllPurchases(this.props.provider, false)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchAllPurchases(nextProps.provider, false)
     }
   }
@@ -34,7 +34,7 @@ class SalesIndex extends Component {
       case purchaseState.PURCHASED:
         return <span className="badge badge-info">Wait for Shipping...</span>
       case purchaseState.SHIPPED:
-        return <span className="badge badge-info">Shipped</span>
+        return <span className="badge badge-info">Waiting for Confirmation...</span>
       case purchaseState.COMPLETED:
         return <span className="badge badge-success">Delivered & Confirmed</span>
       case purchaseState.BUYER_CANCELLED:
@@ -87,9 +87,9 @@ class SalesIndex extends Component {
           <td>{ sale.id }</td>
           <td>{ this.renderTime(sale) }</td>
           <td>
-            <a href="product.html" className="product-img">
+            <Link to={`/items/${sale.item.id}`} className="product-img">
               <img src={ sale.item.picture } alt={ sale.item.name } />
-            </a>
+            </Link>
           </td>
           <td>{ sale.amount } ETH</td>
           <td>{ this.renderSaleState(sale) }</td>
@@ -156,7 +156,7 @@ class SalesIndex extends Component {
         <div className="container">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li className="breadcrumb-item active">Sales history</li>
           </ol>

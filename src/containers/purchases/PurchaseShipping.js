@@ -8,7 +8,7 @@ import PurchaseSummary from '../purchases/PurchaseSummary'
 import { selectPurchase } from '../../actions/actions_purchases'
 import { sendCode } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
-import { item, purchase, current_user, user } from '../../models/selectors'
+import { purchase } from '../../models/selectors'
 
 import '../../style/purchase-shipping.css'
 
@@ -24,13 +24,13 @@ class PurchaseShipping extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
     }
   }
@@ -128,11 +128,11 @@ class PurchaseShipping extends Component {
           <div className="field-group">
             <div className="field">
               <label htmlFor="field-name">Name</label>
-              <input id="field-name" type="text" className="form-control" placeholder="Client full name" value={this.props.user.fullname} disabled />
+              <input id="field-name" type="text" className="form-control" placeholder="Client full name" value={this.props.purchase.buyer.fullname} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-email">Email address</label>
-              <input id="field-email" type="email" className="form-control" placeholder="Email address" value={this.props.user.email} disabled />
+              <input id="field-email" type="email" className="form-control" placeholder="Email address" value={this.props.purchase.buyer.email} disabled />
             </div>
           </div>
 
@@ -159,7 +159,7 @@ class PurchaseShipping extends Component {
             </div>
             <div className="field">
               <label htmlFor="field-phone">Phone</label>
-              <input id="field-phone" type="text" className="form-control" placeholder="Phone" disabled />
+              <input id="field-phone" type="text" className="form-control" placeholder="Phone" value="" disabled />
             </div>
           </div>
 
@@ -217,7 +217,7 @@ class PurchaseShipping extends Component {
   }
 
   render() {
-    if (!this.props.item.name) {
+    if (!this.props.purchase.id) {
       return <div>Loading..</div>
     }
     return (
@@ -225,7 +225,7 @@ class PurchaseShipping extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
+            <PurchaseSummary item={this.props.purchase.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
           </div>
         </div>
       </div>
@@ -234,7 +234,7 @@ class PurchaseShipping extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state), user: user(state) }
+  return { provider: state.provider, purchase: purchase(state) }
 }
 
 export default connect(mapStateToProps, { selectPurchase, sendCode })(PurchaseShipping)

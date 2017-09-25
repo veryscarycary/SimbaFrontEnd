@@ -7,6 +7,8 @@ import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, fetchEscrowBalance } from '../../actions/actions_contract'
 
+import Auth from '../../services/auth'
+
 import '../../style/navigation.css'
 
 class Navigation extends Component {
@@ -26,7 +28,7 @@ class Navigation extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchEscrowBalance(this.props.provider).then(transaction => {
         this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
       })
@@ -34,7 +36,7 @@ class Navigation extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchEscrowBalance(nextProps.provider).then(transaction => {
         this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
       })
@@ -43,7 +45,7 @@ class Navigation extends Component {
 
   signOut(event) {
     event.preventDefault()
-    this.props.deleteCurrentUser(this.props.provider, this.props.current_user.wallet)
+    this.props.deleteCurrentUser(this.props.current_user.wallet)
 
     this.props.history.push('/')
   }
@@ -66,7 +68,7 @@ class Navigation extends Component {
             </div>
           </li>
           {
-            (this.props.current_user.authentication_token && this.props.current_user.wallet) ? (
+            Auth.isLoggedIn() ? (
               <li>
                 <div className={`dropdown ${this.state.isMyAccountHovered ? 'show' : ''}`}
                      onMouseEnter={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}
@@ -77,7 +79,7 @@ class Navigation extends Component {
                   </a>
                   <div className="dropdown-menu dropdown-menu-dark" role="menu">
                     <span className="dropdown-header">My Profile</span>
-                    <a className="dropdown-item" href="/">Information</a>
+                    <Link className="dropdown-item" to='/users/me'>Information</Link>
                     <a className="dropdown-item" href="/" onClick={(event) => this.signOut(event)}>Sign out</a>
 
                     <span className="dropdown-header">Purchases</span>
@@ -101,7 +103,7 @@ class Navigation extends Component {
             )
            }
            {
-              (this.props.current_user.authentication_token && this.props.current_user.wallet) ?
+              Auth.isLoggedIn() ?
                 '' : (
                   <li>
                     <Link to='/users/register' className="account"> Register </Link>

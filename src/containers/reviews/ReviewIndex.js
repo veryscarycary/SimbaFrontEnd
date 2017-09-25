@@ -9,13 +9,13 @@ import { userReviews, user } from '../../models/selectors'
 class ReviewIndex extends Component {
   componentWillMount() {
     this.props.selectUser(this.props.match.params.user_wallet)
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchUserRating(this.props.provider, this.props.match.params.user_wallet)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchUserRating(nextProps.provider, this.props.match.params.user_wallet)
     }
   }

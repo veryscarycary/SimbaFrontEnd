@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route as RouterRoute, Redirect } from 'react-router-dom'
 
-import { setCurrentUser } from './actions/actions_users'
 import { fetchProvider } from './actions/actions_provider'
 
 // Shared Containers
@@ -15,6 +14,7 @@ import SignInForm from './containers/users/SignInForm'
 
 // Users Containers
 import UserIndex from './containers/users/UserIndex'
+import UserProfile from './containers/users/UserProfile'
 
 // Items Containers
 import ItemNew from './containers/items/ItemNew'
@@ -29,6 +29,8 @@ import PurchaseIndex from './containers/purchases/PurchaseIndex'
 import SalesIndex from './containers/purchases/SalesIndex'
 import PurchaseShipping from './containers/purchases/PurchaseShipping'
 import PurchaseCancel from './containers/purchases/PurchaseCancel'
+import PurchaseConfirm from './containers/purchases/PurchaseConfirm'
+import PurchaseReceipt from './containers/purchases/PurchaseReceipt'
 
 // Activities Containers
 import ActivityIndex from './containers/activities/ActivityIndex'
@@ -64,15 +66,7 @@ const Route = ({ component: Component, auth, ...rest }) => (
 
 class App extends Component {
   componentWillMount() {
-    this.props.fetchProvider().then(() => {
-      this.props.provider.eth.accounts().then((accounts) => {
-        if (typeof accounts[0] === 'undefined') {
-          this.props.setCurrentUser(this.props.provider, '', Auth.token)
-        } else {
-          this.props.setCurrentUser(this.props.provider, accounts[0], Auth.token)
-        }
-      })
-    })
+    this.props.fetchProvider()
   }
 
   render() {
@@ -84,10 +78,13 @@ class App extends Component {
           </section>
           <section className='main-container'>
             <Route exact path='/' component={ItemIndex} />
+
             <Route exact path='/users/register' component={RegistrationForm} />
             <Route exact path='/users/sign_in' component={SignInForm} />
             <Route exact path='/users' component={UserIndex} />
             <Route exact path='/users/:user_wallet/reviews' component={ReviewIndex} />
+            <Route auth exact path='/users/me' component={UserProfile} />
+
             <Route auth exact path='/listing/create' component={ItemNew} />
             <Route exact path='/items/:item_id' component={ItemShow} />
             <Route exact path='/items' component={ItemIndex} />
@@ -97,6 +94,8 @@ class App extends Component {
             <Route auth exact path='/sales' component={SalesIndex} />
             <Route auth exact path='/purchases/:purchase_id/shipping' component={PurchaseShipping} />
             <Route auth exact path='/purchases/:purchase_id/cancel' component={PurchaseCancel} />
+            <Route auth exact path='/purchases/:purchase_id/confirm' component={PurchaseConfirm} />
+            <Route auth exact path='/purchases/:purchase_id/receipt' component={PurchaseReceipt} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
 
@@ -116,4 +115,4 @@ function mapStateToProps({ provider }) {
   return { provider: provider }
 }
 
-export default connect(mapStateToProps, { fetchProvider, setCurrentUser })(App)
+export default connect(mapStateToProps, { fetchProvider })(App)

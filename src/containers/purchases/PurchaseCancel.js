@@ -7,18 +7,18 @@ import PurchaseSummary from '../purchases/PurchaseSummary'
 import { selectPurchase } from '../../actions/actions_purchases'
 import { cancelPurchase } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
-import { item, purchase, current_user, user } from '../../models/selectors'
+import { purchase } from '../../models/selectors'
 
 
 class PurchaseCancel extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
     }
   }
@@ -35,7 +35,7 @@ class PurchaseCancel extends Component {
               </h1>
             </header>
             <p>
-              {this.props.purchase.amount} ETH has been refunded to {this.props.user.fullname}.
+              {this.props.purchase.amount} ETH has been refunded to {this.props.purchase.buyer.fullname}.
             </p>
             <Link to='/'>
               Go back to Home Page
@@ -54,7 +54,7 @@ class PurchaseCancel extends Component {
             <header>
               <i className="ion-ios-close-outline"></i>
               <h1>
-                An error occured. Your shipping number hasn't been sent.
+                An error occured while trying to cancel this order.
               </h1>
             </header>
             <p>
@@ -122,11 +122,11 @@ class PurchaseCancel extends Component {
           <div className="field-group">
             <div className="field">
               <label htmlFor="field-name">Name</label>
-              <input id="field-name" type="text" className="form-control" placeholder="Client full name" value={this.props.user.fullname} disabled />
+              <input id="field-name" type="text" className="form-control" placeholder="Client full name" value={this.props.purchase.buyer.fullname} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-email">Email address</label>
-              <input id="field-email" type="email" className="form-control" placeholder="Email address" value={this.props.user.email} disabled />
+              <input id="field-email" type="email" className="form-control" placeholder="Email address" value={this.props.purchase.buyer.email} disabled />
             </div>
             <div className="field">
               <label htmlFor="field-purchase-date">Purchase Date</label>
@@ -146,7 +146,7 @@ class PurchaseCancel extends Component {
   }
 
   render() {
-    if (!this.props.item.name) {
+    if (!this.props.purchase.id) {
       return <div>Loading..</div>
     }
     return (
@@ -154,7 +154,7 @@ class PurchaseCancel extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
+            <PurchaseSummary item={this.props.purchase.item} finalPrice={this.props.purchase.amount} purchase={this.props.purchase} />
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@ class PurchaseCancel extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state), user: user(state) }
+  return { provider: state.provider, purchase: purchase(state) }
 }
 
 export default connect(mapStateToProps, { selectPurchase, cancelPurchase })(PurchaseCancel)

@@ -1,11 +1,24 @@
 import getProvider from '../utils/getProvider'
+import Auth from '../services/auth'
 
-export const FETCH_PROVIDER = 'FETCH_PROVIDER';
+import { setCurrentUser, fetchBalance } from './actions_users'
+
+export const FETCH_PROVIDER = 'FETCH_PROVIDER'
+
 
 export function fetchProvider() {
   return dispatch => {
-    return getProvider.then(request => {
-      dispatch({type: FETCH_PROVIDER, payload: request});
+    return getProvider.then(provider => {
+      provider.Eth.accounts().then((accounts) => {
+        if (typeof accounts[0] === 'undefined') {
+          Auth.setWallet('')
+          dispatch({type: FETCH_PROVIDER, payload: {eth: provider.Eth, isConnected: false}})
+        } else {
+          dispatch(setCurrentUser({wallet: accounts[0], authentication_token: Auth.token}))
+          dispatch({type: FETCH_PROVIDER, payload: {eth: provider.Eth, isConnected: true}})
+          dispatch(fetchBalance(provider, accounts[0]))
+        }
+      })
     }).catch((err) => {
       console.log('Error finding Provider : ', err)
     })

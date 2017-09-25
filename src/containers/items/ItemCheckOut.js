@@ -22,7 +22,7 @@ class ItemCheckOut extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
         this.setFinalPrice()
       })
@@ -30,7 +30,7 @@ class ItemCheckOut extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
         this.setFinalPrice()
       })

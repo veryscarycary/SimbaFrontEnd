@@ -14,13 +14,13 @@ import { pendingPurchases, completedPurchases } from '../../models/selectors'
 
 class PurchaseIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchAllPurchases(this.props.provider, true)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchAllPurchases(nextProps.provider, true)
     }
   }
@@ -66,10 +66,10 @@ class PurchaseIndex extends Component {
       case purchaseState.SHIPPED:
         return (
           <td>
-            <Link to={`/purchases/confirmation/${purchase.id}`}>
+            <Link to={`/purchases/${purchase.id}/confirm`}>
               <button className="btn btn-outline-info btn-sm">Track Package</button>
             </Link>
-            <Link to={`/purchases/confirmation/${purchase.id}`}>
+            <Link to={`/purchases/${purchase.id}/confirm`}>
               <button className="btn btn-outline-success btn-sm">Confirm</button>
             </Link>
           </td>
@@ -93,12 +93,12 @@ class PurchaseIndex extends Component {
     let purchasesRows = _purchases.map((purchase) => {
       return (
         <tr key={purchase.id}>
-          <td>{ purchase.id }</td>
+          <td><Link to={`/purchases/${purchase.id}/receipt`}>{ purchase.id }</Link></td>
           <td>{ this.renderTime(purchase) }</td>
           <td>
-            <a href="product.html" className="product-img">
+            <Link to={`/items/${purchase.item.id}`} className="product-img">
               <img src={ purchase.item.picture } alt={ purchase.item.name } />
-            </a>
+            </Link>
           </td>
           <td>{ purchase.amount } ETH</td>
           <td>{ this.renderPurchaseState(purchase) }</td>
@@ -165,7 +165,7 @@ class PurchaseIndex extends Component {
         <div className="container">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li className="breadcrumb-item active">Order history</li>
           </ol>

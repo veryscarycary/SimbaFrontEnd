@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 class PurchaseSummary extends Component {
   renderDiscount() {
@@ -18,15 +19,17 @@ class PurchaseSummary extends Component {
     return (
       <div className="col-md-6">
         <div id="checkout-cart-summary" className="clearfix float-right">
-          <h3>Order { this.props.purchase.id ? this.props.purchase.id : 'Summary' }</h3>
+          <h3>Order { this.props.purchase.id ? (<Link to={`/purchases/${this.props.purchase.id}/receipt`}>{ this.props.purchase.id }</Link>) : 'Summary' }</h3>
           <div className="line-items">
             <div className="item clearfix">
               <div className="pic">
-                <img src={ this.props.item.picture } className="img-responsive" alt={ this.props.item.name } />
+                <Link to={`/items/${this.props.item.id}`}>
+                  <img src={ this.props.item.picture } className="img-responsive" alt={ this.props.item.name } />
+                </Link>
               </div>
               <div className="details">
                 <span className="name">
-                  { this.props.item.name }
+                  <Link to={`/items/${this.props.item.id}`}> { this.props.item.name } </Link>
                 </span>
                 <span className="variant">
                   Ship within { this.props.item.shipping_deadline } days
