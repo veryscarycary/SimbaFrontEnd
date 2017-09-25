@@ -9,13 +9,13 @@ import { fetchSellerItems } from '../../actions/actions_items'
 
 class SellerItemsIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.eth) {
+    if (this.props.provider.isConnected) {
       this.props.fetchSellerItems(this.props.provider, this.props.current_user.wallet)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.eth && !this.props.provider.eth) {
+    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
       this.props.fetchSellerItems(nextProps.provider, this.props.current_user.wallet)
     }
   }
