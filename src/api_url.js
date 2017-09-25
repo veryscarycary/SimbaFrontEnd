@@ -1,8 +1,11 @@
 import Auth from './services/auth'
+import runtimeEnv from '@mars/heroku-js-runtime-env'
+
+const env = runtimeEnv()
 
 export const headers = { headers: { 'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token } }
 
-export const ROOT_URL = process.env.REACT_APP_API_HOST || 'http://localhost:3001'
+export const ROOT_URL = env.REACT_APP_API_HOST || 'http://localhost:3001'
 
 // DEVISE URLS
 export const SIGN_UP_URL = `${ROOT_URL}/users`

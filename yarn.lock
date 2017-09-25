@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@mars/heroku-js-runtime-env@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@mars/heroku-js-runtime-env/-/heroku-js-runtime-env-3.0.0.tgz#9f6853e707ce3d14c4984d4d10143fc76f53fd6c"
+
 "@timer/detect-port@1.1.3":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@timer/detect-port/-/detect-port-1.1.3.tgz#1383abd67f9a5d683df5276f8a92d60bdf9abb90"
