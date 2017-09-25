@@ -90,7 +90,7 @@ export function updateItem(item_params, itemId) {
   }
 }
 
-export function fetchSellerItems(provider, wallet='') {
+export function fetchSellerItems(provider, wallet) {
   return dispatch => {
     return axios.get(`${USERS_URL}/${Auth.wallet}/items`, headers)
          .then((request) => {

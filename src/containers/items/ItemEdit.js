@@ -10,16 +10,16 @@ class ItemEdit extends Component {
     super(props)
 
     this.state = {
-      name: '',
-      category: '',
-      price: '',
-      reference: '',
-      discount: '',
-      shipping_fee: '',
-      picture: '',
-      shipping_deadline: '',
-      short_description: '',
-      description: ''
+      name: this.props.item.name,
+      category: this.props.item.category,
+      price: this.props.item.price,
+      reference: this.props.item.reference,
+      discount: this.props.item.discount,
+      shipping_fee: this.props.item.shipping_fee,
+      picture: this.props.item.picture,
+      shipping_deadline: this.props.item.shipping_deadline,
+      short_description: this.props.item.short_description,
+      description: this.props.item.description
     }
   }
 
@@ -38,17 +38,6 @@ class ItemEdit extends Component {
   componentWillMount() {
     if (this.props.provider.eth) {
       this.props.selectItem(this.props.provider, this.props.match.params.item_id)
-      this.setState({
-        name: this.props.item.name,
-        reference: this.props.item.reference,
-        price: this.props.item.price,
-        discount: this.props.item.discount,
-        shipping_fee: this.props.item.shipping_fee,
-        picture: this.props.item.picture,
-        shipping_deadline: this.props.item.shipping_deadline,
-        short_description: this.props.item.short_description,
-        description: this.props.item.description
-      })
     }
   }
 
