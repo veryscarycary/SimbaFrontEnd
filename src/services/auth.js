@@ -3,8 +3,8 @@ const WALLET_TOKEN_KEY = 'simba_wallet'
 
 class Auth {
   constructor() {
-    this.token = localStorage.getItem(SIMBA_TOKEN_KEY)
-    this.wallet = localStorage.getItem(WALLET_TOKEN_KEY)
+    this.token = JSON.parse(localStorage.getItem(SIMBA_TOKEN_KEY))
+    this.wallet = JSON.parse(localStorage.getItem(WALLET_TOKEN_KEY))
   }
 
   /**
@@ -20,7 +20,7 @@ class Auth {
   setToken = (token) => {
     this.token = token
 
-    localStorage.setItem(SIMBA_TOKEN_KEY, token)
+    localStorage.setItem(SIMBA_TOKEN_KEY, JSON.stringify(token))
   }
 
   /**
@@ -30,7 +30,7 @@ class Auth {
   setWallet = (wallet) => {
     this.wallet = wallet
 
-    localStorage.setItem(WALLET_TOKEN_KEY, wallet)
+    localStorage.setItem(WALLET_TOKEN_KEY, JSON.stringify(wallet))
   }
 
   /**
