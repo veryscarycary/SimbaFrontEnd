@@ -8,8 +8,6 @@ import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './action
 
 import { CREATE_USERS } from './actions_users'
 
-import Auth from '../services/auth'
-
 export const SELECT_ITEM = 'SELECT_ITEM'
 export const CREATE_ITEM = 'CREATE_ITEM'
 export const CREATE_ITEMS = 'CREATE_ITEMS'
@@ -92,7 +90,7 @@ export function updateItem(item_params, itemId) {
 
 export function fetchSellerItems(provider, wallet) {
   return dispatch => {
-    return axios.get(`${USERS_URL}/${Auth.wallet}/items`, headers)
+    return axios.get(`${USERS_URL}/${wallet}/items`, headers)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
