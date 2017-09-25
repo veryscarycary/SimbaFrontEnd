@@ -14,17 +14,17 @@ export const CREATE_REVIEW = 'CREATE_REVIEW'
 export function createReview(purchase, params, provider) {
   const user_params = {
     buyer_wallet: Auth.wallet,
-    seller_wallet: purchase.seller,
+    seller_wallet: purchase.seller.wallet,
     rating: params.seller_rating,
     description: params.seller_review,
-    item_id: purchase.item
+    item_id: purchase.item.id,
   }
   const item_params = {
     buyer_wallet: Auth.wallet,
-    seller_wallet: purchase.seller,
+    seller_wallet: purchase.seller.wallet,
     rating: params.item_rating,
     description: params.item_review,
-    item_id: purchase.item
+    item_id: purchase.item.id,
   }
 
   return dispatch => {
