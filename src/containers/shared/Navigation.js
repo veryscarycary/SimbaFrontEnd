@@ -87,6 +87,7 @@ class Navigation extends Component {
 
                     <span className="dropdown-header">Sales</span>
                     <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
+                    <Link className="dropdown-item" to='/my_items'>My Items</Link>
                     <Link className="dropdown-item" to='/sales'>Sales History</Link>
 
                     <span className="dropdown-header">Admin</span>

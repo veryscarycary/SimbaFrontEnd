@@ -14,7 +14,6 @@ export const MY_PROFILE_URL = `${ROOT_URL}/users/me`
 
 // ITEMS URLS
 export const ITEMS_URL = `${ROOT_URL}/items`
-
 // PURCHASES URLS
 export const PURCHASES_URL = `${ROOT_URL}/purchases`
 export const BUYER_PURCHASES_URL = `${ROOT_URL}/purchases/buyer_purchases`

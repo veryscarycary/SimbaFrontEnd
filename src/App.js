@@ -18,7 +18,9 @@ import UserProfile from './containers/users/UserProfile'
 
 // Items Containers
 import ItemNew from './containers/items/ItemNew'
+import ItemEdit from './containers/items/ItemEdit'
 import ItemIndex from './containers/items/ItemIndex'
+import SellerItemsIndex from './containers/items/SellerItemsIndex'
 import ItemShow from './containers/items/ItemShow'
 import ItemCheckOut from './containers/items/ItemCheckOut'
 
@@ -96,6 +98,9 @@ class App extends Component {
             <Route auth exact path='/purchases/:purchase_id/receipt' component={PurchaseReceipt} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
+
+            <Route auth exact path='/items/:item_id/edit' component={ItemEdit} />
+            <Route auth exact path='/my_items' component={SellerItemsIndex} />
           </section>
           <section className='footer'>
             <Footer />
