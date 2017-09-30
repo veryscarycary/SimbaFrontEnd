@@ -4,12 +4,7 @@ import escrowJSON from '../contract_build/Escrow.json'
 import EscrowContract from '../services/escrow'
 
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
-import {
-  watchShippingEvent,
-  watchPurchaseCompleteEvent,
-  watchCancelPurchaseEvent,
-  watchShippingTimeoutEvent,
-  watchConfirmationTimeoutEvent } from './actions_event_watcher'
+import { watchShippingTimeoutEvent, watchConfirmationTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'

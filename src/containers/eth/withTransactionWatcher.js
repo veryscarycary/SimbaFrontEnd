@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom'
 import Modal from 'react-modal'
 import Spinner from 'react-spinkit'
 

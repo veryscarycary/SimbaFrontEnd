@@ -5,12 +5,10 @@ import { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } fro
 
 import { setFlashMessage } from './actions_flash_messages'
 import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
-import { CREATE_USERS, SELECT_USER } from './actions_users'
-import { CREATE_ITEMS, SELECT_ITEM } from './actions_items'
+import { CREATE_USERS } from './actions_users'
+import { CREATE_ITEMS } from './actions_items'
 
-import { purchaseState } from '../containers/shared/PurchaseState'
 import { purchasesNormalizr, purchaseNormalizr } from '../models/normalizr'
-import EscrowContract from '../services/escrow'
 
 export const CREATE_PURCHASE = 'CREATE_PURCHASE'
 export const CREATE_PURCHASES = 'CREATE_PURCHASES'
