@@ -54,7 +54,6 @@ class ItemCheckOut extends Component {
 
     this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
       .then(() => this.props.closeModal())
-      .catch(() => this.props.closeModal())
   }
 
   renderPurchaseConfirmation() {

@@ -91,6 +91,25 @@ class EscrowContract {
         }
       )
   }
+
+  /**
+   * Writes the shipping information in the blockchain
+   * @param  {String} options.purchaseId
+   * @param  {String} options.trackingNumber
+   * @return {Promise}
+   */
+  sendShippingInformation({ purchaseId, trackingNumber }) {
+    return this.accounts()
+      .then(
+        (accounts) => this.deployed().then((instance) => instance.setCode(
+            purchaseId,
+            trackingNumber,
+            {
+              from: accounts[0]
+            }
+          ))
+      )
+  }
 }
 
 export default new EscrowContract()

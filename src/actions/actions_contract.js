@@ -4,12 +4,12 @@ import escrowJSON from '../contract_build/Escrow.json'
 import EscrowContract from '../services/escrow'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
-import { watchPurchaseEvent,
-        watchShippingEvent,
-        watchPurchaseCompleteEvent,
-        watchCancelPurchaseEvent,
-        watchShippingTimeoutEvent,
-        watchConfirmationTimeoutEvent } from './actions_event_watcher'
+import {
+  watchShippingEvent,
+  watchPurchaseCompleteEvent,
+  watchCancelPurchaseEvent,
+  watchShippingTimeoutEvent,
+  watchConfirmationTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
@@ -17,51 +17,17 @@ import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
 
 // Block chain transaction
-// Buyer Purchase an item '_itemId' from Seller (_seller)
-// State of the purchase : "PURCHASED"
-export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider) {
-  return (dispatch) => {
-    return EscrowContract.purchaseItem({
-      purchaseId,
-      sellerAddress,
-      itemId,
-      amount,
-      shippingDeadline
-    })
-     .then((transaction) => {
-        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_PURCHASED } })
-        return transaction
-      })
-     .catch((error) => {
-        dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
-        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
-
-        throw error
-      })
-  }
-}
-
-// Block chain transaction
 // Seller send the code to Buyer
 // Code can be a tracking number, a digital code, a coupon
 // State of the purchase : "SHIPPED"
 export function sendCode(purchaseId, code, provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
-
-  return dispatch => {
-    provider.eth.accounts().then((accounts) => {
-      escrow.deployed().then(instance => {
-        dispatch(watchShippingEvent(provider))
-        instance.setCode.sendTransaction(purchaseId, code, {from: accounts[0]})
-                        .then(transaction => {
-                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_SHIPPED } })
-                      }).catch(error => {
-                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
-                      })
-      })
+  return (dispatch) => EscrowContract.sendShippingInformation({ purchaseId, trackingNumber: code })
+    .then(transaction => {
+      dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
+      return transaction
+    }).catch(error => {
+      dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
-  }
 }
 
 // Block chain transaction

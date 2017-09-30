@@ -57,8 +57,6 @@ export function createPurchase(item, finalPrice, provider) {
          .catch((error) => {
             dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
             dispatch({ type: UPDATE_PURCHASE, payload: { id: request.data.id, purchaseState: purchaseState.ERROR } })
-
-            throw error
           })
     })
   }

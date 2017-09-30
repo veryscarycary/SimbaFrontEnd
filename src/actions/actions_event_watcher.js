@@ -7,63 +7,6 @@ import { createLogActivity } from './actions_activities'
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
 
 // Watch block chain event
-// Buyer purchases an Item
-export function watchPurchaseEvent(provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
-
-  return dispatch => {
-    escrow.deployed().then(instance => {
-    instance.ItemPurchased().watch(function(error, result) {
-      if (!error) {
-        const newLog = `[${result.args.buyer}] purchased ${Eth.toUtf8(result.args.purchaseId)} for ${Eth.fromWei(result.args.amount, 'ether')} ETH`
-        console.log('[Event - ItemPurchased] : ', newLog)
-        dispatch(createLogActivity(activityCategories.PURCHASE,
-                                   Eth.toUtf8(result.args.purchaseId),
-                                   Eth.toUtf8(result.args.itemId),
-                                   Eth.fromWei(result.args.amount, 'ether'),
-                                   result.args.buyer,
-                                   result.args.seller)
-        )
-        dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.PURCHASED}})
-      } else {
-        console.log(error)
-        dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
-      }
-    })
-  })
-  }
-}
-
-// Watch block chain event
-// User shipped item and send code (i.e : tracking number)
-export function watchShippingEvent(provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
-
-  return dispatch => {
-    escrow.deployed().then(instance => {
-      instance.ItemShipped().watch(function(error, result) {
-        if (!error) {
-          const newLog = `[${result.args.seller}] shipped ${Eth.toUtf8(result.args.itemId)} - Tracking Number : ${Eth.toUtf8(result.args.code)}`
-          console.log('[Event - ItemShipped] : ', newLog)
-          dispatch(createLogActivity(activityCategories.SHIP_ITEM,
-                                     Eth.toUtf8(result.args.purchaseId),
-                                     Eth.toUtf8(result.args.itemId),
-                                     Eth.toAscii(result.args.code),
-                                     result.args.buyer,
-                                     result.args.seller)
-          )
-          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.SHIPPED}})
-        } else {
-          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
-        }
-      })
-    })
-  }
-}
-
-// Watch block chain event
 // User confirm the purchase closing the transaction and paying the seller
 export function watchPurchaseCompleteEvent(provider) {
   const escrow = contract(escrowJSON)

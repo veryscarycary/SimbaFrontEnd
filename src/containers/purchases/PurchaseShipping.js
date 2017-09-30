@@ -9,6 +9,7 @@ import { selectPurchase } from '../../actions/actions_purchases'
 import { sendCode } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
 import { purchase } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 import '../../style/purchase-shipping.css'
 
@@ -90,8 +91,6 @@ class PurchaseShipping extends Component {
         return this.renderShippingConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorShipping()
-      case purchaseState.PENDING_SHIPPED:
-        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -102,7 +101,13 @@ class PurchaseShipping extends Component {
   }
 
   submit(model) {
+    this.props.openModal({
+      title: 'Sending your shipping information',
+      content: "Your shipping information are being sent to the buyer. Please don't close this page until it's finished.",
+    })
+
     this.props.sendCode(this.props.purchase.id, this.state.shippingNumber, this.props.provider)
+      .then(() => this.props.closeModal())
   }
 
   renderShippingDeadlineDate() {
@@ -237,4 +242,4 @@ function mapStateToProps(state) {
   return { provider: state.provider, purchase: purchase(state) }
 }
 
-export default connect(mapStateToProps, { selectPurchase, sendCode })(PurchaseShipping)
+export default withTransactionWatcher('ItemShipping')(connect(mapStateToProps, { selectPurchase, sendCode })(PurchaseShipping))
