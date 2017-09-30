@@ -9,18 +9,13 @@ import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
 import { item, purchase, current_user } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 import '../../style/checkout.css'
 
 
 class ItemCheckOut extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      finalPrice: 0.0
-    }
-  }
+  state = { finalPrice: 0.0 }
 
   componentWillMount() {
     if (this.props.provider.isConnected) {
@@ -51,7 +46,15 @@ class ItemCheckOut extends Component {
 
   purchaseItem(event) {
     event.preventDefault()
+
+    this.props.openModal({
+      title: 'Processing your order',
+      content: "Your order is being transmitted. Please don't close this page until it's finished.",
+    })
+
     this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
+      .then(() => this.props.closeModal())
+      .catch(() => this.props.closeModal())
   }
 
   renderPurchaseConfirmation() {
@@ -205,8 +208,6 @@ class ItemCheckOut extends Component {
       return <div>Loading..</div>
     }
 
-    const submitting = this.props.purchase.purchaseState === purchaseState.PENDING_PURCHASED
-
     return (
       <div id="checkout">
         <div className="container">
@@ -215,19 +216,6 @@ class ItemCheckOut extends Component {
             <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice} purchase={this.props.purchase} />
           </div>
         </div>
-
-        <Modal
-          isOpen={submitting}
-          contentLabel="Purchase modal"
-        >
-          <div className="modal-header">
-            <h5 className="modal-title">Processing your order</h5>
-          </div>
-
-          <div className="modal-body">
-            <p>Your order is being transmitted. Please don't close this page until it's finished.</p>
-          </div>
-        </Modal>
       </div>
     )
   }
@@ -237,4 +225,4 @@ function mapStateToProps(state) {
   return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
 }
 
-export default connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut)
+export default withTransactionWatcher('ItemCheckout')(connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut))
