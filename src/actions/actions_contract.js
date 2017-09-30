@@ -34,7 +34,7 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
                          .then(transaction => {
                             dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_PURCHASED } })
                        }).catch(error => {
-                            dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
+                            console.log(error)
                             dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
                        })
       })

@@ -27,7 +27,7 @@ export function watchPurchaseEvent(provider) {
         )
         dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.PURCHASED}})
       } else {
-        console.log(error)
+        console.log("Watcher", error)
         dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
       }
     })
