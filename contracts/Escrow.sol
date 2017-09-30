@@ -26,12 +26,28 @@ contract Escrow {
     bytes32[] comments;
   }
 
+  struct User {
+    address wallet;
+    Review review;
+    uint salesNumber;
+    uint balance;
+  }
+
+  struct Item {
+    bytes32 itemId;
+    Review review;
+    uint salesNumber;
+  }
+
   address owner;
   mapping(bytes32 => Purchase) public purchases;
-  mapping(bytes32 => uint) public itemSales;
-  mapping(address => uint) public userSales;
-  mapping(address => Review) public userReviews;
-  mapping(bytes32 => Review) public itemReviews;
+  // mapping(bytes32 => uint) public itemSales;
+  // mapping(bytes32 => Review) public itemReviews;
+  // mapping(address => uint) public userSales;
+  // mapping(address => Review) public userReviews;
+  mapping(address => User) public sellers;
+  mapping(bytes32 => Item) public items;
+
   bytes32[] private pendingPurchases;
   bytes32[] private pendingPurchasesToDelete;
   uint private numPendingPurchasesToDelete = 0;
@@ -48,21 +64,40 @@ contract Escrow {
     owner = msg.sender;
   }
 
+
+  /**
+   * Guarantee that the sender is the creator of the contract (the one who deployed it)
+   */
   modifier onlyOwner() {
     require(msg.sender == owner);
     _;
   }
 
+  /**
+   * Guarantee that the sender is the buyer of the purchase
+   * param  {address}
+   * return {}
+   */
   modifier onlyBuyer(address _buyer) {
     require(msg.sender == _buyer);
     _;
   }
 
+  /**
+   * Guarantee that the sender is the Seller of the purchase
+   * param  {address}
+   * return {}
+   */
   modifier onlySeller(address _seller) {
     require(msg.sender == _seller);
     _;
   }
 
+  /**
+   * Guarantee that the sender is either a buyer or seller of his transaction
+   * params {address}
+   * params {address}
+   */
   modifier onlyBuyerOrSeller(address _buyer, address _seller) {
     require(msg.sender == _buyer || msg.sender == _seller);
     _;
@@ -70,8 +105,8 @@ contract Escrow {
 
   /**
    * Prevent a buyer from buying an item he listed himself
-   * {address} _buyer
-   * {address} _seller
+   * params {address} _buyer
+   * params {address} _seller
    */
   modifier preventSelfBuy(address _buyer, address _seller) {
     require(_buyer != _seller);
@@ -80,8 +115,8 @@ contract Escrow {
 
   /**
    * Require that current state of purchase "_purchaseState" is equal to "_tmpState"
-   * {Purchase} _purchase: current purchase
-   * {Status} _requirePurchaseState: purchase status we want the purchase to be equal to
+   * params {Purchase} _purchase: current purchase
+   * params {Status} _requirePurchaseState: purchase status we want the purchase to be equal to
    */
   modifier onlyForPurchaseState(Purchase _purchase, Status _requirePurchaseState) {
     require(_purchase.status == _requirePurchaseState);
@@ -90,10 +125,10 @@ contract Escrow {
 
   /**
    * Buyer Purchase an item '_itemId' from Seller (_seller) - State of the purchase : "Purchased"
-   *  {bytes32} ID of _purchase
-   *  {address} wallet address of _seller
-   *  {bytes32} ID of _item
-   *  {uint} seller needs to ship the item within _shippingDaysDeadline days after purchase or purchase will be timeout and cancelled
+   *  params {bytes32} ID of _purchase
+   *  params {address} wallet address of _seller
+   *  params {bytes32} ID of _item
+   *  params {uint} seller needs to ship the item within _shippingDaysDeadline days after purchase or purchase will be timeout and cancelled
    */
   function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId, uint _shippingDaysDeadline)
   preventSelfBuy(msg.sender, _seller)
@@ -110,9 +145,12 @@ contract Escrow {
     ItemPurchased(_purchaseId, msg.sender, _seller, _itemId, msg.value);
   }
 
-  // Seller send the code to Buyer
-  // Code can be a tracking number, a digital code, a coupon
-  // State of the purchase : "Shipped"
+  /**
+   * Seller send the code to Buyer (Code can be a tracking number, a digital code, a coupon) [ State of the purchase : "Shipped"]
+   * params {bytes32 _purchaseId}
+   * params {bytes32 _code}
+   * return {Event Log ItemShipped}
+   */
   function setCode(bytes32 _purchaseId, bytes32 _code)
   onlySeller(purchases[_purchaseId].seller)
   public
@@ -155,12 +193,12 @@ contract Escrow {
       review = itemReviews[purchases[_purchaseId].itemId];
     }
 
-    // No rating was provided
+    // Test if rating was provided
     if (_rating != 0) {
       review.total += 1;
       review.rating += _rating;
     }
-    // No review was provided
+    // Test if review was provided
     if (_reviewId.length != 0) {
       review.comments.push(_reviewId);
     }
