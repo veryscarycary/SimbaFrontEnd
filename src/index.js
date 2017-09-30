@@ -5,6 +5,7 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import promise from 'redux-promise'
 import thunk from 'redux-thunk'
 import { Helmet } from 'react-helmet'
+import ReactModal from 'react-modal'
 
 import './style/vendor/bootstrap.css'
 import './style/vendor/font-awesome.min.css'
@@ -17,6 +18,31 @@ import reducers from './reducers/index'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const createStoreWithMiddleware = composeEnhancers(applyMiddleware(promise, thunk))(createStore)
+
+ReactModal.defaultStyles = {
+  overlay : {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)'
+  },
+  content : {
+    position: 'absolute',
+    top: '40px',
+    left: '40px',
+    right: '40px',
+    bottom: '40px',
+    border: '1px solid #ccc',
+    background: '#fff',
+    overflow: 'auto',
+    WebkitOverflowScrolling: 'touch',
+    borderRadius: '4px',
+    outline: 'none',
+    padding: '20px'
+  }
+}
 
 ReactDOM.render(
   <Provider store={createStoreWithMiddleware(reducers)}>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import Modal from 'react-modal'
 
 import PurchaseSummary from '../purchases/PurchaseSummary'
 
@@ -100,16 +101,11 @@ class ItemCheckOut extends Component {
   }
 
   renderFormOrConfirmation() {
-    if (!this.props.purchase.purchaseState) {
-      return this.renderShippingForm()
-    }
-    switch(this.props.purchase.purchaseState) {
+    switch (this.props.purchase.purchaseState) {
       case purchaseState.PURCHASED:
         return this.renderPurchaseConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorPurchase()
-      case purchaseState.PENDING_PURCHASED:
-        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -208,6 +204,9 @@ class ItemCheckOut extends Component {
     if (!this.props.item.name) {
       return <div>Loading..</div>
     }
+
+    const submitting = this.props.purchase.purchaseState === purchaseState.PENDING_PURCHASED
+
     return (
       <div id="checkout">
         <div className="container">
@@ -216,6 +215,19 @@ class ItemCheckOut extends Component {
             <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice} purchase={this.props.purchase} />
           </div>
         </div>
+
+        <Modal
+          isOpen={submitting}
+          contentLabel="Purchase modal"
+        >
+          <div className="modal-header">
+            <h5 className="modal-title">Processing your order</h5>
+          </div>
+
+          <div className="modal-body">
+            <p>Your order is being transmitted. Please don't close this page until it's finished.</p>
+          </div>
+        </Modal>
       </div>
     )
   }
