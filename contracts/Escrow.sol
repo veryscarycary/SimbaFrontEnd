@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10; //We have to specify what version of compiler this code will use
+pragma solidity ^0.4.15; //We have to specify what version of compiler this code will use
 
 contract Escrow {
   enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerShippingTimeOut, BuyerConfirmationTimeOut}
@@ -32,10 +32,10 @@ contract Escrow {
   mapping(address => uint) public userSales;
   mapping(address => Review) public userReviews;
   mapping(bytes32 => Review) public itemReviews;
-  bytes32[] pendingPurchases;
-  bytes32[] pendingPurchasesToDelete;
-  uint numPendingPurchasesToDelete = 0;
-  uint confirmationDaysDeadline = 15;
+  bytes32[] private pendingPurchases;
+  bytes32[] private pendingPurchasesToDelete;
+  uint private numPendingPurchasesToDelete = 0;
+  uint public confirmationDaysDeadline = 15;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
@@ -53,19 +53,52 @@ contract Escrow {
     _;
   }
 
-  // modifier onlyBuyer(buyer) {
-  //   require(msg.sender == buyer);
-  //   _;
-  // }
+  modifier onlyBuyer(address _buyer) {
+    require(msg.sender == _buyer);
+    _;
+  }
 
-  // modifier onlySeller(seller) {
-  //   require(msg.sender == seller);
-  //   _;
-  // }
+  modifier onlySeller(address _seller) {
+    require(msg.sender == _seller);
+    _;
+  }
 
-  // Buyer Purchase an item '_itemId' from Seller (_seller)
-  // State of the purchase : "Purchased"
-  function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId, uint _shippingDaysDeadline) payable {
+  modifier onlyBuyerOrSeller(address _buyer, address _seller) {
+    require(msg.sender == _buyer || msg.sender == _seller);
+    _;
+  }
+
+  /**
+   * Prevent a buyer from buying an item he listed himself
+   * {address} _buyer
+   * {address} _seller
+   */
+  modifier preventSelfBuy(address _buyer, address _seller) {
+    require(_buyer != _seller);
+    _;
+  }
+
+  /**
+   * Require that current state of purchase "_purchaseState" is equal to "_tmpState"
+   * {Purchase} _purchase: current purchase
+   * {Status} _requirePurchaseState: purchase status we want the purchase to be equal to
+   */
+  modifier onlyForPurchaseState(Purchase _purchase, Status _requirePurchaseState) {
+    require(_purchase.status == _requirePurchaseState);
+    _;
+  }
+
+  /**
+   * Buyer Purchase an item '_itemId' from Seller (_seller) - State of the purchase : "Purchased"
+   *  {bytes32} ID of _purchase
+   *  {address} wallet address of _seller
+   *  {bytes32} ID of _item
+   *  {uint} seller needs to ship the item within _shippingDaysDeadline days after purchase or purchase will be timeout and cancelled
+   */
+  function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId, uint _shippingDaysDeadline)
+  preventSelfBuy(msg.sender, _seller)
+  payable public
+  {
     purchases[_purchaseId].itemId = _itemId;
     purchases[_purchaseId].seller = _seller;
     purchases[_purchaseId].buyer = msg.sender;
@@ -80,7 +113,10 @@ contract Escrow {
   // Seller send the code to Buyer
   // Code can be a tracking number, a digital code, a coupon
   // State of the purchase : "Shipped"
-  function setCode(bytes32 _purchaseId, bytes32 _code) {
+  function setCode(bytes32 _purchaseId, bytes32 _code)
+  onlySeller(purchases[_purchaseId].seller)
+  public
+  {
     purchases[_purchaseId].code = _code;
     purchases[_purchaseId].status = Status.Shipped;
     purchases[_purchaseId].shippedTime = now;
@@ -90,7 +126,10 @@ contract Escrow {
   // Buyer confirms receive the code from the Seller - Completing the transactions
   // Seller receives the money
   // State of the purchase : "Completed"
-  function confirmPurchase(bytes32 _purchaseId, bytes32 _userReviewId, bytes32 _itemReviewId, uint _userRating, uint _itemRating) {
+  function confirmPurchase(bytes32 _purchaseId, bytes32 _userReviewId, bytes32 _itemReviewId, uint _userRating, uint _itemRating)
+  onlyBuyer(purchases[_purchaseId].buyer)
+  public
+  {
     if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
       purchases[_purchaseId].amount = 0;
       purchases[_purchaseId].status = Status.Completed;
@@ -108,7 +147,7 @@ contract Escrow {
   }
 
   // Set Item or Users's review & rating
-  function setReview(bool isUserReview, bytes32 _purchaseId, bytes32 _reviewId, uint _rating) internal {
+  function setReview(bool isUserReview, bytes32 _purchaseId, bytes32 _reviewId, uint _rating) private {
     Review review;
     if (isUserReview) {
       review = userReviews[purchases[_purchaseId].seller];
@@ -131,7 +170,11 @@ contract Escrow {
   // ---> can only happen before the item has been shipped
   // If sender == buyer : State of the purchase : "BuyerCancelled"
   // If sender == buyer : State of the purchase : "SellerCancelled"
-  function cancelPurchase(bytes32 _purchaseId) {
+  function cancelPurchase(bytes32 _purchaseId)
+  onlyForPurchaseState(purchases[_purchaseId], Status.Purchased)
+  onlyBuyerOrSeller(purchases[_purchaseId].buyer, purchases[_purchaseId].seller)
+  public
+  {
     if (purchases[_purchaseId].buyer.send(purchases[_purchaseId].amount)) {
       if (purchases[_purchaseId].buyer == msg.sender) {
           purchases[_purchaseId].status = Status.BuyerCancelled;
@@ -147,18 +190,17 @@ contract Escrow {
   }
 
   // Get total balance of the Escrow contract
-  function getBalance() constant returns (uint) {
+  function getBalance() onlyOwner constant public returns (uint) {
     return this.balance;
   }
 
   // Kill the contract and send all the balance to the owner's wallet
-  function killContract() onlyOwner {
+  function killContract() onlyOwner public {
     selfdestruct(owner);
   }
 
-
   // Get Shipping Date Deadline for a purchase
-  function getPurchaseTimes(bytes32 _purchaseId) constant returns (uint, uint, uint, uint, uint, uint) {
+  function getPurchaseTimes(bytes32 _purchaseId) constant public returns (uint, uint, uint, uint, uint, uint) {
     return (purchases[_purchaseId].shippingDaysDeadline,
             purchases[_purchaseId].purchasedTime,
             purchases[_purchaseId].shippedTime,
@@ -168,51 +210,51 @@ contract Escrow {
   }
 
   // Get current state of a purchase
-  function getPurchaseState(bytes32 _purchaseId) constant returns (Status) {
+  function getPurchaseState(bytes32 _purchaseId) constant public returns (Status) {
     return purchases[_purchaseId].status;
   }
 
   // Get seller total number of sales he made
-  function getUserSalesNumber(address _user) constant returns (uint) {
+  function getUserSalesNumber(address _user) constant public returns (uint) {
     return userSales[_user];
   }
 
   // Get total number item sold
-  function getItemSalesNumber(bytes32 _itemId) constant returns (uint) {
+  function getItemSalesNumber(bytes32 _itemId) constant public returns (uint) {
     return itemSales[_itemId];
   }
 
   // Get a seller total number of rating
   //     -- and the accumulated rating score
   //     -- and the total number of reviews left
-  function getUserReviews(address _user) constant returns (uint, uint, uint) {
+  function getUserReviews(address _user) constant public returns (uint, uint, uint) {
     return (userReviews[_user].total,
             userReviews[_user].rating,
             userReviews[_user].comments.length);
   }
 
   // Get one user review ID
-  function getUserReviewComment(address _user, uint _index) constant returns (bytes32) {
+  function getUserReviewComment(address _user, uint _index) constant public returns (bytes32) {
     return userReviews[_user].comments[_index];
   }
 
   // Get an item total number of rating
   //     -- and the accumulated rating score
   //     -- and the total number of reviews left
-  function getItemReviews(bytes32 _itemId) constant returns (uint, uint, uint) {
+  function getItemReviews(bytes32 _itemId) constant public returns (uint, uint, uint) {
     return (itemReviews[_itemId].total,
             itemReviews[_itemId].rating,
             itemReviews[_itemId].comments.length);
   }
 
   // Get one item review ID
-  function getItemReviewComment(bytes32 _itemId, uint _index) constant returns (bytes32) {
+  function getItemReviewComment(bytes32 _itemId, uint _index) constant public returns (bytes32) {
     return itemReviews[_itemId].comments[_index];
   }
 
   // Delete a purchase from the list of pending purchases
   // i.e : when a purchase is complete or cancel
-  function deleteOnePurchaseFromPending(uint index) {
+  function deleteOnePurchaseFromPending(uint index) private {
     // Index == -1 means that the item doesn't exist in the array
     require((index !=  uint(-1)) && (index < pendingPurchases.length));
 
@@ -225,7 +267,7 @@ contract Escrow {
   }
 
    // Finds the index of a given purchaseId in the pending purchases array.
-  function IndexOfPurchase(bytes32 _purchaseId) constant returns(uint) {
+  function IndexOfPurchase(bytes32 _purchaseId) constant public returns(uint) {
     for (uint i = 0; i < pendingPurchases.length; i++) {
       if (pendingPurchases[i] == _purchaseId) {
         return i;
@@ -238,7 +280,7 @@ contract Escrow {
   // Main auto cancel function
   //   -- cancel shipping Timeout orders
   //   -- cancel confirmation timeout orders
-  function cancelTimeoutOrders() {
+  function cancelTimeoutOrders() onlyOwner public {
     for (uint i = 0; i < pendingPurchases.length; i++) {
       // Automatically cancel orders that haven't been shipped before the deadline
       cancelShippingTimeoutOrders(pendingPurchases[i]);
@@ -250,7 +292,7 @@ contract Escrow {
 
   // This function will remove all purchases included in pendingPurchasesToDelete array from pendingPurchases
   // Purchase found in pendingPurchasesToDelete : means that the purchase state is not pending anymore
-  function clearPendingPurchases() {
+  function clearPendingPurchases() private {
     for (uint i = 0; i < numPendingPurchasesToDelete; i++) {
       deleteOnePurchaseFromPending(IndexOfPurchase(pendingPurchasesToDelete[i]));
     }
@@ -258,7 +300,7 @@ contract Escrow {
   }
 
   // Automatically cancel orders that haven't been shipped before the deadline
-  function cancelShippingTimeoutOrders(bytes32 _purchaseId) {
+  function cancelShippingTimeoutOrders(bytes32 _purchaseId) private {
     if ((purchases[_purchaseId].shippingDaysDeadline <  now) && (purchases[_purchaseId].status == Status.Purchased)) {
       if (purchases[_purchaseId].buyer.send(purchases[_purchaseId].amount)) {
         purchases[_purchaseId].status = Status.SellerShippingTimeOut;
@@ -275,7 +317,7 @@ contract Escrow {
   }
 
   // Automatically confirm orders that haven't been confirmed by the users before the deadline
-  function cancelConfirmationTimeoutOrders(bytes32 _purchaseId) {
+  function cancelConfirmationTimeoutOrders(bytes32 _purchaseId) private {
     if (((purchases[_purchaseId].shippedTime + confirmationDaysDeadline * 1 days) <  now) && (purchases[_purchaseId].status == Status.Shipped)) {
       if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
         purchases[_purchaseId].status = Status.BuyerConfirmationTimeOut;
@@ -292,23 +334,8 @@ contract Escrow {
   }
 
   // Set a global number of days limitation to confirm a purchase after shipping before it gets automatically confirmed
-  function setConfirmationDaysDeadline(uint _day) {
+  function setConfirmationDaysDeadline(uint _day) onlyOwner public {
     confirmationDaysDeadline = _day;
   }
-
-  function getConfirmationDaysDeadline() constant returns(uint) {
-    return confirmationDaysDeadline;
-  }
-
-  function getOnePendingPurchase(uint _index) constant returns(bytes32, uint) {
-    return (pendingPurchases[_index],
-            pendingPurchases.length);
-  }
-
-  // function fee(){
-  //     escrow.send(this.balance / 100); //1% fee
-  //     payOut();
-  // }
-
 }
 
