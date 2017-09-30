@@ -43,21 +43,7 @@ export function createPurchase(item, finalPrice, provider) {
         })
         dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
 
-        return EscrowContract.purchaseItem({
-          purchaseId: request.data.id,
-          sellerAddress: item.user.wallet,
-          itemId: item.id,
-          amount: request.data.amount,
-          shippingDeadline: item.shipping_deadline,
-        })
-         .then((transaction) => {
-            dispatch({ type: UPDATE_PURCHASE, payload: { id: request.data.id, purchaseState: purchaseState.PURCHASED } })
-            return transaction
-          })
-         .catch((error) => {
-            dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
-            dispatch({ type: UPDATE_PURCHASE, payload: { id: request.data.id, purchaseState: purchaseState.ERROR } })
-          })
+        return dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline))
     })
   }
 }

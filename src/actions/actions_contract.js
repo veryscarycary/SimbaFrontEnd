@@ -17,15 +17,38 @@ import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
 
 // Block chain transaction
+// Buyer Purchase an item '_itemId' from Seller (_seller)
+// State of the purchase : "PURCHASED"
+export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider) {
+  return (dispatch) => EscrowContract.purchaseItem({
+    purchaseId,
+    sellerAddress,
+    itemId,
+    amount,
+    shippingDeadline,
+  })
+   .then((transaction) => {
+      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
+    })
+   .catch((error) => {
+    console.error('Could not create purchase', error)
+
+      dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
+      dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+    })
+}
+
+// Block chain transaction
 // Seller send the code to Buyer
 // Code can be a tracking number, a digital code, a coupon
 // State of the purchase : "SHIPPED"
 export function sendCode(purchaseId, code, provider) {
   return (dispatch) => EscrowContract.sendShippingInformation({ purchaseId, trackingNumber: code })
     .then(transaction => {
-      dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
-      return transaction
+      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
     }).catch(error => {
+      console.error('Could not send shipping info', error)
+
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
@@ -35,23 +58,21 @@ export function sendCode(purchaseId, code, provider) {
 // Seller receives the money
 // State of the purchase : "COMPLETED"
 export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRating, itemRating, provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
+  return (dispatch) => EscrowContract.confirmPurchase({
+    purchaseId,
+    userReviewId,
+    itemReviewId,
+    userRating,
+    itemRating,
+  })
+    .then((transaction) => {
+      return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
+    }).catch(error => {
+      console.error('Could not confirm purchase', error)
 
-  return dispatch => {
-    provider.eth.accounts().then((accounts) => {
-      escrow.deployed().then(instance => {
-        dispatch(watchPurchaseCompleteEvent(provider))
-        instance.confirmPurchase.sendTransaction(purchaseId, userReviewId, itemReviewId, userRating, itemRating, {from: accounts[0]})
-                        .then(transaction => {
-                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_COMPLETED } })
-                      }).catch(error => {
-                          dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
-                          dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
-                      })
-      })
+      dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
+      dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
-  }
 }
 
 // Block chain transaction

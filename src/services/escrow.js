@@ -110,6 +110,33 @@ class EscrowContract {
           ))
       )
   }
+
+  /**
+   * Confirms and complete the purchase
+   * @param  {String} options.purchaseId
+   * @param  {String} options.userReviewId
+   * @param  {String} options.itemReviewId
+   * @param  {Number} options.userRating
+   * @param  {Number} options.itemRating
+   * @return {Promise}
+   */
+  confirmPurchase({ purchaseId, userReviewId, itemReviewId, userRating, itemRating }) {
+    return this.accounts()
+      .then(
+        (accounts) => this.deployed().then(
+          (instance) => instance.confirmPurchase(
+            purchaseId,
+            userReviewId,
+            itemReviewId,
+            userRating,
+            itemRating,
+            {
+              from: accounts[0]
+            }
+          )
+        )
+      )
+  }
 }
 
 export default new EscrowContract()

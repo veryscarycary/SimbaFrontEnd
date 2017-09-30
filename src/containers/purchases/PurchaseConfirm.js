@@ -10,6 +10,7 @@ import { selectPurchase } from '../../actions/actions_purchases'
 import { createReview } from '../../actions/actions_reviews'
 import { purchaseState } from '../shared/PurchaseState'
 import { purchase } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 import '../../style/purchase-confirm.css'
 
@@ -104,7 +105,13 @@ class PurchaseConfirm extends Component {
   }
 
   submit(model) {
+    this.props.openModal({
+      title: 'Submitting your review',
+      content: "Your review is being sumitted. Please don't close this page until it's finished.",
+    })
+
     this.props.createReview(this.props.purchase, this.state, this.props.provider)
+      .then(() => this.props.closeModal())
   }
 
   renderDate(epochTime) {
@@ -223,4 +230,4 @@ function mapStateToProps(state) {
   return { provider: state.provider, purchase: purchase(state) }
 }
 
-export default connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm)
+export default withTransactionWatcher('ItemConfirm')(connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm))

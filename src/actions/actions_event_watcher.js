@@ -7,35 +7,6 @@ import { createLogActivity } from './actions_activities'
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
 
 // Watch block chain event
-// User confirm the purchase closing the transaction and paying the seller
-export function watchPurchaseCompleteEvent(provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
-
-  return dispatch => {
-    escrow.deployed().then(instance => {
-      instance.PurchaseCompleted().watch(function(error, result) {
-        if (!error) {
-          const newLog = `[${result.args.buyer}] confirms receiving ${Eth.toUtf8(result.args.itemId)}. The transaction is complete.`
-          console.log('[Event - PurchaseComplete] : ', newLog)
-          dispatch(createLogActivity(activityCategories.CONFIRM_PURCHASE,
-                                     Eth.toUtf8(result.args.purchaseId),
-                                     Eth.toUtf8(result.args.itemId),
-                                     '',
-                                     result.args.buyer,
-                                     result.args.seller)
-          )
-          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.COMPLETED}})
-        } else {
-          console.log(error)
-          dispatch({type: CREATE_PURCHASE, payload: {id: Eth.toUtf8(result.args.purchaseId), purchaseState: purchaseState.ERROR}})
-        }
-      })
-    })
-  }
-}
-
-// Watch block chain event
 // When a buyer cancel a purchases before the item was shipped
 export function watchCancelPurchaseEvent(provider) {
   const escrow = contract(escrowJSON)

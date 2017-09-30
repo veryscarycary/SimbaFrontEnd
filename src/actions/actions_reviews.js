@@ -27,26 +27,35 @@ export function createReview(purchase, params, provider) {
     item_id: purchase.item.id,
   }
 
-  return dispatch => {
-    return dispatch(createUserReview(user_params)).then((userRequest) => {
+  return dispatch => dispatch(createUserReview(user_params))
+    .then((userRequest) => {
       const normalizeRequest = normalize(userRequest.data, reviewNormalizr)
+
       dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
       dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
       dispatch({type: CREATE_REVIEW, payload: Object.assign({}, userRequest.data, { isItem: false })})
-      return dispatch(createItemReview(item_params)).then((itemRequest) => {
-        const normalizeRequest = normalize(itemRequest.data, reviewNormalizr)
-        dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
-        dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
-        dispatch({type: CREATE_REVIEW, payload: Object.assign({}, itemRequest.data, { isItem: true })})
-        dispatch(confirmPurchase(purchase.id,
-                                 userRequest.data.id,
-                                 itemRequest.data.id,
-                                 user_params.rating,
-                                 item_params.rating, provider))
+
+      return dispatch(createItemReview(item_params))
+        .then((itemRequest) => {
+          const normalizeRequest = normalize(itemRequest.data, reviewNormalizr)
+
+          dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
+          dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+          dispatch({type: CREATE_REVIEW, payload: Object.assign({}, itemRequest.data, { isItem: true })})
+
+          return dispatch(
+            confirmPurchase(
+              purchase.id,
+              userRequest.data.id,
+              itemRequest.data.id,
+              user_params.rating,
+              item_params.rating, provider
+            )
+          )
       })
     })
-  }
 }
+
 
 export function createUserReview(params) {
   return dispatch => {
