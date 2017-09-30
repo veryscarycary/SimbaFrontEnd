@@ -13,11 +13,15 @@ import './style/vendor/ionicons.css'
 
 import App from './App'
 import registerServiceWorker from './registerServiceWorker'
+import EscrowContract from './services/escrow'
 
 import reducers from './reducers/index'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const createStoreWithMiddleware = composeEnhancers(applyMiddleware(promise, thunk))(createStore)
+
+// Initialize escrow contract
+EscrowContract.initializeProvider()
 
 ReactModal.defaultStyles = {
   overlay : {

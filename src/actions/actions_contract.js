@@ -1,6 +1,7 @@
 import { default as contract } from 'truffle-contract'
 import Eth from 'ethjs'
 import escrowJSON from '../contract_build/Escrow.json'
+import EscrowContract from '../services/escrow'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
 import { watchPurchaseEvent,
@@ -19,26 +20,24 @@ import { fetchOneReview } from './actions_reviews'
 // Buyer Purchase an item '_itemId' from Seller (_seller)
 // State of the purchase : "PURCHASED"
 export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline, provider) {
-  const escrow = contract(escrowJSON)
-  escrow.setProvider(provider.eth.currentProvider)
-
-  return dispatch => {
-    provider.eth.accounts().then((accounts) => {
-      escrow.deployed().then(instance => {
-        dispatch(watchPurchaseEvent(provider))
-        instance.purchase.sendTransaction(purchaseId,
-                                          sellerAddress,
-                                          itemId,
-                                          shippingDeadline,
-                                          {from: accounts[0], value: Eth.toWei(amount, 'ether')})
-                         .then(transaction => {
-                            dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_PURCHASED } })
-                       }).catch(error => {
-                            dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
-                            dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
-                       })
-      })
+  return (dispatch) => {
+    return EscrowContract.purchaseItem({
+      purchaseId,
+      sellerAddress,
+      itemId,
+      amount,
+      shippingDeadline
     })
+     .then((transaction) => {
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PENDING_PURCHASED } })
+        return transaction
+      })
+     .catch((error) => {
+        dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+
+        throw error
+      })
   }
 }
 

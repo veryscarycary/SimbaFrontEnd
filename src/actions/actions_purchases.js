@@ -8,7 +8,9 @@ import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_cont
 import { CREATE_USERS, SELECT_USER } from './actions_users'
 import { CREATE_ITEMS, SELECT_ITEM } from './actions_items'
 
+import { purchaseState } from '../containers/shared/PurchaseState'
 import { purchasesNormalizr, purchaseNormalizr } from '../models/normalizr'
+import EscrowContract from '../services/escrow'
 
 export const CREATE_PURCHASE = 'CREATE_PURCHASE'
 export const CREATE_PURCHASES = 'CREATE_PURCHASES'
@@ -33,20 +35,32 @@ export function createPurchase(item, finalPrice, provider) {
 
   return dispatch => {
     return axios.post(PURCHASES_URL, params, headers)
-                .then((request) => {
-                  const normalizeRequest = normalize(request.data, purchaseNormalizr)
-                  dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
-                  dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
-                  dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline, provider))
-              }).catch((error) => {
-                  console.log(error)
-                  if (error.response) {
-                    dispatch(setFlashMessage(error.response.data.error, 'error'))
-                  } else {
-                    dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
-                  }
+      .then((request) => {
+        const normalizeRequest = normalize(request.data, purchaseNormalizr)
+        dispatch({
+          type: CREATE_PURCHASES,
+          payload: normalizeRequest.entities.purchases,
+        })
+        dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
 
-              })
+        return EscrowContract.purchaseItem({
+          purchaseId: request.data.id,
+          sellerAddress: item.user.wallet,
+          itemId: item.id,
+          amount: request.data.amount,
+          shippingDeadline: item.shipping_deadline,
+        })
+         .then((transaction) => {
+            dispatch({ type: UPDATE_PURCHASE, payload: { id: request.data.id, purchaseState: purchaseState.PURCHASED } })
+            return transaction
+          })
+         .catch((error) => {
+            dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
+            dispatch({ type: UPDATE_PURCHASE, payload: { id: request.data.id, purchaseState: purchaseState.ERROR } })
+
+            throw error
+          })
+    })
   }
 }
 

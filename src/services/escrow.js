@@ -6,7 +6,21 @@ import getProvider from '../utils/getProvider'
 class EscrowContract {
   constructor() {
     this.escrow = TruffleContract(escrowJSON)
-    this._provider = getProvider() // This is a promise
+    this.initializeProvider()
+  }
+
+  initializeProvider() {
+    this.providerPromise = getProvider()
+      .then((provider) => {
+        this.provider = provider
+        this.escrow.setProvider(provider.Eth.currentProvider)
+
+        return provider
+      })
+  }
+
+  setEscrowProvider(provider) {
+    this.escrow.setProvider(provider.Eth.currentProvider)
   }
 
   /**
@@ -14,7 +28,7 @@ class EscrowContract {
    * @return {Promise}
    */
   provider() {
-    return this._provider
+    return this.providerPromise
   }
 
   /**
@@ -22,7 +36,7 @@ class EscrowContract {
    * @return {Promise}
    */
   accounts() {
-    return this._provider.then((provider) => provider.Eth.accounts())
+    return this.providerPromise.then((provider) => provider.Eth.accounts())
   }
 
   /**
@@ -30,7 +44,7 @@ class EscrowContract {
    * @return {Promise}
    */
   deployed() {
-    this.escrow.deployed()
+    return this.escrow.deployed()
   }
 
   /**
@@ -39,7 +53,7 @@ class EscrowContract {
    * @return {Promise}
    */
   getBalance(wallet) {
-    this._provider.then((provider) => provider.Eth.getBalance(wallet, 'latest'))
+    return this.providerPromise.then((provider) => provider.Eth.getBalance(wallet, 'latest'))
   }
 
   /**
@@ -60,21 +74,22 @@ class EscrowContract {
    * @return {Promise}
    */
   purchaseItem({ purchaseId, sellerAddress, itemId, amount, shippingDeadline }) {
-    return this.accounts((accounts) => {
-      return this.deployed()
-        .then((instance) => {
-          return instance.purchase.sendTransaction(
-            purchaseId,
-            sellerAddress,
-            itemId,
-            shippingDeadline,
-            {
-              from: accounts[0],
-              value: Eth.toWei(amount, 'ether')
-            }
-          )
-        })
-    })
+    return this.accounts()
+      .then(
+        (accounts) => {
+          return this.deployed()
+            .then((instance) => instance.purchase(
+              purchaseId,
+              sellerAddress,
+              itemId,
+              shippingDeadline,
+              {
+                from: accounts[0],
+                value: Eth.toWei(amount, 'ether')
+              }
+            ))
+        }
+      )
   }
 }
 
