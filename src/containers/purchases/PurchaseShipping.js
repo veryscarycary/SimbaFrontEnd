@@ -103,10 +103,10 @@ class PurchaseShipping extends Component {
   submit(model) {
     this.props.openModal({
       title: 'Sending your shipping information',
-      content: "Your shipping information are being sent to the buyer. Please don't close this page until it's finished.",
+      content: "Your shipping information are being sent to the buyer. Please don't close this window until it's finished.",
     })
 
-    this.props.sendCode(this.props.purchase.id, this.state.shippingNumber, this.props.provider)
+    this.props.sendCode(this.props.purchase.id, this.state.shippingNumber)
       .then(() => this.props.closeModal())
   }
 

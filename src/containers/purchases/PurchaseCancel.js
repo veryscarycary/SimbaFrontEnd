@@ -7,8 +7,8 @@ import PurchaseSummary from '../purchases/PurchaseSummary'
 import { selectPurchase } from '../../actions/actions_purchases'
 import { cancelPurchase } from '../../actions/actions_contract'
 import { purchaseState } from '../shared/PurchaseState'
-import { purchase } from '../../models/selectors'
-
+import { purchase, current_user } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 class PurchaseCancel extends Component {
   componentWillMount() {
@@ -79,8 +79,6 @@ class PurchaseCancel extends Component {
         return this.renderCancelConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorShipping()
-      case purchaseState.PENDING_CANCELLED:
-        // Modal For Pending Shipping Transaction
       default:
         return this.renderBuyerInformation()
     }
@@ -88,10 +86,6 @@ class PurchaseCancel extends Component {
 
   handleChange(name, value) {
     this.setState({[name]: value})
-  }
-
-  submit(model) {
-    this.props.sendCode(this.props.purchase.id, this.state.shippingNumber, this.props.provider)
   }
 
   renderPurchaseDate() {
@@ -103,7 +97,21 @@ class PurchaseCancel extends Component {
 
   cancelPurchase(event) {
     event.preventDefault()
-    this.props.cancelPurchase(this.props.purchase.id, this.props.provider)
+
+    this.props.openModal({
+      title: 'Cancelling purchase',
+      content: "Your purchase is being cancelled. Please don't close this window until it's finished.",
+    })
+    const canceller = this.props.purchase.seller === this.props.currentUser.id ? 'seller' : 'buyer'
+
+    this.props.cancelPurchase({
+      purchaseId: this.props.purchase.id,
+      itemId: this.props.purchase.item.id,
+      sellerId: this.props.purchase.seller.id,
+      buyerId: this.props.purchase.buyer.id,
+      canceller,
+    })
+      .then(() => this.props.closeModal())
   }
 
   renderBuyerInformation() {
@@ -135,10 +143,10 @@ class PurchaseCancel extends Component {
           </div>
 
           <div className="text-right">
-            <a href="/" className="checkout-btn-next-step" onClick={(event) => this.cancelPurchase(event)}>
+            <button href="/" className="checkout-btn-next-step" onClick={(event) => this.cancelPurchase(event)}>
               Cancel Order
               <i className="ion-chevron-right"></i>
-            </a>
+            </button>
           </div>
         </section>
       </div>
@@ -163,7 +171,7 @@ class PurchaseCancel extends Component {
 }
 
 function mapStateToProps(state) {
-  return { provider: state.provider, purchase: purchase(state) }
+  return { provider: state.provider, purchase: purchase(state), currentUser : current_user(state) }
 }
 
-export default connect(mapStateToProps, { selectPurchase, cancelPurchase })(PurchaseCancel)
+export default withTransactionWatcher('Cancel modal')(connect(mapStateToProps, { selectPurchase, cancelPurchase })(PurchaseCancel))

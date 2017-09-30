@@ -107,10 +107,10 @@ class PurchaseConfirm extends Component {
   submit(model) {
     this.props.openModal({
       title: 'Submitting your review',
-      content: "Your review is being sumitted. Please don't close this page until it's finished.",
+      content: "Your review is being sumitted. Please don't close this window until it's finished.",
     })
 
-    this.props.createReview(this.props.purchase, this.state, this.props.provider)
+    this.props.createReview(this.props.purchase, this.state)
       .then(() => this.props.closeModal())
   }
 

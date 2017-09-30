@@ -20,10 +20,12 @@ export function watchCancelPurchaseEvent(provider) {
           console.log('[Event - CancelPurchase] : ', newLog)
           var activityCategory = activityCategories.CANCEL_PURCHASE
           var cancelPurchaseState = purchaseState.BUYER_CANCELLED
+
           if (result.args.sender === result.args.seller) {
             activityCategory = activityCategories.CANCEL_SALES
             cancelPurchaseState = purchaseState.SELLER_CANCELLED
           }
+
           dispatch(createLogActivity(activityCategory,
                                      Eth.toUtf8(result.args.purchaseId),
                                      Eth.toUtf8(result.args.itemId),

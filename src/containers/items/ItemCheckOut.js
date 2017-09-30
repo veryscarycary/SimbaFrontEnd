@@ -49,10 +49,10 @@ class ItemCheckOut extends Component {
 
     this.props.openModal({
       title: 'Processing your order',
-      content: "Your order is being transmitted. Please don't close this page until it's finished.",
+      content: "Your order is being transmitted. Please don't close this window until it's finished.",
     })
 
-    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
+    this.props.createPurchase(this.props.item, this.state.finalPrice)
       .then(() => this.props.closeModal())
   }
 

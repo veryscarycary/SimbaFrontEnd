@@ -101,13 +101,15 @@ class EscrowContract {
   sendShippingInformation({ purchaseId, trackingNumber }) {
     return this.accounts()
       .then(
-        (accounts) => this.deployed().then((instance) => instance.setCode(
+        (accounts) => this.deployed().then(
+          (instance) => instance.setCode(
             purchaseId,
             trackingNumber,
             {
               from: accounts[0]
             }
-          ))
+          )
+        )
       )
   }
 
@@ -130,6 +132,25 @@ class EscrowContract {
             itemReviewId,
             userRating,
             itemRating,
+            {
+              from: accounts[0]
+            }
+          )
+        )
+      )
+  }
+
+  /**
+   * Cancels a purchase
+   * @param  {String} options.purchaseId
+   * @return {Promise}
+   */
+  cancelPurchase({ purchaseId }) {
+    return this.accounts()
+      .then(
+        (accounts) => this.deployed().then(
+          (instance) => instance.cancelPurchase(
+            purchaseId,
             {
               from: accounts[0]
             }
