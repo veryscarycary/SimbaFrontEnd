@@ -1,7 +1,6 @@
-import axios from 'axios'
 import { normalize } from 'normalizr'
 
-import { headers, REVIEWS_URL } from '../api_url'
+import Api, { REVIEWS_URL } from '../services/api'
 import { reviewNormalizr } from '../models/normalizr'
 import { confirmPurchase } from './actions_contract'
 import { CREATE_USERS } from './actions_users'
@@ -11,7 +10,7 @@ import Auth from '../services/auth'
 
 export const CREATE_REVIEW = 'CREATE_REVIEW'
 
-export function createReview(purchase, params, provider) {
+export function createReview(purchase, params) {
   const user_params = {
     buyer_wallet: Auth.wallet,
     seller_wallet: purchase.seller.wallet,
@@ -49,7 +48,7 @@ export function createReview(purchase, params, provider) {
               userRequest.data.id,
               itemRequest.data.id,
               user_params.rating,
-              item_params.rating, provider
+              item_params.rating,
             )
           )
       })
@@ -59,19 +58,19 @@ export function createReview(purchase, params, provider) {
 
 export function createUserReview(params) {
   return dispatch => {
-    return axios.post(REVIEWS_URL, params, headers)
+    return Api.post(REVIEWS_URL, params)
   }
 }
 
 export function createItemReview(params) {
   return dispatch => {
-    return axios.post(REVIEWS_URL, params, headers)
+    return Api.post(REVIEWS_URL, params)
   }
 }
 
 export function fetchOneReview(reviewId, isItem) {
   return dispatch => {
-    return axios.get(`${REVIEWS_URL}/${reviewId}`)
+    return Api.get(`${REVIEWS_URL}/${reviewId}`)
                 .then(request => {
                   const normalizeRequest = normalize(request.data, reviewNormalizr)
                   dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})

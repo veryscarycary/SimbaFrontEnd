@@ -14,24 +14,8 @@ import '../../style/item.css'
 
 class ItemShow extends Component {
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id)
-    }
+    this.props.selectItem(this.props.match.params.item_id)
   }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id)
-    }
-  }
-
-  // renderReviews() {
-  //   return (
-  //     this.props.itemReviews.map(review => {
-  //       return <ReviewShow key={review.id} review={review} />
-  //     })
-  //   )
-  // }
 
   renderRating() {
     return (
@@ -49,14 +33,6 @@ class ItemShow extends Component {
       </div>
     )
   }
-
-  // renderSalesNumber() {
-  //   return (
-  //     <div>
-  //       { this.props.item.sales } sold
-  //     </div>
-  //   )
-  // }
 
   renderItemPrice() {
     if (!this.props.item.discount || this.props.item.discount === 0) {
@@ -244,7 +220,7 @@ class ItemShow extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, itemReviews: itemReviews(state) }
+  return { item : item(state), itemReviews: itemReviews(state) }
 }
 
 export default connect(mapStateToProps, { selectItem })(ItemShow)

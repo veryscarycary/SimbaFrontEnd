@@ -27,15 +27,7 @@ class PurchaseConfirm extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
-    }
+    this.props.selectPurchase(this.props.match.params.purchase_id)
   }
 
   renderPurchaseConfirmation() {
@@ -227,7 +219,7 @@ class PurchaseConfirm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { provider: state.provider, purchase: purchase(state) }
+  return { purchase: purchase(state) }
 }
 
 export default withTransactionWatcher('ItemConfirm')(connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm))

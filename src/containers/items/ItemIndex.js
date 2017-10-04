@@ -10,15 +10,7 @@ import { items } from '../../models/selectors'
 
 class ItemIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.fetchAllItems(this.props.provider)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchAllItems(nextProps.provider)
-    }
+    this.props.fetchAllItems()
   }
 
   renderRating(item) {
@@ -94,7 +86,7 @@ class ItemIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { items: items(state), provider: state.provider }
+  return { items: items(state) }
 }
 
 export default connect(mapStateToProps, { fetchAllItems })(ItemIndex)
