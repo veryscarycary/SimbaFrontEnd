@@ -203,13 +203,19 @@ contract Escrow {
     }
   }
 
-  // Set Item or Users's review & rating
+  /**
+   * Set Item or Users's review & rating
+   * param {bool}     isUserReview [Distinguish if we're setting an Item or an User Review]
+   * param {bytes32}  _purchaseId  [ID of purchase in Database]
+   * param {bytes32}  _reviewId    [ID of Review in Database]
+   * param {uint}     _rating      [Value between 1-5]
+   */
   function setReview(bool isUserReview, bytes32 _purchaseId, bytes32 _reviewId, uint _rating) private {
     Review review;
     if (isUserReview) {
-      review = userReviews[purchases[_purchaseId].seller];
+      review = sellers[purchases[_purchaseId].seller].review;
     } else {
-      review = itemReviews[purchases[_purchaseId].itemId];
+      review = items[purchases[_purchaseId].itemId].review;
     }
 
     // Test if rating was provided
@@ -246,17 +252,39 @@ contract Escrow {
     }
   }
 
-  // Get total balance of the Escrow contract
+  /**
+   * Get total balance of the Escrow contract
+   * @return {uint}   [total balance of Escrow contract]
+   */
   function getBalance() onlyOwner constant public returns (uint) {
     return this.balance;
   }
 
-  // Kill the contract and send all the balance to the owner's wallet
+  /**
+   * Get msg.sender current balance (money available to be withdrawn anytime)
+   * @return {uint}   [msg.sender balance]
+   */
+  function getUserBalance() constant public returns (uint) {
+    return sellers[msg.sender].balance;
+  }
+
+  /**
+   * Kill the contract and send all the balance to the contract owner
+   */
   function killContract() onlyOwner public {
     selfdestruct(owner);
   }
 
-  // Get Shipping Date Deadline for a purchase
+  /**
+   * Get All Status Time for a Purchase
+   * param  {bytes32}  _purchaseId) [ID of purchase in database]
+   * return {uint} shippingDaysDeadline [Block time when purchase will be considered in shipping Timeout]
+   * return {uint} purchasedTime [Block time when purchase state reached Status.Purchased]
+   * return {uint} shippedTime [Block time when purchase state reached Status.Shipped]
+   * return {uint} cancelTime [Block time when purchase state reached Status.Cancelled]
+   * return {uint} completedTime [Block time when purchase state reached Status.Completed]
+   * return {uint} timeoutTime [Block time when a timeout occured (shipping/confirmation timeout)]
+   */
   function getPurchaseTimes(bytes32 _purchaseId) constant public returns (uint, uint, uint, uint, uint, uint) {
     return (purchases[_purchaseId].shippingDaysDeadline,
             purchases[_purchaseId].purchasedTime,
@@ -266,19 +294,23 @@ contract Escrow {
             purchases[_purchaseId].timeoutTime);
   }
 
-  // Get current state of a purchase
+  /**
+   * Get current state of a purchase
+   * @param  {bytes32}  _purchaseId [Purchase ID in the Database]
+   * @return {Status} [Purchase State]
+   */
   function getPurchaseState(bytes32 _purchaseId) constant public returns (Status) {
     return purchases[_purchaseId].status;
   }
 
   // Get seller total number of sales he made
   function getUserSalesNumber(address _user) constant public returns (uint) {
-    return userSales[_user];
+    return sellers[_user].salesNumber;
   }
 
   // Get total number item sold
   function getItemSalesNumber(bytes32 _itemId) constant public returns (uint) {
-    return itemSales[_itemId];
+    return items[_itemId].salesNumber;
   }
 
   // Get a seller total number of rating
