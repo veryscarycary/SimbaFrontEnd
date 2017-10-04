@@ -111,8 +111,4 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ provider }) {
-  return { provider: provider }
-}
-
-export default connect(mapStateToProps, { fetchProvider })(App)
+export default connect(() => ({}), { fetchProvider })(App)

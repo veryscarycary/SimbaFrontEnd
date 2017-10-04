@@ -18,19 +18,9 @@ class ItemCheckOut extends Component {
   state = { finalPrice: 0.0 }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
-    }
+    this.props.selectItem(this.props.match.params.item_id).then((request) => {
+      this.setFinalPrice()
+    })
   }
 
   setFinalPrice() {
@@ -221,7 +211,7 @@ class ItemCheckOut extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
+  return { item : item(state), purchase: purchase(state), current_user: current_user(state) }
 }
 
 export default withTransactionWatcher('ItemCheckout')(connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut))

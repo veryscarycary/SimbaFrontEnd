@@ -35,7 +35,7 @@ export const get = (url, config = {}) => axios.get(url, {
   }
 })
 
-export const post = (url, data, config = {}) => axios.get(url, data, {
+export const post = (url, data, config = {}) => axios.post(url, data, {
   ...config,
   headers: {
     'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token

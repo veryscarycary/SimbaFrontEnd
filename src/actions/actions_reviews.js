@@ -10,7 +10,7 @@ import Auth from '../services/auth'
 
 export const CREATE_REVIEW = 'CREATE_REVIEW'
 
-export function createReview(purchase, params, provider) {
+export function createReview(purchase, params) {
   const user_params = {
     buyer_wallet: Auth.wallet,
     seller_wallet: purchase.seller.wallet,
@@ -48,7 +48,7 @@ export function createReview(purchase, params, provider) {
               userRequest.data.id,
               itemRequest.data.id,
               user_params.rating,
-              item_params.rating, provider
+              item_params.rating,
             )
           )
       })

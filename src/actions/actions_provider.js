@@ -18,7 +18,7 @@ export function fetchProvider() {
           } else {
             dispatch(setCurrentUser({wallet: accounts[0], authentication_token: Auth.token}))
             dispatch({type: FETCH_PROVIDER_SUCCEEDED, payload: {eth: provider.Eth, isConnected: true}})
-            dispatch(fetchBalance(provider, accounts[0]))
+            dispatch(fetchBalance(accounts[0]))
           }
         }).catch((err) => {
           console.log('Error finding Provider : ', err)

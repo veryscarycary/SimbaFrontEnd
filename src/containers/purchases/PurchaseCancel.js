@@ -12,15 +12,7 @@ import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 class PurchaseCancel extends Component {
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
-    }
+    this.props.selectPurchase(this.props.match.params.purchase_id)
   }
 
   renderCancelConfirmation() {
@@ -171,7 +163,7 @@ class PurchaseCancel extends Component {
 }
 
 function mapStateToProps(state) {
-  return { provider: state.provider, purchase: purchase(state), currentUser : current_user(state) }
+  return { purchase: purchase(state), currentUser : current_user(state) }
 }
 
 export default withTransactionWatcher('Cancel modal')(connect(mapStateToProps, { selectPurchase, cancelPurchase })(PurchaseCancel))

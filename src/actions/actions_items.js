@@ -12,7 +12,7 @@ export const CREATE_ITEM = 'CREATE_ITEM'
 export const CREATE_ITEMS = 'CREATE_ITEMS'
 export const UPDATE_ITEM = 'UPDATE_ITEM'
 
-export function fetchAllItems(provider) {
+export function fetchAllItems() {
   return dispatch => {
     return Api.get(ITEMS_URL)
          .then((request) => {
@@ -21,9 +21,9 @@ export function fetchAllItems(provider) {
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
 
           request.data.forEach((item) => {
-            dispatch(fetchItemRating(provider, item.id))
-            dispatch(fetchItemSalesNumber(provider, item.id))
-            dispatch(fetchUserRating(provider, item.user.wallet))
+            dispatch(fetchItemRating(item.id))
+            dispatch(fetchItemSalesNumber(item.id))
+            dispatch(fetchUserRating(item.user.wallet))
           })
        }).catch((error) => {
           console.log(error)
@@ -36,7 +36,7 @@ export function fetchAllItems(provider) {
   }
 }
 
-export function selectItem(provider, itemId) {
+export function selectItem(itemId) {
   return dispatch => {
     return Api.get(`${ITEMS_URL}/${itemId}`)
                 .then((request) => {
@@ -87,7 +87,7 @@ export function updateItem(item_params, itemId) {
   }
 }
 
-export function fetchSellerItems(provider, wallet) {
+export function fetchSellerItems(wallet) {
   return dispatch => {
     return Api.get(`${USERS_URL}/${wallet}/items`)
          .then((request) => {
@@ -95,7 +95,7 @@ export function fetchSellerItems(provider, wallet) {
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
 
           request.data.forEach((item) => {
-            dispatch(fetchItemSalesNumber(provider, item.id))
+            dispatch(fetchItemSalesNumber(item.id))
           })
        }).catch((error) => {
           console.log(error)

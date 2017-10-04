@@ -1,6 +1,6 @@
 import { normalize } from 'normalizr'
 
-import Api, { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../services/api'
+import Api, { PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../services/api'
 
 import { setFlashMessage } from './actions_flash_messages'
 import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
@@ -17,7 +17,7 @@ export const SELECT_PURCHASE = 'SELECT_PURCHASE'
 // Purchase one item
 // Create locally first a purchase in mongodb
 // Retrieve the purchaseId to send the transaction into the smart contract
-export function createPurchase(item, finalPrice, provider) {
+export function createPurchase(item, finalPrice) {
   const params = {
     amount: finalPrice,
     item_id: item.id,
@@ -46,7 +46,7 @@ export function createPurchase(item, finalPrice, provider) {
 }
 
 // Get one purchase information
-export function selectPurchase(provider, purchaseId) {
+export function selectPurchase(purchaseId) {
   return dispatch => {
     Api.get(`${PURCHASES_URL}/${purchaseId}`)
          .then((request) => {
@@ -55,15 +55,15 @@ export function selectPurchase(provider, purchaseId) {
             dispatch({ type: CREATE_USERS, payload: normalizeRequest.entities.users })
             dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
             dispatch({ type: SELECT_PURCHASE, payload: request.data.id })
-            dispatch(fetchPurchaseState(request.data, provider))
-            dispatch(fetchPurchaseTimes(request.data, provider))
+            dispatch(fetchPurchaseState(request.data))
+            dispatch(fetchPurchaseTimes(request.data))
          })
   }
 }
 
 // Fetch All User's Purchases and sort them between 'Pending' or 'Finalized' state
 // Get Purchases State from the blockchain
-export function fetchAllPurchases(provider, isBuyer) {
+export function fetchAllPurchases(isBuyer) {
   const PURCHASE_API_URL = isBuyer ? BUYER_PURCHASES_URL : SELLER_PURCHASES_URL
   return dispatch => {
     Api.get(PURCHASE_API_URL)
@@ -73,8 +73,8 @@ export function fetchAllPurchases(provider, isBuyer) {
           dispatch({ type: CREATE_ITEMS, payload: normalizeRequest.entities.items })
           dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
           request.data.forEach((purchase) => {
-            dispatch(fetchPurchaseState(purchase, provider))
-            dispatch(fetchPurchaseTimes(purchase, provider))
+            dispatch(fetchPurchaseState(purchase))
+            dispatch(fetchPurchaseTimes(purchase))
           })
        }).catch((error) => {
         console.log(error)

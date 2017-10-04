@@ -3,6 +3,7 @@ import Eth from 'ethjs'
 import Api, { SIGN_UP_URL, SIGN_IN_URL, USERS_URL, MY_PROFILE_URL } from '../services/api'
 import { setFlashMessage } from './actions_flash_messages'
 
+import EscrowContract from '../services/escrow'
 import Auth from '../services/auth'
 
 export const CREATE_USERS = 'CREATE_USERS'
@@ -11,12 +12,15 @@ export const SELECT_USER = 'SELECT_USER'
 export const CREATE_USER = 'CREATE_USER'
 export const UPDATE_USER = 'UPDATE_USER'
 
-export function fetchBalance(provider, wallet) {
+export function fetchBalance(wallet) {
   return dispatch => {
-    provider.Eth.getBalance(wallet, 'latest').then(result => {
-      const balance = Eth.fromWei(result, 'ether').toString()
-      dispatch({type: UPDATE_USER, payload: { wallet: wallet, balance: balance}});
-    })
+    return EscrowContract.provider()
+      .then((provider) => {
+        return provider.Eth.getBalance(wallet, 'latest').then(result => {
+          const balance = Eth.fromWei(result, 'ether').toString()
+          dispatch({type: UPDATE_USER, payload: { wallet: wallet, balance: balance}});
+        })
+      })
   }
 }
 
