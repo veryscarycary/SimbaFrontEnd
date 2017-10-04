@@ -1,11 +1,15 @@
 pragma solidity ^0.4.15; //We have to specify what version of compiler this code will use
 
+import './SafeMath.sol';
+
 contract Escrow {
+  using SafeMath for uint256;
+
   enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerShippingTimeOut, BuyerConfirmationTimeOut}
   enum Category {Good, Digital, Service, Auction}
 
   struct Purchase {
-    uint amount;
+    uint256 amount;
     address seller;
     address buyer;
     Status status;
@@ -30,7 +34,7 @@ contract Escrow {
     address wallet;
     Review review;
     uint salesNumber;
-    uint balance;
+    uint256 balance;
   }
 
   struct Item {
@@ -134,6 +138,10 @@ contract Escrow {
   preventSelfBuy(msg.sender, _seller)
   payable public
   {
+    require(_shippingDaysDeadline > 0);
+    require(_seller != 0);
+    require(_purchaseId != '' && _itemId != '');
+    require(msg.value > 0);
     purchases[_purchaseId].itemId = _itemId;
     purchases[_purchaseId].seller = _seller;
     purchases[_purchaseId].buyer = msg.sender;
@@ -147,39 +155,50 @@ contract Escrow {
 
   /**
    * Seller send the code to Buyer (Code can be a tracking number, a digital code, a coupon) [ State of the purchase : "Shipped"]
-   * params {bytes32 _purchaseId}
-   * params {bytes32 _code}
-   * return {Event Log ItemShipped}
+   * params {bytes32} _purchaseId [ID of purchaseID in Database]
+   * params {bytes32} _code [shipping tracking number, digital code, coupon, etc..]
+   * return {ItemShipped} [Log Event]
    */
   function setCode(bytes32 _purchaseId, bytes32 _code)
   onlySeller(purchases[_purchaseId].seller)
   public
   {
+    require(_code != '');
     purchases[_purchaseId].code = _code;
     purchases[_purchaseId].status = Status.Shipped;
     purchases[_purchaseId].shippedTime = now;
     ItemShipped(_purchaseId, purchases[_purchaseId].buyer, msg.sender, purchases[_purchaseId].itemId, _code);
   }
 
-  // Buyer confirms receive the code from the Seller - Completing the transactions
-  // Seller receives the money
-  // State of the purchase : "Completed"
+  /**
+   * Buyer confirms receive the code from the Seller - Balance is added to Seller mapping [State of the purchase : "Completed"]
+   * param  {bytes32} _purchaseId   [ID of purchaseID in Database]
+   * param  {bytes32}  _userReviewId [ID of Review in Database]
+   * param  {bytes32}  _itemReviewId [ID of Review in Database]
+   * param  {uint}     _userRating   [Value between 1-5]
+   * param  {uint}     _itemRating   [Value between 1-5]
+   * return {PurchaseCompleted}  [Log Event]
+   */
   function confirmPurchase(bytes32 _purchaseId, bytes32 _userReviewId, bytes32 _itemReviewId, uint _userRating, uint _itemRating)
   onlyBuyer(purchases[_purchaseId].buyer)
   public
   {
+    require(_purchaseId != 0);
     if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
-      purchases[_purchaseId].amount = 0;
-      purchases[_purchaseId].status = Status.Completed;
+      // purchases[_purchaseId].amount = 0;
       // Set item's review & rating + total number of item sales
-      itemSales[purchases[_purchaseId].itemId] += 1;
+      items[purchases[_purchaseId].itemId].salesNumber += 1;
       setReview(false, _purchaseId, _itemReviewId, _itemRating);
 
       // Set user's review & rating + total number of sales
-      userSales[purchases[_purchaseId].seller] += 1;
+      sellers[purchases[_purchaseId].seller].salesNumber += 1;
       setReview(true, _purchaseId, _userReviewId, _userRating);
+
+      // Delete Purchase from list of pending purchase
       deleteOnePurchaseFromPending(IndexOfPurchase(_purchaseId));
       purchases[_purchaseId].completedTime = now;
+      purchases[_purchaseId].status = Status.Completed;
+      sellers[purchases[_purchaseId].seller].balance = sellers[purchases[_purchaseId].seller].balance.add(purchases[_purchaseId].amount);
       PurchaseCompleted(_purchaseId, msg.sender, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
   }
