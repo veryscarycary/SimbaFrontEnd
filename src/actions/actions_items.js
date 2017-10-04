@@ -1,8 +1,7 @@
-import axios from 'axios'
 import { normalize } from 'normalizr'
 
 import { itemsNormalizr, itemNormalizr } from '../models/normalizr'
-import { headers, ITEMS_URL, USERS_URL } from '../api_url'
+import Api, { ITEMS_URL, USERS_URL } from '../services/api'
 import { setFlashMessage } from './actions_flash_messages'
 import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './actions_contract'
 
@@ -15,7 +14,7 @@ export const UPDATE_ITEM = 'UPDATE_ITEM'
 
 export function fetchAllItems(provider) {
   return dispatch => {
-    return axios.get(ITEMS_URL, headers)
+    return Api.get(ITEMS_URL)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -39,22 +38,22 @@ export function fetchAllItems(provider) {
 
 export function selectItem(provider, itemId) {
   return dispatch => {
-    return axios.get(`${ITEMS_URL}/${itemId}`, headers)
+    return Api.get(`${ITEMS_URL}/${itemId}`)
                 .then((request) => {
                     const normalizeRequest = normalize(request.data, itemNormalizr)
                     dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
                     dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
                     dispatch({type: SELECT_ITEM, payload: request.data.id})
-                    dispatch(fetchItemRating(provider, request.data.id))
-                    dispatch(fetchItemSalesNumber(provider, itemId))
-                    dispatch(fetchUserRating(provider, request.data.user.wallet))
+                    dispatch(fetchItemRating(request.data.id))
+                    dispatch(fetchItemSalesNumber(itemId))
+                    dispatch(fetchUserRating(request.data.user.wallet))
                 })
   }
 }
 
 export function createItem(item_params) {
   return dispatch => {
-    return axios.post(ITEMS_URL, item_params, headers)
+    return Api.post(ITEMS_URL, item_params)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -72,7 +71,7 @@ export function createItem(item_params) {
 
 export function updateItem(item_params, itemId) {
   return dispatch => {
-    return axios.put(`${ITEMS_URL}/${itemId}`, item_params, headers)
+    return Api.put(`${ITEMS_URL}/${itemId}`, item_params)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -90,7 +89,7 @@ export function updateItem(item_params, itemId) {
 
 export function fetchSellerItems(provider, wallet) {
   return dispatch => {
-    return axios.get(`${USERS_URL}/${wallet}/items`, headers)
+    return Api.get(`${USERS_URL}/${wallet}/items`)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})

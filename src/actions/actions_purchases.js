@@ -1,7 +1,6 @@
-import axios from 'axios'
 import { normalize } from 'normalizr'
 
-import { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../api_url'
+import Api, { headers, PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../services/api'
 
 import { setFlashMessage } from './actions_flash_messages'
 import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
@@ -32,7 +31,7 @@ export function createPurchase(item, finalPrice, provider) {
   }
 
   return dispatch => {
-    return axios.post(PURCHASES_URL, params, headers)
+    return Api.post(PURCHASES_URL, params)
       .then((request) => {
         const normalizeRequest = normalize(request.data, purchaseNormalizr)
         dispatch({
@@ -49,7 +48,7 @@ export function createPurchase(item, finalPrice, provider) {
 // Get one purchase information
 export function selectPurchase(provider, purchaseId) {
   return dispatch => {
-    axios.get(`${PURCHASES_URL}/${purchaseId}`, headers)
+    Api.get(`${PURCHASES_URL}/${purchaseId}`)
          .then((request) => {
             const normalizeRequest = normalize(request.data, purchaseNormalizr)
             dispatch({ type: CREATE_ITEMS, payload: normalizeRequest.entities.items })
@@ -67,7 +66,7 @@ export function selectPurchase(provider, purchaseId) {
 export function fetchAllPurchases(provider, isBuyer) {
   const PURCHASE_API_URL = isBuyer ? BUYER_PURCHASES_URL : SELLER_PURCHASES_URL
   return dispatch => {
-    axios.get(PURCHASE_API_URL, headers)
+    Api.get(PURCHASE_API_URL)
          .then((request) => {
           const normalizeRequest = normalize(request.data, purchasesNormalizr)
           dispatch({ type: CREATE_USERS, payload: normalizeRequest.entities.users })

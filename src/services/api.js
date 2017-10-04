@@ -1,9 +1,9 @@
-import Auth from './services/auth'
+import axios from 'axios'
 import runtimeEnv from '@mars/heroku-js-runtime-env'
 
-const env = runtimeEnv()
+import Auth from './auth'
 
-export const headers = { headers: { 'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token } }
+const env = runtimeEnv()
 
 export const ROOT_URL = env.REACT_APP_API_HOST || 'http://localhost:3001'
 
@@ -27,3 +27,26 @@ export const ACTIVITIES_URL = `${ROOT_URL}/activities`
 
 // REVIEWS URL
 export const REVIEWS_URL = `${ROOT_URL}/reviews`
+
+export const get = (url, config = {}) => axios.get(url, {
+  ...config,
+  headers: {
+    'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token
+  }
+})
+
+export const post = (url, data, config = {}) => axios.get(url, data, {
+  ...config,
+  headers: {
+    'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token
+  }
+})
+
+export const put = (url, data, config = {}) => axios.put(url, data, {
+  ...config,
+  headers: {
+    'X-User-Wallet': Auth.wallet, 'X-User-Token': Auth.token
+  },
+})
+
+export default { get, post, put }
