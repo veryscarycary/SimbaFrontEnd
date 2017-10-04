@@ -14,15 +14,7 @@ import { pendingPurchases, completedPurchases } from '../../models/selectors'
 
 class PurchaseIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.fetchAllPurchases(this.props.provider, true)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchAllPurchases(nextProps.provider, true)
-    }
+    this.props.fetchAllPurchases(true)
   }
 
   renderPurchaseState(purchase) {
@@ -180,7 +172,7 @@ class PurchaseIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { pendingPurchases: pendingPurchases(state), completedPurchases: completedPurchases(state), provider: state.provider }
+  return { pendingPurchases: pendingPurchases(state), completedPurchases: completedPurchases(state) }
 }
 
 export default connect(mapStateToProps, { fetchAllPurchases, cancelPurchase })(PurchaseIndex)

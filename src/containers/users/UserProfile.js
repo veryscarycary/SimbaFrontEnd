@@ -48,11 +48,6 @@ class UserProfile extends Component {
     this.setState({[name]: value})
   }
 
-  submit(model) {
-    //this.props.sendCode(this.props.purchase.id, this.state.shippingNumber, this.props.provider)
-  }
-
-
   renderInformationForm() {
     const countryOptions = [
       {value: '', label: ' '},

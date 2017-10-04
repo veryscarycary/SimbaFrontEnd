@@ -14,15 +14,7 @@ import { pendingSales, completedSales } from '../../models/selectors'
 
 class SalesIndex extends Component {
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.fetchAllPurchases(this.props.provider, false)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchAllPurchases(nextProps.provider, false)
-    }
+    this.props.fetchAllPurchases(false)
   }
 
   renderSaleState(sale) {
@@ -171,7 +163,7 @@ class SalesIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { pendingSales: pendingSales(state), completedSales: completedSales(state), provider: state.provider }
+  return { pendingSales: pendingSales(state), completedSales: completedSales(state) }
 }
 
 export default connect(mapStateToProps, { fetchAllPurchases, cancelPurchase })(SalesIndex)

@@ -36,15 +36,10 @@ class ItemEdit extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id)
-    }
+    this.props.selectItem(this.props.match.params.item_id)
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id)
-    }
     if (nextProps.item) {
       this.setState({
         name: nextProps.item.name,
@@ -154,7 +149,7 @@ class ItemEdit extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item: item(state), provider: state.provider }
+  return { item: item(state) }
 }
 
 export default connect(mapStateToProps, { selectItem, updateItem })(ItemEdit)

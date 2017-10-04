@@ -9,15 +9,7 @@ import { userReviews, user } from '../../models/selectors'
 class ReviewIndex extends Component {
   componentWillMount() {
     this.props.selectUser(this.props.match.params.user_wallet)
-    if (this.props.provider.isConnected) {
-      this.props.fetchUserRating(this.props.provider, this.props.match.params.user_wallet)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchUserRating(nextProps.provider, this.props.match.params.user_wallet)
-    }
+    this.props.fetchUserRating(this.props.provider, this.props.match.params.user_wallet)
   }
 
   renderReviews() {
@@ -42,7 +34,7 @@ class ReviewIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { userReviews: userReviews(state), provider: state.provider, user: user(state) }
+  return { userReviews: userReviews(state), user: user(state) }
 }
 
 export default connect(mapStateToProps, { selectUser, fetchUserRating })(ReviewIndex)

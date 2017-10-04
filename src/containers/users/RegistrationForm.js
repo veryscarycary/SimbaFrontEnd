@@ -19,7 +19,8 @@ class RegistrationForm extends Component {
       first_name: '',
       last_name: '',
       password: '',
-      password_confirmation: ''
+      password_confirmation: '',
+      submitting: false,
     }
   }
 
@@ -30,11 +31,20 @@ class RegistrationForm extends Component {
   submit(model) {
     var user_params = { user: { ...this.state, wallet: this.props.current_user.wallet } }
 
+    this.setState({ submitting: true })
+
     this.props.userRegistration(user_params)
-      .then(() => this.props.history.push(this.props.nextRoute))
+      .then(
+        () => {
+          this.setState({ submitting: false })
+          this.props.history.push(this.props.nextRoute)
+        }
+      )
   }
 
   renderForm() {
+    const disabled = this.state.submitting || !this.props.provider.isConnected
+
     return (
       <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
         <Input
@@ -44,50 +54,69 @@ class RegistrationForm extends Component {
           type='text'
           onChange={this.handleChange.bind(this)}
           required
-          disabled />
-        <Input
-          label='Email'
-          value={this.state.email}
-          name='email'
-          type='email'
-          onChange={this.handleChange.bind(this)}
-          required />
+          disabled
+        />
+
         <Input
           label='First Name'
           value={this.state.first_name}
           name='first_name'
           type='text'
           onChange={this.handleChange.bind(this)}
-          required />
+          disabled={disabled}
+          required
+        />
+
         <Input
           label='Last Name'
           value={this.state.last_name}
           name='last_name'
           type='text'
           onChange={this.handleChange.bind(this)}
-          required />
+          required
+          disabled={disabled}
+        />
+
+        <Input
+          label='Email'
+          value={this.state.email}
+          name='email'
+          type='email'
+          onChange={this.handleChange.bind(this)}
+          disabled={disabled}
+          required
+        />
+
         <Input
           label='Password'
           value={this.state.password}
           name='password'
           type='password'
           onChange={this.handleChange.bind(this)}
-          required />
+          required
+          disabled={disabled}
+        />
+
         <Input
           label='Password Confirmation'
           value={this.state.password_confirmation}
           name='password_confirmation'
           type='password'
           onChange={this.handleChange.bind(this)}
-          required />
+          required
+          disabled={disabled}
+        />
+
         <div className="checkbox">
           <label>
             <input type="checkbox" /> I've read & agree with the <a href="/">Terms</a>.
           </label>
         </div>
+
         <div className="form-action">
-          <button type="submit" className="btn-shadow btn-shadow-dark">Create account</button>
+          <button type="submit" className="btn-shadow btn-shadow-dark" disabled={disabled}>Create account</button>
         </div>
+
         <div className="form-bottom">
           Already have an account? <Link to='/users/sign_in' className="account">Sign in</Link>
         </div>
@@ -98,7 +127,7 @@ class RegistrationForm extends Component {
   renderErrorBlockChain() {
     return (
       <Alert bsStyle="danger">
-        <h4>Wallet couldn't be find.</h4>
+        <h4>Wallet couldn't be found.</h4>
         <p>To register to Simba, please make sure you are connected to an Ethereum nodes by installing Metamask plugin (Chrome/Firefox) or using Mist or Parity as your web browser.</p>
       </Alert>
     )
@@ -114,7 +143,9 @@ class RegistrationForm extends Component {
                 <h1>
                   Create your account
                 </h1>
-                { this.props.provider.isConnected ? this.renderForm() : this.renderErrorBlockChain() }
+
+                { !this.props.provider.fetching && !this.props.provider.isConnected && this.renderErrorBlockChain() }
+                { this.renderForm()  }
               </div>
             </div>
           </div>
@@ -128,6 +159,5 @@ function mapStateToProps(state) {
   return { current_user: current_user(state), provider: state.provider }
 }
 
-export default withNextRoute(
-  connect(mapStateToProps, { userRegistration })(RegistrationForm)
-)
+export default withNextRoute(connect(mapStateToProps, { userRegistration })(RegistrationForm))
+
