@@ -184,23 +184,21 @@ contract Escrow {
   public
   {
     require(_purchaseId != 0);
-    if (purchases[_purchaseId].seller.send(purchases[_purchaseId].amount)) {
-      // purchases[_purchaseId].amount = 0;
-      // Set item's review & rating + total number of item sales
-      items[purchases[_purchaseId].itemId].salesNumber += 1;
-      setReview(false, _purchaseId, _itemReviewId, _itemRating);
+    // Delete Purchase from list of pending purchase
+    deleteOnePurchaseFromPending(_purchaseId);
 
-      // Set user's review & rating + total number of sales
-      sellers[purchases[_purchaseId].seller].salesNumber += 1;
-      setReview(true, _purchaseId, _userReviewId, _userRating);
+    // Set user & item review & rating
+    setReview(false, _purchaseId, _itemReviewId, _itemRating);
+    setReview(true, _purchaseId, _userReviewId, _userRating);
 
-      // Delete Purchase from list of pending purchase
-      deleteOnePurchaseFromPending(IndexOfPurchase(_purchaseId));
-      purchases[_purchaseId].completedTime = now;
-      purchases[_purchaseId].status = Status.Completed;
-      sellers[purchases[_purchaseId].seller].balance = sellers[purchases[_purchaseId].seller].balance.add(purchases[_purchaseId].amount);
-      PurchaseCompleted(_purchaseId, msg.sender, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
-    }
+    // Set user & item total sales Number
+    sellers[purchases[_purchaseId].seller].salesNumber += 1;
+    items[purchases[_purchaseId].itemId].salesNumber += 1;
+
+    purchases[_purchaseId].completedTime = now;
+    purchases[_purchaseId].status = Status.Completed;
+    sellers[purchases[_purchaseId].seller].balance = sellers[purchases[_purchaseId].seller].balance.add(purchases[_purchaseId].amount);
+    PurchaseCompleted(_purchaseId, msg.sender, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
   }
 
   /**
@@ -229,25 +227,25 @@ contract Escrow {
     }
   }
 
-  // Cancel a Purchase
-  // ---> can only happen before the item has been shipped
-  // If sender == buyer : State of the purchase : "BuyerCancelled"
-  // If sender == buyer : State of the purchase : "SellerCancelled"
+  /**
+   * Cancel a Purchase by a buyer or a seller - can only happen before the item has been shipped
+   * @param  {bytes32}  _purchaseId   [ID of purchase in Database]
+   */
   function cancelPurchase(bytes32 _purchaseId)
   onlyForPurchaseState(purchases[_purchaseId], Status.Purchased)
   onlyBuyerOrSeller(purchases[_purchaseId].buyer, purchases[_purchaseId].seller)
   public
   {
-    if (purchases[_purchaseId].buyer.send(purchases[_purchaseId].amount)) {
-      if (purchases[_purchaseId].buyer == msg.sender) {
-          purchases[_purchaseId].status = Status.BuyerCancelled;
-        } else {
-          purchases[_purchaseId].status = Status.SellerCancelled;
-        }
+    if (purchases[_purchaseId].buyer == msg.sender) {
+      purchases[_purchaseId].status = Status.BuyerCancelled;
+    } else {
+      purchases[_purchaseId].status = Status.SellerCancelled;
+    }
 
-      purchases[_purchaseId].amount = 0;
+    if (purchases[_purchaseId].buyer.send(purchases[_purchaseId].amount)) {
+      //purchases[_purchaseId].amount = 0;
       purchases[_purchaseId].cancelTime = now;
-      deleteOnePurchaseFromPending(IndexOfPurchase(_purchaseId));
+      deleteOnePurchaseFromPending(_purchaseId);
       PurchaseCancelled(_purchaseId, msg.sender, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId);
     }
   }
@@ -303,49 +301,78 @@ contract Escrow {
     return purchases[_purchaseId].status;
   }
 
-  // Get seller total number of sales he made
+  /**
+   *  Get seller total number of sales he made
+   * @param  {address} _user
+   * @return {uint} number of total seller's sales
+   */
   function getUserSalesNumber(address _user) constant public returns (uint) {
     return sellers[_user].salesNumber;
   }
 
-  // Get total number item sold
+  /**
+   * Get total number item sold
+   * @param  {bytes32} _itemId
+   * @return {uint} number of total item sold
+   */
   function getItemSalesNumber(bytes32 _itemId) constant public returns (uint) {
     return items[_itemId].salesNumber;
   }
 
-  // Get a seller total number of rating
-  //     -- and the accumulated rating score
-  //     -- and the total number of reviews left
+  /**
+   * Get a seller ratings + reviews
+   * @param  {address}  _user [address of User wallet in database]
+   * @return {uint} [Total Number of Rating]
+   * @return {uint} [Accumulated value of all user ratings]
+   * @return {uint} [Total Number of user reviews]
+   */
   function getUserReviews(address _user) constant public returns (uint, uint, uint) {
-    return (userReviews[_user].total,
-            userReviews[_user].rating,
-            userReviews[_user].comments.length);
+    return (sellers[_user].review.total,
+            sellers[_user].review.rating,
+            sellers[_user].review.comments.length);
   }
 
-  // Get one user review ID
+  /**
+   * [Get a single review for a Seller]
+   * @param  {address} _user [address of User wallet in database]
+   * @param  {uint} _index [index of the user review in the comments array]
+   * @return {bytes32}  [ID of the User Review in Database]
+   */
   function getUserReviewComment(address _user, uint _index) constant public returns (bytes32) {
-    return userReviews[_user].comments[_index];
+    return sellers[_user]review.comments[_index];
   }
 
-  // Get an item total number of rating
-  //     -- and the accumulated rating score
-  //     -- and the total number of reviews left
+  /**
+   * Get a single item its ratings + reviews
+   * @param  {bytes32} _itemId [ID of Item in database]
+   * @return {uint} [Total Number of item ratings]
+   * @return {uint} [Accumulated value of all item ratings]
+   * @return {uint} [Total Number of item reviews]
+   */
   function getItemReviews(bytes32 _itemId) constant public returns (uint, uint, uint) {
-    return (itemReviews[_itemId].total,
-            itemReviews[_itemId].rating,
-            itemReviews[_itemId].comments.length);
+    return (items[_itemId].review.total,
+            items[_itemId].review.rating,
+            items[_itemId].review.comments.length);
   }
 
-  // Get one item review ID
+  /**
+   * Get a single item review
+   * @param  {bytes32}  _itemId [ID of item in database]
+   * @param  {uint} _index [index of the item review in the comments array]
+   * @return {bytes32} [ID of the User Review in Database]
+   */
   function getItemReviewComment(bytes32 _itemId, uint _index) constant public returns (bytes32) {
-    return itemReviews[_itemId].comments[_index];
+    return items[_itemId].review.comments[_index];
   }
 
   // Delete a purchase from the list of pending purchases
   // i.e : when a purchase is complete or cancel
-  function deleteOnePurchaseFromPending(uint index) private {
+  function deleteOnePurchaseFromPending(bytes32 _purchaseId) private {
     // Index == -1 means that the item doesn't exist in the array
-    require((index !=  uint(-1)) && (index < pendingPurchases.length));
+    require(
+      (IndexOfPurchase(_purchaseId) != uint(-1)) &&
+      (IndexOfPurchase(_purchaseId) < pendingPurchases.length)
+    );
 
     delete pendingPurchases[index];
     if (pendingPurchases.length >= 2) {
@@ -353,6 +380,8 @@ contract Escrow {
       delete pendingPurchases[pendingPurchases.length - 1];
     }
     pendingPurchases.length--;
+
+    require(IndexOfPurchase(_purchaseId) == uint(-1));
   }
 
    // Finds the index of a given purchaseId in the pending purchases array.
@@ -383,7 +412,7 @@ contract Escrow {
   // Purchase found in pendingPurchasesToDelete : means that the purchase state is not pending anymore
   function clearPendingPurchases() private {
     for (uint i = 0; i < numPendingPurchasesToDelete; i++) {
-      deleteOnePurchaseFromPending(IndexOfPurchase(pendingPurchasesToDelete[i]));
+      deleteOnePurchaseFromPending(pendingPurchasesToDelete[i]);
     }
     numPendingPurchasesToDelete = 0;
   }
