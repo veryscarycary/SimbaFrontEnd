@@ -6,7 +6,7 @@ contract Escrow {
   using SafeMath for uint256;
 
   enum Status {Pending, Purchased, Shipped, Completed, BuyerCancelled, SellerCancelled, SellerShippingTimeOut, BuyerConfirmationTimeOut}
-  enum Category {Good, Digital, Service, Auction}
+  // enum Category {Good, Digital, Service, Auction}
 
   struct Purchase {
     uint256 amount;
@@ -15,7 +15,7 @@ contract Escrow {
     Status status;
     bytes32 code;
     bytes32 itemId;
-    Category category;
+    // Category category;
     uint shippingDaysDeadline;
     uint purchasedTime;
     uint shippedTime;
@@ -45,13 +45,13 @@ contract Escrow {
   }
 
   address owner;
-  mapping(bytes32 => Purchase) public purchases;
-  mapping(address => User) public users;
-  mapping(bytes32 => Item) public items;
+  mapping(bytes32 => Purchase) purchases;
+  mapping(address => User) users;
+  mapping(bytes32 => Item) items;
 
-  bytes32[] private pendingPurchases;
-  bytes32[] private pendingPurchasesToDelete;
-  uint private numPendingPurchasesToDelete = 0;
+  // bytes32[] private pendingPurchases;
+  // bytes32[] private pendingPurchasesToDelete;
+  // uint private numPendingPurchasesToDelete = 0;
 
   event ItemPurchased(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, uint256 amount);
   event ItemShipped(bytes32 purchaseId, address buyer, address seller, bytes32 itemId, bytes32 code);
@@ -67,7 +67,7 @@ contract Escrow {
 
 
   /**
-   * Guarantee that the sender is the creator of the contract (the one who deployed it)
+   * @dev Guarantee that the sender is the creator of the contract (the one who deployed it)
    */
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -75,9 +75,8 @@ contract Escrow {
   }
 
   /**
-   * Guarantee that the sender is the buyer of the purchase
-   * param  {address}
-   * return {}
+   * @dev Guarantee that the sender is the buyer of the purchase
+   * @param _buyer wallet address of buyer
    */
   modifier onlyBuyer(address _buyer) {
     require(msg.sender == _buyer);
@@ -85,9 +84,8 @@ contract Escrow {
   }
 
   /**
-   * Guarantee that the sender is the Seller of the purchase
-   * param  {address}
-   * return {}
+   * @dev Guarantee that the sender is the Seller of the purchase
+   * @param _seller wallet address of seller
    */
   modifier onlySeller(address _seller) {
     require(msg.sender == _seller);
@@ -95,9 +93,9 @@ contract Escrow {
   }
 
   /**
-   * Guarantee that the sender is either a buyer or seller of his transaction
-   * params {address}
-   * params {address}
+   * @dev Guarantee that the sender is either a buyer or seller of his transaction
+   * @param _buyer wallet address of buyer
+   * @param _seller wallet address of seller
    */
   modifier onlyBuyerOrSeller(address _buyer, address _seller) {
     require(msg.sender == _buyer || msg.sender == _seller);
@@ -105,9 +103,9 @@ contract Escrow {
   }
 
   /**
-   * Prevent a buyer from buying an item he listed himself
-   * params {address} _buyer
-   * params {address} _seller
+   * @dev Prevent a buyer from buying an item he listed himself
+   * @param _buyer wallet address of buyer
+   * @param _seller wallet address of seller
    */
   modifier preventSelfBuy(address _buyer, address _seller) {
     require(_buyer != _seller);
@@ -115,9 +113,9 @@ contract Escrow {
   }
 
   /**
-   * Require that current state of purchase "_purchaseState" is equal to "_tmpState"
-   * params {Purchase} _purchase: current purchase
-   * params {Status} _requirePurchaseState: purchase status we want the purchase to be equal to
+   * @dev Require that current state of purchase "_purchaseState" is equal to "_tmpState"
+   * @param _purchase current purchase
+   * @param _requirePurchaseState purchase status we want the purchase to be equal to
    */
   modifier onlyForPurchaseState(Purchase _purchase, Status _requirePurchaseState) {
     require(_purchase.status == _requirePurchaseState);
@@ -125,11 +123,11 @@ contract Escrow {
   }
 
   /**
-   * Buyer Purchase an item '_itemId' from Seller (_seller) - State of the purchase : "Purchased"
-   *  params {bytes32} ID of _purchase
-   *  params {address} wallet address of _seller
-   *  params {bytes32} ID of _item
-   *  params {uint} seller needs to ship the item within _shippingDaysDeadline days after purchase or purchase will be timeout and cancelled
+   * @dev Buyer Purchase an item '_itemId' from Seller (_seller) - State of the purchase : "Purchased"
+   * @param _purchaseId ID of _purchase
+   * @param _seller wallet address of _seller
+   * @param _itemId ID of _item
+   * @param _shippingDaysDeadline seller needs to ship the item within _shippingDaysDeadline days after purchase or purchase will be timeout and cancelled
    */
   function purchase(bytes32 _purchaseId, address _seller, bytes32 _itemId, uint _shippingDaysDeadline)
   preventSelfBuy(msg.sender, _seller)
@@ -146,15 +144,14 @@ contract Escrow {
     purchases[_purchaseId].amount = msg.value;
     purchases[_purchaseId].purchasedTime = now;
     purchases[_purchaseId].shippingDaysDeadline = now + _shippingDaysDeadline * 1 days;
-    pendingPurchases.push(_purchaseId);
+    //pendingPurchases.push(_purchaseId);
     ItemPurchased(_purchaseId, msg.sender, _seller, _itemId, msg.value);
   }
 
   /**
-   * Seller send the code to Buyer (Code can be a tracking number, a digital code, a coupon) [ State of the purchase : "Shipped"]
-   * params {bytes32} _purchaseId [ID of purchaseID in Database]
-   * params {bytes32} _code [shipping tracking number, digital code, coupon, etc..]
-   * return {ItemShipped} [Log Event]
+   * @dev Seller send the code to Buyer (Code can be a tracking number, a digital code, a coupon) [ State of the purchase : "Shipped"]
+   * @param _purchaseId [ID of purchaseID in Database]
+   * @param _code [shipping tracking number, digital code, coupon, etc..]
    */
   function setCode(bytes32 _purchaseId, bytes32 _code)
   onlySeller(purchases[_purchaseId].seller)
@@ -168,13 +165,12 @@ contract Escrow {
   }
 
   /**
-   * Buyer confirms receive the code from the Seller - Balance is added to Seller mapping [State of the purchase : "Completed"]
-   * param  {bytes32} _purchaseId   [ID of purchaseID in Database]
-   * param  {bytes32}  _userReviewId [ID of Review in Database]
-   * param  {bytes32}  _itemReviewId [ID of Review in Database]
-   * param  {uint}     _userRating   [Value between 1-5]
-   * param  {uint}     _itemRating   [Value between 1-5]
-   * return {PurchaseCompleted}  [Log Event]
+   * @dev Buyer confirms receive the code from the Seller - Balance is added to Seller mapping [State of the purchase : "Completed"]
+   * @param _purchaseId   [ID of purchaseID in Database]
+   * @param  _userReviewId [ID of Review in Database]
+   * @param _itemReviewId [ID of Review in Database]
+   * @param _userRating   [Value between 1-5]
+   * @param _itemRating   [Value between 1-5]
    */
   function confirmPurchase(bytes32 _purchaseId, bytes32 _userReviewId, bytes32 _itemReviewId, uint _userRating, uint _itemRating)
   onlyBuyer(purchases[_purchaseId].buyer)
@@ -199,11 +195,11 @@ contract Escrow {
   }
 
   /**
-   * Set Item or Users's review & rating
-   * param {bool}     isUserReview [Distinguish if we're setting an Item or an User Review]
-   * param {bytes32}  _purchaseId  [ID of purchase in Database]
-   * param {bytes32}  _reviewId    [ID of Review in Database]
-   * param {uint}     _rating      [Value between 1-5]
+   * @dev Set Item or Users's review & rating
+   * @param isUserReview [Distinguish if we're setting an Item or an User Review]
+   * @param _purchaseId  [ID of purchase in Database]
+   * @param _reviewId    [ID of Review in Database]
+   * @param _rating      [Value between 1-5]
    */
   function setReview(bool isUserReview, bytes32 _purchaseId, bytes32 _reviewId, uint _rating) private {
     Review review;
@@ -225,8 +221,8 @@ contract Escrow {
   }
 
   /**
-   * Cancel a Purchase by a buyer or a seller - can only happen before the item has been shipped
-   * @param  {bytes32}  _purchaseId   [ID of purchase in Database]
+   * @dev Cancel a Purchase by a buyer or a seller - can only happen before the item has been shipped
+   * @param _purchaseId   [ID of purchase in Database]
    */
   function cancelPurchase(bytes32 _purchaseId)
   onlyForPurchaseState(purchases[_purchaseId], Status.Purchased)
@@ -245,8 +241,8 @@ contract Escrow {
   }
 
   /**
-   * Get msg.sender current balance (money available to be withdrawn anytime)
-   * @return {uint}   [msg.sender balance]
+   * @dev Get msg.sender current balance (money available to be withdrawn anytime)
+   * @return uint [msg.sender balance]
    */
   function getUserBalance() constant public returns (uint) {
     return users[msg.sender].balance;
@@ -254,9 +250,9 @@ contract Escrow {
 
 
   /**
-   * Withdraw your current balance (Contract) to your own wallet
+   * @dev Withdraw your current balance (Contract) to your own wallet
    */
-  function withdraw() {
+  function withdraw() public {
     require(users[msg.sender].balance > 0);
     uint256 amount = users[msg.sender].balance;
     users[msg.sender].balance = 0;
@@ -266,14 +262,14 @@ contract Escrow {
 
 
   /**
-   * Get All Status Time for a Purchase
-   * param  {bytes32}  _purchaseId) [ID of purchase in database]
-   * return {uint} shippingDaysDeadline [Block time when purchase will be considered in shipping Timeout]
-   * return {uint} purchasedTime [Block time when purchase state reached Status.Purchased]
-   * return {uint} shippedTime [Block time when purchase state reached Status.Shipped]
-   * return {uint} cancelTime [Block time when purchase state reached Status.Cancelled]
-   * return {uint} completedTime [Block time when purchase state reached Status.Completed]
-   * return {uint} timeoutTime [Block time when a timeout occured (shipping/confirmation timeout)]
+   * @dev Get All Status Time for a Purchase
+   * @param _purchaseId [ID of purchase in database]
+   * @return uint shippingDaysDeadline [Block time when purchase will be considered in shipping Timeout]
+   * @return uint purchasedTime [Block time when purchase state reached Status.Purchased]
+   * @return uint shippedTime [Block time when purchase state reached Status.Shipped]
+   * @return uint cancelTime [Block time when purchase state reached Status.Cancelled]
+   * @return uint completedTime [Block time when purchase state reached Status.Completed]
+   * @return uint timeoutTime [Block time when a timeout occured (shipping/confirmation timeout)]
    */
   function getPurchaseTimes(bytes32 _purchaseId) constant public returns (uint, uint, uint, uint, uint, uint) {
     return (purchases[_purchaseId].shippingDaysDeadline,
@@ -285,9 +281,9 @@ contract Escrow {
   }
 
   /**
-   * Get current state of a purchase
-   * @param  {bytes32}  _purchaseId [Purchase ID in the Database]
-   * @return {Status} [Purchase State]
+   * @dev Get current state of a purchase
+   * @param _purchaseId [Purchase ID in the Database]
+   * @return Status [Purchase State]
    */
   function getPurchaseState(bytes32 _purchaseId) constant public returns (Status) {
     return purchases[_purchaseId].status;
@@ -295,28 +291,28 @@ contract Escrow {
 
   /**
    *  Get seller total number of sales he made
-   * @param  {address} _user
-   * @return {uint} number of total seller's sales
+   * @param _user [wallet address of user]
+   * @return uint [number of total seller's sales]
    */
   function getUserSalesNumber(address _user) constant public returns (uint) {
     return users[_user].salesNumber;
   }
 
   /**
-   * Get total number item sold
-   * @param  {bytes32} _itemId
-   * @return {uint} number of total item sold
+   * @dev Get total number item sold
+   * @param _itemId [ID of item in database]
+   * @return uint [number of total item sold]
    */
   function getItemSalesNumber(bytes32 _itemId) constant public returns (uint) {
     return items[_itemId].salesNumber;
   }
 
   /**
-   * Get a seller ratings + reviews
-   * @param  {address}  _user [address of User wallet in database]
-   * @return {uint} [Total Number of Rating]
-   * @return {uint} [Accumulated value of all user ratings]
-   * @return {uint} [Total Number of user reviews]
+   * @dev Get a seller ratings + reviews
+   * @param _user [address of User wallet in database]
+   * @return uint [Total Number of Rating]
+   * @return uint [Accumulated value of all user ratings]
+   * @return uint [Total Number of user reviews]
    */
   function getUserReviews(address _user) constant public returns (uint, uint, uint) {
     return (users[_user].review.total,
@@ -325,21 +321,21 @@ contract Escrow {
   }
 
   /**
-   * [Get a single review for a Seller]
-   * @param  {address} _user [address of User wallet in database]
-   * @param  {uint} _index [index of the user review in the comments array]
-   * @return {bytes32}  [ID of the User Review in Database]
+   * @dev Get a single review for a Seller
+   * @param _user [address of User wallet in database]
+   * @param _index [index of the user review in the comments array]
+   * @return bytes32 [ID of the User Review in Database]
    */
   function getUserReviewComment(address _user, uint _index) constant public returns (bytes32) {
-    return users[_user]review.comments[_index];
+    return users[_user].review.comments[_index];
   }
 
   /**
-   * Get a single item its ratings + reviews
-   * @param  {bytes32} _itemId [ID of Item in database]
-   * @return {uint} [Total Number of item ratings]
-   * @return {uint} [Accumulated value of all item ratings]
-   * @return {uint} [Total Number of item reviews]
+   * @dev Get a single item its ratings + reviews
+   * @param _itemId [ID of Item in database]
+   * @return uint [Total Number of item ratings]
+   * @return uint [Accumulated value of all item ratings]
+   * @return uint [Total Number of item reviews]
    */
   function getItemReviews(bytes32 _itemId) constant public returns (uint, uint, uint) {
     return (items[_itemId].review.total,
@@ -348,10 +344,10 @@ contract Escrow {
   }
 
   /**
-   * Get a single item review
-   * @param  {bytes32}  _itemId [ID of item in database]
-   * @param  {uint} _index [index of the item review in the comments array]
-   * @return {bytes32} [ID of the User Review in Database]
+   * @dev Get a single item review
+   * @param _itemId [ID of item in database]
+   * @param _index [index of the item review in the comments array]
+   * @return bytes32 [ID of the User Review in Database]
    */
   function getItemReviewComment(bytes32 _itemId, uint _index) constant public returns (bytes32) {
     return items[_itemId].review.comments[_index];
@@ -449,15 +445,15 @@ contract Escrow {
   // }
 
   /**
-   * Get total balance of the Escrow contract
-   * @return {uint}   [total balance of Escrow contract]
+   * @dev Get total balance of the Escrow contract
+   * @return uint [total balance of Escrow contract]
    */
   function getBalance() onlyOwner constant public returns (uint) {
     return this.balance;
   }
 
   /**
-   * Kill the contract and send all the balance to the contract owner
+   * @dev Kill the contract and send all the balance to the contract owner
    */
   function killContract() onlyOwner public {
     selfdestruct(owner);
