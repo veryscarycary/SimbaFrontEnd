@@ -4,7 +4,7 @@ const WALLET_TOKEN_KEY = 'simba_wallet'
 class Auth {
   constructor() {
     this.token = JSON.parse(localStorage.getItem(SIMBA_TOKEN_KEY))
-    this.wallet = JSON.parse(localStorage.getItem(WALLET_TOKEN_KEY))
+    this.wallet = localStorage.getItem(WALLET_TOKEN_KEY)
   }
 
   /**

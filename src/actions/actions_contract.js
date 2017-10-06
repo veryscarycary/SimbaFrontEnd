@@ -4,7 +4,7 @@ import EscrowContract from '../services/escrow'
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
 import { watchShippingTimeoutEvent, watchConfirmationTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
-import { UPDATE_PURCHASE } from './actions_purchases'
+import { UPDATE_PURCHASE, updatePurchaseState } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
@@ -22,11 +22,12 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
     shippingDeadline,
   })
    .then((transaction) => {
+      dispatch(updatePurchaseState({state: purchaseState.PURCHASED}, purchaseId))
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
     })
    .catch((error) => {
       console.error('Could not create purchase', error)
-
+      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
       dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
@@ -39,11 +40,12 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
 export function sendCode(purchaseId, code) {
   return (dispatch) => EscrowContract.sendShippingInformation({ purchaseId, trackingNumber: code })
     .then(transaction => {
+      dispatch(updatePurchaseState({state: purchaseState.SHIPPED}, purchaseId))
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
     })
     .catch(error => {
       console.error('Could not send shipping info', error)
-
+      dispatch(updatePurchaseState({state:  purchaseState.ERROR}, purchaseId))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
@@ -61,11 +63,12 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
     itemRating,
   })
     .then((transaction) => {
+      dispatch(updatePurchaseState({state: purchaseState.COMPLETED}, purchaseId))
       return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
     })
     .catch(error => {
       console.error('Could not confirm purchase', error)
-
+      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
       dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
@@ -88,6 +91,7 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
       const activityCategory = canceller === 'buyer' ? activityCategories.CANCEL_PURCHASE : activityCategories.CANCEL_SALES
       const cancelPurchaseState = canceller === 'buyer' ? purchaseState.BUYER_CANCELLED : purchaseState.SELLER_CANCELLED
 
+      dispatch(updatePurchaseState({state: cancelPurchaseState}, purchaseId))
       dispatch(
         createLogActivity(
           activityCategory,
@@ -103,7 +107,7 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
     })
     .catch((error) => {
       console.log('Could not cancel the purchase', error)
-
+      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
       dispatch(setFlashMessage("Error: Couldn't cancel the purchase transaction.. please try again later.", 'error'))
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
@@ -116,6 +120,10 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
 export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
     .then(transaction => {
+      const transactionState = transaction.valueOf()
+      if (![purchaseState.COMPLETED,purchaseState.BUYER_CANCELLED,purchaseState.SELLER_CANCELLED].includes(transactionState)) {
+        dispatch(updatePurchaseState({state: transactionState}, purchase.id))
+      }
       return dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
     })
     .catch(error => {
@@ -271,4 +279,3 @@ export function cancelTimeoutOrders(provider) {
 export function fetchEscrowBalance() {
   return dispatch => EscrowContract.getBalance()
 }
-

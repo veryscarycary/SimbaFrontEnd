@@ -79,8 +79,7 @@ class Navigation extends Component {
                     <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
                     <Link className="dropdown-item" to='/my_items'>My Items</Link>
                     <Link className="dropdown-item" to='/sales'>Sales History</Link>
-
-                    <span className="dropdown-header">Admin</span>
+                    <Link className="dropdown-item" to='/admin/dashboard'>Admin</Link>
                     <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
                     <a className="dropdown-item"  href="/" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
                   </div>
@@ -370,7 +369,6 @@ class Navigation extends Component {
       <nav className='store-navbar'>
         <div className='container'>
           { this.renderSearchBarMyAccount() }
-          { this.renderNavigationMenu() }
         </div>
       </nav>
     )
