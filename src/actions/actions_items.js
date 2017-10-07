@@ -1,8 +1,7 @@
-import axios from 'axios'
 import { normalize } from 'normalizr'
 
 import { itemsNormalizr, itemNormalizr } from '../models/normalizr'
-import { headers, ITEMS_URL } from '../api_url'
+import Api, { ITEMS_URL, USERS_URL } from '../services/api'
 import { setFlashMessage } from './actions_flash_messages'
 import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './actions_contract'
 
@@ -13,18 +12,18 @@ export const CREATE_ITEM = 'CREATE_ITEM'
 export const CREATE_ITEMS = 'CREATE_ITEMS'
 export const UPDATE_ITEM = 'UPDATE_ITEM'
 
-export function fetchAllItems(provider) {
+export function fetchAllItems() {
   return dispatch => {
-    axios.get(ITEMS_URL, headers)
+    return Api.get(ITEMS_URL)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
 
           request.data.forEach((item) => {
-            dispatch(fetchItemRating(provider, item.id))
-            dispatch(fetchItemSalesNumber(provider, item.id))
-            dispatch(fetchUserRating(provider, item.user.wallet))
+            dispatch(fetchItemRating(item.id))
+            dispatch(fetchItemSalesNumber(item.id))
+            dispatch(fetchUserRating(item.user.wallet))
           })
        }).catch((error) => {
           console.log(error)
@@ -37,24 +36,24 @@ export function fetchAllItems(provider) {
   }
 }
 
-export function selectItem(provider, itemId) {
+export function selectItem(itemId) {
   return dispatch => {
-    return axios.get(`${ITEMS_URL}/${itemId}`, headers)
+    return Api.get(`${ITEMS_URL}/${itemId}`)
                 .then((request) => {
                     const normalizeRequest = normalize(request.data, itemNormalizr)
                     dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
                     dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
                     dispatch({type: SELECT_ITEM, payload: request.data.id})
-                    dispatch(fetchItemRating(provider, request.data.id))
-                    dispatch(fetchItemSalesNumber(provider, itemId))
-                    dispatch(fetchUserRating(provider, request.data.user.wallet))
+                    dispatch(fetchItemRating(request.data.id))
+                    dispatch(fetchItemSalesNumber(itemId))
+                    dispatch(fetchUserRating(request.data.user.wallet))
                 })
   }
 }
 
 export function createItem(item_params) {
   return dispatch => {
-    axios.post(ITEMS_URL, item_params, headers)
+    return Api.post(ITEMS_URL, item_params)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemNormalizr)
           dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
@@ -65,6 +64,45 @@ export function createItem(item_params) {
             dispatch(setFlashMessage(error.request.data.error, 'error'))
           } else {
             dispatch(setFlashMessage("Error: Item couldn't be created, please try again later.", 'error'))
+          }
+       })
+  }
+}
+
+export function updateItem(item_params, itemId) {
+  return dispatch => {
+    return Api.put(`${ITEMS_URL}/${itemId}`, item_params)
+         .then((request) => {
+          const normalizeRequest = normalize(request.data, itemNormalizr)
+          dispatch({type: CREATE_USERS, payload: normalizeRequest.entities.users})
+          dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+          dispatch(setFlashMessage("Item has been successfully updated.", 'success'))
+       }).catch((error) => {
+          if (error.request) {
+            dispatch(setFlashMessage(error.request.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Item couldn't be updated, please try again later.", 'error'))
+          }
+       })
+  }
+}
+
+export function fetchSellerItems(wallet) {
+  return dispatch => {
+    return Api.get(`${USERS_URL}/${wallet}/items`)
+         .then((request) => {
+          const normalizeRequest = normalize(request.data, itemsNormalizr)
+          dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
+
+          request.data.forEach((item) => {
+            dispatch(fetchItemSalesNumber(item.id))
+          })
+       }).catch((error) => {
+          console.log(error)
+          if (error.response) {
+            dispatch(setFlashMessage(error.response.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Failed to retrieve items.. please try again later.", 'error'))
           }
        })
   }

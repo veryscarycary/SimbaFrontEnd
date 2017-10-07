@@ -236,7 +236,14 @@ contract Escrow {
     }
     purchases[_purchaseId].cancelTime = now;
     users[purchases[_purchaseId].buyer].balance = users[purchases[_purchaseId].buyer].balance.add(purchases[_purchaseId].amount);
-    PurchaseCancelled(_purchaseId, msg.sender, purchases[_purchaseId].buyer, purchases[_purchaseId].seller, purchases[_purchaseId].itemId, purchases[_purchaseId].amount);
+    PurchaseCancelled(
+      _purchaseId,
+      msg.sender,
+      purchases[_purchaseId].buyer,
+      purchases[_purchaseId].seller,
+      purchases[_purchaseId].itemId,
+      purchases[_purchaseId].amount
+    );
     //deleteOnePurchaseFromPending(_purchaseId);
   }
 
@@ -253,7 +260,10 @@ contract Escrow {
    * @dev Withdraw your current balance (Contract) to your own wallet
    */
   function withdraw() public {
-    require(users[msg.sender].balance > 0);
+    require(
+      users[msg.sender].balance > 0 &&
+      this.balance >= users[msg.sender].balance)
+    ;
     uint256 amount = users[msg.sender].balance;
     users[msg.sender].balance = 0;
     msg.sender.transfer(amount);

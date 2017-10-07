@@ -10,6 +10,7 @@ import { selectPurchase } from '../../actions/actions_purchases'
 import { createReview } from '../../actions/actions_reviews'
 import { purchaseState } from '../shared/PurchaseState'
 import { purchase } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 import '../../style/purchase-confirm.css'
 
@@ -26,15 +27,7 @@ class PurchaseConfirm extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectPurchase(this.props.provider, this.props.match.params.purchase_id)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectPurchase(nextProps.provider, this.props.match.params.purchase_id)
-    }
+    this.props.selectPurchase(this.props.match.params.purchase_id)
   }
 
   renderPurchaseConfirmation() {
@@ -104,7 +97,13 @@ class PurchaseConfirm extends Component {
   }
 
   submit(model) {
-    this.props.createReview(this.props.purchase, this.state, this.props.provider)
+    this.props.openModal({
+      title: 'Submitting your review',
+      content: "Your review is being sumitted. Please don't close this window until it's finished.",
+    })
+
+    this.props.createReview(this.props.purchase, this.state)
+      .then(() => this.props.closeModal())
   }
 
   renderDate(epochTime) {
@@ -220,7 +219,7 @@ class PurchaseConfirm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { provider: state.provider, purchase: purchase(state) }
+  return { purchase: purchase(state) }
 }
 
-export default connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm)
+export default withTransactionWatcher('ItemConfirm')(connect(mapStateToProps, { selectPurchase, createReview })(PurchaseConfirm))

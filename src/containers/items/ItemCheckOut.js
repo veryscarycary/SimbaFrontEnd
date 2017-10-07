@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import Modal from 'react-modal'
 
 import PurchaseSummary from '../purchases/PurchaseSummary'
 
@@ -8,33 +9,18 @@ import { createPurchase } from '../../actions/actions_purchases'
 import { selectItem } from '../../actions/actions_items'
 import { purchaseState } from '../shared/PurchaseState'
 import { item, purchase, current_user } from '../../models/selectors'
+import withTransactionWatcher from '../../containers/eth/withTransactionWatcher'
 
 import '../../style/checkout.css'
 
 
 class ItemCheckOut extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      finalPrice: 0.0
-    }
-  }
+  state = { finalPrice: 0.0 }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.selectItem(this.props.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.selectItem(nextProps.provider, this.props.match.params.item_id).then((request) => {
-        this.setFinalPrice()
-      })
-    }
+    this.props.selectItem(this.props.match.params.item_id).then((request) => {
+      this.setFinalPrice()
+    })
   }
 
   setFinalPrice() {
@@ -50,7 +36,14 @@ class ItemCheckOut extends Component {
 
   purchaseItem(event) {
     event.preventDefault()
-    this.props.createPurchase(this.props.item, this.state.finalPrice, this.props.provider)
+
+    this.props.openModal({
+      title: 'Processing your order',
+      content: "Your order is being transmitted. Please don't close this window until it's finished.",
+    })
+
+    this.props.createPurchase(this.props.item, this.state.finalPrice)
+      .then(() => this.props.closeModal())
   }
 
   renderPurchaseConfirmation() {
@@ -100,16 +93,11 @@ class ItemCheckOut extends Component {
   }
 
   renderFormOrConfirmation() {
-    if (!this.props.purchase.purchaseState) {
-      return this.renderShippingForm()
-    }
-    switch(this.props.purchase.purchaseState) {
+    switch (this.props.purchase.purchaseState) {
       case purchaseState.PURCHASED:
         return this.renderPurchaseConfirmation()
       case purchaseState.ERROR:
         return this.renderErrorPurchase()
-      case purchaseState.PENDING_PURCHASED:
-        // Modal For Pending Shipping Transaction
       default:
         return this.renderShippingForm()
     }
@@ -208,6 +196,7 @@ class ItemCheckOut extends Component {
     if (!this.props.item.name) {
       return <div>Loading..</div>
     }
+
     return (
       <div id="checkout">
         <div className="container">
@@ -222,7 +211,7 @@ class ItemCheckOut extends Component {
 }
 
 function mapStateToProps(state) {
-  return { item : item(state), provider: state.provider, purchase: purchase(state), current_user: current_user(state) }
+  return { item : item(state), purchase: purchase(state), current_user: current_user(state) }
 }
 
-export default connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut)
+export default withTransactionWatcher('ItemCheckout')(connect(mapStateToProps, { selectItem, createPurchase })(ItemCheckOut))

@@ -28,19 +28,9 @@ class Navigation extends Component {
   }
 
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.fetchEscrowBalance(this.props.provider).then(transaction => {
-        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
-      })
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchEscrowBalance(nextProps.provider).then(transaction => {
-        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
-      })
-    }
+    this.props.fetchEscrowBalance().then(transaction => {
+      this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
+    })
   }
 
   signOut(event) {
@@ -87,6 +77,7 @@ class Navigation extends Component {
 
                     <span className="dropdown-header">Sales</span>
                     <Link className="dropdown-item" to='/listing/create'>Add New Listing</Link>
+                    <Link className="dropdown-item" to='/my_items'>My Items</Link>
                     <Link className="dropdown-item" to='/sales'>Sales History</Link>
 
                     <span className="dropdown-header">Admin</span>
