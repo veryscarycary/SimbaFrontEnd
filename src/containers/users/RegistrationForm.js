@@ -43,7 +43,7 @@ class RegistrationForm extends Component {
   }
 
   renderForm() {
-    const disabled = this.state.submitting || !this.props.provider.isConnected
+    const disabled = this.state.submitting
 
     return (
       <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
@@ -144,8 +144,8 @@ class RegistrationForm extends Component {
                   Create your account
                 </h1>
 
-                { !this.props.provider.fetching && !this.props.provider.isConnected && this.renderErrorBlockChain() }
-                { this.renderForm()  }
+                { this.renderErrorBlockChain() }
+                { this.renderForm() }
               </div>
             </div>
           </div>
@@ -156,7 +156,7 @@ class RegistrationForm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { current_user: current_user(state), provider: state.provider }
+  return { current_user: current_user(state) }
 }
 
 export default withNextRoute(connect(mapStateToProps, { userRegistration })(RegistrationForm))

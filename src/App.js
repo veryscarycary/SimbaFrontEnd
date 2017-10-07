@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route as RouterRoute, Redirect } from 'react-router-dom'
 
-import { fetchProvider } from './actions/actions_provider'
-
 // Shared Containers
 import Navigation from './containers/shared/Navigation'
 import Footer from './containers/shared/Footer'
@@ -65,10 +63,6 @@ const Route = ({ component: Component, auth, ...rest }) => (
 )
 
 class App extends Component {
-  componentWillMount() {
-    this.props.fetchProvider()
-  }
-
   render() {
     return (
       <Router>
@@ -111,4 +105,4 @@ class App extends Component {
   }
 }
 
-export default connect(() => ({}), { fetchProvider })(App)
+export default App

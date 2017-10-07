@@ -6,10 +6,8 @@ import { currentUserWalletReducer, selectedUserWalletReducer } from './reducer_u
 import selectedItemIdReducer from './reducer_items'
 import selectedPurchaseIdReducer from './reducer_purchases'
 import flashMessagesReducer from './reducer_flash_messages'
-import providerReducer from './reducer_provider'
 
 const rootReducer = combineReducers({
-  provider: providerReducer,
   currentUserWallet: currentUserWalletReducer,
   selectedUserWallet: selectedUserWalletReducer,
   selectedItemId: selectedItemIdReducer,

@@ -253,16 +253,16 @@ export function fetchUserReviewIds(wallet, numberReviews) {
 // Automatically cancels orders if seller hasn't shipped the items before the shipping deadlines - State of the purchase : "SELLER_SHIPPING_TIMEOUT"
 // and
 // Automatically confirms orders if buyer hasn't confirmed the reception of the item before the confirmation deadlines - State of the purchase : "BUYER_CONFIRMATION_TIMEOUT"
-export function cancelTimeoutOrders(provider) {
+export function cancelTimeoutOrders() {
   return (dispatch) => {
-    dispatch(watchShippingTimeoutEvent(provider))
-    dispatch(watchConfirmationTimeoutEvent(provider))
+    // dispatch(watchShippingTimeoutEvent(provider))
+    // dispatch(watchConfirmationTimeoutEvent(provider))
 
-    return EscrowContract.cancelTimeoutOrders()
-      .catch(error => {
-        console.log('error cancelTimeoutOrders', error)
-        dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
-      })
+    // return EscrowContract.cancelTimeoutOrders()
+    //   .catch(error => {
+    //     console.log('error cancelTimeoutOrders', error)
+    //     dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
+    //   })
   }
 }
 

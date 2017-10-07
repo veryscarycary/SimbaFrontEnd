@@ -4,6 +4,7 @@ import { Form, Input } from 'formsy-react-components'
 import { Alert } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
+import EscrowContract from '../../services/escrow'
 import { current_user } from '../../models/selectors'
 import { userSignIn } from '../../actions/actions_users'
 import withNextRoute from './withNextRoute'
@@ -39,7 +40,7 @@ class SignInForm extends Component {
   }
 
   renderForm() {
-    const disabled = this.state.submitting || !this.props.provider.isConnected
+    const disabled = this.state.submitting
 
     return (
       <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
@@ -94,6 +95,7 @@ class SignInForm extends Component {
   }
 
   render() {
+    console.log(EscrowContract.isConnected().then())
     return (
       <div className="account-page">
         <div className="container">
@@ -104,8 +106,8 @@ class SignInForm extends Component {
                   Log in to your account
                 </h1>
 
-                {!this.props.provider.fetching && !this.props.provider.isConnected && this.renderErrorBlockChain()}
-                {this.renderForm()}
+                { this.renderErrorBlockChain() }
+                { this.renderForm() }
               </div>
             </div>
           </div>
@@ -118,7 +120,7 @@ class SignInForm extends Component {
 }
 
 function mapStateToProps(state) {
-  return { current_user: current_user(state), provider: state.provider }
+  return { current_user: current_user(state) }
 }
 
 export default withNextRoute(connect(mapStateToProps, { userSignIn })(SignInForm))

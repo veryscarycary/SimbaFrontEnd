@@ -39,6 +39,17 @@ class EscrowContract {
     return this.providerPromise.then((provider) => provider.Eth.accounts())
   }
 
+  account() {
+    return this.accounts().then((account) => { return account[0] })
+  }
+
+  isConnected() {
+    return this.accounts().then((accounts) => {
+      console.log(accounts.length)
+      return accounts.length != 0
+    })
+  }
+
   /**
    * Returns true if the escrow is deployed
    * @return {Promise}

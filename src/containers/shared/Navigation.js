@@ -42,7 +42,7 @@ class Navigation extends Component {
 
   checkTimeout(event) {
     event.preventDefault()
-    this.props.cancelTimeoutOrders(this.props.provider)
+    this.props.cancelTimeoutOrders()
   }
 
   renderSearchBarMyAccount() {
@@ -379,7 +379,7 @@ class Navigation extends Component {
 
 
 function mapStateToProps(state) {
-  return { current_user : current_user(state), provider: state.provider }
+  return { current_user : current_user(state) }
 }
 
 export default withRouter(
