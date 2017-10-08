@@ -39,17 +39,6 @@ class EscrowContract {
     return this.providerPromise.then((provider) => provider.Eth.accounts())
   }
 
-  account() {
-    return this.accounts().then((account) => { return account[0] })
-  }
-
-  isConnected() {
-    return this.accounts().then((accounts) => {
-      console.log(accounts.length)
-      return accounts.length != 0
-    })
-  }
-
   /**
    * Returns true if the escrow is deployed
    * @return {Promise}
@@ -263,6 +252,16 @@ class EscrowContract {
   getBalance() {
     return this._callEscrowMethod(
       'getBalance'
+    )
+  }
+
+  /**
+   * Fetch User Balance inside the smart contract (avaiable to be withdraw)
+   * @return {Promise}
+   */
+  getUserBalance() {
+    return this._callEscrowMethod(
+      'getUserBalance'
     )
   }
 }
