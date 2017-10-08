@@ -5,7 +5,7 @@ import Eth from 'ethjs'
 
 import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
-import { cancelTimeoutOrders, fetchEscrowBalance } from '../../actions/actions_contract'
+import { cancelTimeoutOrders } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
 
@@ -16,7 +16,6 @@ class Navigation extends Component {
     super(props)
 
     this.state = {
-      escrowBalance: 0,
       isMyAccountHovered: false,
       isLink1Hovered: false,
       isLink2Hovered: false,
@@ -25,12 +24,6 @@ class Navigation extends Component {
       isLink5Hovered: false,
       isLink6Hovered: false
     }
-  }
-
-  componentWillMount() {
-    this.props.fetchEscrowBalance().then(transaction => {
-      this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
-    })
   }
 
   signOut(event) {
@@ -383,5 +376,5 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, { deleteCurrentUser, cancelTimeoutOrders, fetchEscrowBalance })(Navigation)
+  connect(mapStateToProps, { deleteCurrentUser, cancelTimeoutOrders })(Navigation)
 )

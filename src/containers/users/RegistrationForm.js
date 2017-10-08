@@ -4,6 +4,7 @@ import { Form, Input } from 'formsy-react-components'
 import { Alert } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
+import BlockChainError from '../shared/BlockChainError'
 import { userRegistration } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import withNextRoute from './withNextRoute'
@@ -43,7 +44,7 @@ class RegistrationForm extends Component {
   }
 
   renderForm() {
-    const disabled = this.state.submitting
+    const disabled = this.state.submitting || !this.props.current_user.wallet
 
     return (
       <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
@@ -124,15 +125,6 @@ class RegistrationForm extends Component {
     )
   }
 
-  renderErrorBlockChain() {
-    return (
-      <Alert bsStyle="danger">
-        <h4>Wallet couldn't be found.</h4>
-        <p>To register to Simba, please make sure you are connected to an Ethereum nodes by installing Metamask plugin (Chrome/Firefox) or using Mist or Parity as your web browser.</p>
-      </Alert>
-    )
-  }
-
   render() {
     return (
       <div className="account-page">
@@ -144,7 +136,7 @@ class RegistrationForm extends Component {
                   Create your account
                 </h1>
 
-                { this.renderErrorBlockChain() }
+                { !this.props.current_user.wallet && <BlockChainError /> }
                 { this.renderForm() }
               </div>
             </div>

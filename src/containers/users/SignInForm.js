@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Form, Input } from 'formsy-react-components'
-import { Alert } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
+import BlockChainError from '../shared/BlockChainError'
 import EscrowContract from '../../services/escrow'
 import { current_user } from '../../models/selectors'
 import { userSignIn } from '../../actions/actions_users'
@@ -40,7 +40,7 @@ class SignInForm extends Component {
   }
 
   renderForm() {
-    const disabled = this.state.submitting
+    const disabled = this.state.submitting || !this.props.current_user.wallet
 
     return (
       <Form layout='vertical' onValidSubmit={this.submit.bind(this)}>
@@ -85,17 +85,9 @@ class SignInForm extends Component {
     )
   }
 
-  renderErrorBlockChain() {
-    return (
-      <Alert bsStyle="danger">
-        <strong>Wallet couldn't be found.</strong>
-        <p>To register to Simba, please make sure you are connected to an Ethereum nodes by installing Metamask plugin (Chrome/Firefox) or using Mist or Parity as your web browser.</p>
-      </Alert>
-    )
-  }
+
 
   render() {
-    console.log(EscrowContract.isConnected().then())
     return (
       <div className="account-page">
         <div className="container">
@@ -106,7 +98,7 @@ class SignInForm extends Component {
                   Log in to your account
                 </h1>
 
-                { this.renderErrorBlockChain() }
+                { !this.props.current_user.wallet && <BlockChainError /> }
                 { this.renderForm() }
               </div>
             </div>
