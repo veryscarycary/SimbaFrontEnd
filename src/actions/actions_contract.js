@@ -2,7 +2,6 @@ import Eth from 'ethjs'
 import EscrowContract from '../services/escrow'
 
 import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
-import { watchShippingTimeoutEvent, watchConfirmationTimeoutEvent } from './actions_event_watcher'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
@@ -22,6 +21,7 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
     shippingDeadline,
   })
    .then((transaction) => {
+      console.log(transaction)
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
     })
    .catch((error) => {
@@ -84,7 +84,6 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
 export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, canceller }) {
   return (dispatch) => EscrowContract.cancelPurchase(purchaseId)
     .then((transaction) => {
-      console.log('Cancelling purchase', { purchaseId, canceller })
       const activityCategory = canceller === 'buyer' ? activityCategories.CANCEL_PURCHASE : activityCategories.CANCEL_SALES
       const cancelPurchaseState = canceller === 'buyer' ? purchaseState.BUYER_CANCELLED : purchaseState.SELLER_CANCELLED
 
@@ -102,7 +101,7 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
     })
     .catch((error) => {
-      console.log('Could not cancel the purchase', error)
+      console.error('Could not cancel the purchase', error)
 
       dispatch(setFlashMessage("Error: Couldn't cancel the purchase transaction.. please try again later.", 'error'))
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
@@ -119,7 +118,7 @@ export function fetchPurchaseState(purchase) {
       return dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -144,7 +143,7 @@ export function fetchPurchaseTimes(purchase) {
       })
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -157,7 +156,7 @@ export function fetchUserSalesNumber(_, wallet) {
       dispatch({ type: UPDATE_USER, payload: { sales: transaction.valueOf(), wallet: wallet }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -170,7 +169,7 @@ export function fetchItemSalesNumber(itemId) {
       dispatch({ type: UPDATE_ITEM, payload: { sales: transaction.valueOf(), id: itemId }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -190,7 +189,7 @@ export function fetchUserRating(wallet) {
       dispatch(fetchUserReviewIds(wallet, transaction[2].valueOf()))
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -210,7 +209,7 @@ export function fetchItemRating(itemId) {
       dispatch(fetchItemReviewIds(itemId, transaction[2].valueOf()))
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -242,14 +241,13 @@ export function fetchUserReviewIds(wallet, numberReviews) {
           dispatch(fetchOneReview(Eth.toAscii(transaction), false))
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
           dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
         })
     }
   }
 }
 
-// block chain transaction
 // Automatically cancels orders if seller hasn't shipped the items before the shipping deadlines - State of the purchase : "SELLER_SHIPPING_TIMEOUT"
 // and
 // Automatically confirms orders if buyer hasn't confirmed the reception of the item before the confirmation deadlines - State of the purchase : "BUYER_CONFIRMATION_TIMEOUT"
@@ -266,9 +264,28 @@ export function cancelTimeoutOrders() {
   }
 }
 
-// block chain call
-// Fetch Total Balance of Escrow smart contract
+/**
+ * fetch Smart Contract Total Balance
+ */
 export function fetchEscrowBalance() {
   return dispatch => EscrowContract.getBalance()
+}
+
+/**
+ * fetch current_user balance in Escrow
+
+ */
+export function fetchUserBalance() {
+  return (dispatch) => {
+    EscrowContract.getUserBalance()
+      .then(transaction => {
+        console.log(transaction)
+        //dispatch({ type: UPDATE_USER, payload: {  }})
+      })
+      .catch(error => {
+        console.error(error)
+        dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
+      })
+  }
 }
 
