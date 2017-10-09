@@ -1,17 +1,24 @@
 import Eth from 'ethjs'
 import EscrowContract from '../services/escrow'
 
-import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
+import { purchaseState } from '../containers/shared/PurchaseState'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
-import { createLogActivity } from './actions_activities'
+import { createPurchaseActivity, createCancelActivity, createShippingActivity, createPurchaseConfirmationActivity } from './actions_activities'
 
-// Block chain transaction
-// Buyer Purchase an item '_itemId' from Seller (_seller)
-// State of the purchase : "PURCHASED"
+/**
+ * Buyer Purchase an item '_itemId' from Seller (_seller)
+ * State of the purchase : "PURCHASED"
+ * @param  {String} purchaseId
+ * @param  {String} sellerAddress    [Seller Wallet Address]
+ * @param  {String} itemId           [Item ID]
+ * @param  {Float} amount           [Total price of the transaction]
+ * @param  {Integer} shippingDeadline [Shipping Deadline in Days]
+ * @return {Promise}
+ */
 export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline) {
   return (dispatch) => EscrowContract.purchaseItem({
     purchaseId,
@@ -23,14 +30,7 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
    .then((transaction) => {
       console.log(transaction)
       if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemPurchased')) {
-        const newLog = `[${transaction.logs[0].args.buyer}] purchased ${Eth.toUtf8(transaction.logs[0].args.purchaseId)} for ${Eth.fromWei(transaction.logs[0].args.amount, 'ether')} ETH`
-        console.log('[Event - ItemPurchased] : ', newLog)
-        dispatch(createLogActivity(activityCategories.PURCHASE,
-                                   Eth.toUtf8(transaction.logs[0].args.purchaseId),
-                                   Eth.toUtf8(transaction.logs[0].args.itemId),
-                                   Eth.fromWei(transaction.logs[0].args.amount, 'ether'),
-                                   transaction.logs[0].args.buyer,
-                                   transaction.logs[0].args.seller))
+        dispatch(createPurchaseActivity(transaction.logs[0].args))
         return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
       } else {
         return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
@@ -42,26 +42,39 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
     })
 }
 
-// Block chain transaction
-// Seller send the code to Buyer
-// Code can be a tracking number, a digital code, a coupon
-// State of the purchase : "SHIPPED"
+/**
+ * Seller send the code to Buyer
+ * State of the purchase : "SHIPPED"
+ * @param  {String} purchaseId
+ * @param  {String} code       [Code can be a tracking number, a digital code, a coupon]
+ * @return {Promise}
+ */
 export function sendCode(purchaseId, code) {
   return (dispatch) => EscrowContract.sendShippingInformation({ purchaseId, trackingNumber: code })
     .then(transaction => {
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemShipped')) {
+        dispatch(createShippingActivity(transaction.logs[0].args))
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
+      } else {
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
     .catch(error => {
       console.error('Could not send shipping info', error)
-
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
 
-// Block chain transaction
-// Buyer confirms receive the code from the Seller - Completing the transactions
-// Seller receives the money
-// State of the purchase : "COMPLETED"
+/**
+ * Buyer confirms receive the code from the Seller - Completing the transactions
+ * State of the purchase : "COMPLETED"
+ * @param  {String} purchaseId
+ * @param  {String} userReviewId
+ * @param  {String} itemReviewId
+ * @param  {Integer} userRating   [Rating 1-5]
+ * @param  {Integer} itemRating   [Rating 1-5]
+ * @return {Promise}
+ */
 export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRating, itemRating) {
   return (dispatch) => EscrowContract.confirmPurchase({
     purchaseId,
@@ -71,19 +84,21 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
     itemRating,
   })
     .then((transaction) => {
-      return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'PurchaseCompleted')) {
+        dispatch(createPurchaseConfirmationActivity(transaction.logs[0].args))
+        return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
+      } else {
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
+
     })
     .catch(error => {
       console.error('Could not confirm purchase', error)
-
-      dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
 
 /**
- * Cancels the purchase
- * Block chain transaction
  * Buyer cancels his purchases (before the shipping happened) - State Purchase : BUYER_CANCELLED
  * or
  * Seller cancels his orders (before he shipped the item) - State Purchase : SELLER_CANCELLED
@@ -94,23 +109,14 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
 export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, canceller }) {
   return (dispatch) => EscrowContract.cancelPurchase(purchaseId)
     .then((transaction) => {
-      console.log(transaction)
       if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'PurchaseCancelled')) {
-        const newLog = `[${transaction.logs[0].args.sender}] cancels order ${Eth.toUtf8(transaction.logs[0].args.itemId)}.`
-        console.log('[Event - CancelPurchase] : ', newLog)
-        var activityCategory = activityCategories.CANCEL_PURCHASE
-        var cancelPurchaseState = purchaseState.BUYER_CANCELLED
+        dispatch(createCancelActivity(transaction.logs[0].args))
+        var cancelPurchaseState;
         if (transaction.logs[0].args.sender === transaction.logs[0].args.seller) {
-          activityCategory = activityCategories.CANCEL_SALES
           cancelPurchaseState = purchaseState.SELLER_CANCELLED
+        } else {
+          cancelPurchaseState = purchaseState.BUYER_CANCELLED
         }
-        dispatch(createLogActivity(activityCategory,
-                                   Eth.toUtf8(transaction.logs[0].args.purchaseId),
-                                   Eth.toUtf8(transaction.logs[0].args.itemId),
-                                   '',
-                                   transaction.logs[0].args.buyer,
-                                   transaction.logs[0].args.seller))
-
         return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
       } else {
         return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
