@@ -22,12 +22,22 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
   })
    .then((transaction) => {
       console.log(transaction)
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemPurchased')) {
+        const newLog = `[${transaction.logs[0].args.buyer}] purchased ${Eth.toUtf8(transaction.logs[0].args.purchaseId)} for ${Eth.fromWei(transaction.logs[0].args.amount, 'ether')} ETH`
+        console.log('[Event - ItemPurchased] : ', newLog)
+        dispatch(createLogActivity(activityCategories.PURCHASE,
+                                   Eth.toUtf8(transaction.logs[0].args.purchaseId),
+                                   Eth.toUtf8(transaction.logs[0].args.itemId),
+                                   Eth.fromWei(transaction.logs[0].args.amount, 'ether'),
+                                   transaction.logs[0].args.buyer,
+                                   transaction.logs[0].args.seller))
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
+      } else {
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
    .catch((error) => {
       console.error('Could not create purchase', error)
-
-      dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
@@ -84,26 +94,30 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
 export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, canceller }) {
   return (dispatch) => EscrowContract.cancelPurchase(purchaseId)
     .then((transaction) => {
-      const activityCategory = canceller === 'buyer' ? activityCategories.CANCEL_PURCHASE : activityCategories.CANCEL_SALES
-      const cancelPurchaseState = canceller === 'buyer' ? purchaseState.BUYER_CANCELLED : purchaseState.SELLER_CANCELLED
+      console.log(transaction)
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'PurchaseCancelled')) {
+        const newLog = `[${transaction.logs[0].args.sender}] cancels order ${Eth.toUtf8(transaction.logs[0].args.itemId)}.`
+        console.log('[Event - CancelPurchase] : ', newLog)
+        var activityCategory = activityCategories.CANCEL_PURCHASE
+        var cancelPurchaseState = purchaseState.BUYER_CANCELLED
+        if (transaction.logs[0].args.sender === transaction.logs[0].args.seller) {
+          activityCategory = activityCategories.CANCEL_SALES
+          cancelPurchaseState = purchaseState.SELLER_CANCELLED
+        }
+        dispatch(createLogActivity(activityCategory,
+                                   Eth.toUtf8(transaction.logs[0].args.purchaseId),
+                                   Eth.toUtf8(transaction.logs[0].args.itemId),
+                                   '',
+                                   transaction.logs[0].args.buyer,
+                                   transaction.logs[0].args.seller))
 
-      dispatch(
-        createLogActivity(
-          activityCategory,
-          Eth.toUtf8(purchaseId),
-          Eth.toUtf8(itemId),
-          '',
-          buyerId,
-          sellerId
-        )
-      )
-
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
+      } else {
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
     .catch((error) => {
       console.error('Could not cancel the purchase', error)
-
-      dispatch(setFlashMessage("Error: Couldn't cancel the purchase transaction.. please try again later.", 'error'))
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
@@ -179,6 +193,7 @@ export function fetchItemSalesNumber(itemId) {
 export function fetchUserRating(wallet) {
   return (dispatch) => EscrowContract.getUserReviews(wallet)
     .then(transaction => {
+      console.log('user Rating', transaction)
       let rating = 0
 
       if (transaction[0].toNumber() !== 0) {
@@ -199,6 +214,7 @@ export function fetchUserRating(wallet) {
 export function fetchItemRating(itemId) {
   return (dispatch) => EscrowContract.getItemReviews(itemId)
     .then(transaction => {
+      console.log('item Rating', transaction)
       let rating = 0
 
       if (transaction[0].toNumber() !== 0) {
@@ -221,6 +237,7 @@ export function fetchItemReviewIds(itemId, numberReviews) {
     for (var i = 0; i < numberReviews; i++) {
       EscrowContract.getItemReviewComment(itemId, i)
         .then(transaction => {
+          console.log('Item Reviews IDs', transaction)
           dispatch(fetchOneReview(Eth.toAscii(transaction), true))
         })
         .catch(error => {
@@ -238,6 +255,7 @@ export function fetchUserReviewIds(wallet, numberReviews) {
     for (var i = 0; i < numberReviews; i++) {
       EscrowContract.getUserReviewComment(wallet, i)
         .then(transaction => {
+          console.log('User Reviews IDs', transaction)
           dispatch(fetchOneReview(Eth.toAscii(transaction), false))
         })
         .catch(error => {
