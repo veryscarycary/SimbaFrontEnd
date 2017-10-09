@@ -4,7 +4,6 @@ import { Form, Input } from 'formsy-react-components'
 import { Link } from 'react-router-dom'
 
 import BlockChainError from '../shared/BlockChainError'
-import EscrowContract from '../../services/escrow'
 import { current_user } from '../../models/selectors'
 import { userSignIn } from '../../actions/actions_users'
 import withNextRoute from './withNextRoute'

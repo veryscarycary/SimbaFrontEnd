@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
-import Eth from 'ethjs'
 
 import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'

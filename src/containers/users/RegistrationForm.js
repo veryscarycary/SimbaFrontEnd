@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Form, Input } from 'formsy-react-components'
-import { Alert } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import BlockChainError from '../shared/BlockChainError'

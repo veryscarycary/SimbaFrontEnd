@@ -1,9 +1,6 @@
-import Eth from 'ethjs'
-
 import Api, { SIGN_UP_URL, SIGN_IN_URL, USERS_URL, MY_PROFILE_URL } from '../services/api'
 import { setFlashMessage } from './actions_flash_messages'
 
-import EscrowContract from '../services/escrow'
 import Auth from '../services/auth'
 
 export const CREATE_USERS = 'CREATE_USERS'
