@@ -13,15 +13,3 @@ export const purchaseState = {
   PENDING_COMPLETED: '-4',
   PENDING_CANCELLED: '-5'
 }
-
-export const activityCategories = {
-  USER_CREATION: 0,
-  ITEM_LISTING: 1,
-  PURCHASE: 2,
-  SHIP_ITEM: 3,
-  CONFIRM_PURCHASE: 4,
-  CANCEL_PURCHASE: 5,
-  CANCEL_SALES: 6,
-  BUYER_CONFIRMATION_TIMEOUT: 7,
-  SELLER_SHIPPING_TIMEOUT: 8
-}

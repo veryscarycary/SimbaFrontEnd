@@ -254,6 +254,16 @@ class EscrowContract {
       'getBalance'
     )
   }
+
+  /**
+   * Fetch User Balance inside the smart contract (avaiable to be withdraw)
+   * @return {Promise}
+   */
+  getUserBalance() {
+    return this._callEscrowMethod(
+      'getUserBalance'
+    )
+  }
 }
 
 export default new EscrowContract()

@@ -1,18 +1,24 @@
 import Eth from 'ethjs'
 import EscrowContract from '../services/escrow'
 
-import { purchaseState, activityCategories } from '../containers/shared/PurchaseState'
-import { watchShippingTimeoutEvent, watchConfirmationTimeoutEvent } from './actions_event_watcher'
+import { purchaseState } from '../containers/shared/PurchaseState'
 import { setFlashMessage } from './actions_flash_messages'
 import { UPDATE_PURCHASE, updatePurchaseState } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
-import { createLogActivity } from './actions_activities'
+import { createPurchaseActivity, createCancelActivity, createShippingActivity, createPurchaseConfirmationActivity } from './actions_activities'
 
-// Block chain transaction
-// Buyer Purchase an item '_itemId' from Seller (_seller)
-// State of the purchase : "PURCHASED"
+/**
+ * Buyer Purchase an item '_itemId' from Seller (_seller)
+ * State of the purchase : "PURCHASED"
+ * @param  {String} purchaseId
+ * @param  {String} sellerAddress    [Seller Wallet Address]
+ * @param  {String} itemId           [Item ID]
+ * @param  {Float} amount           [Total price of the transaction]
+ * @param  {Integer} shippingDeadline [Shipping Deadline in Days]
+ * @return {Promise}
+ */
 export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDeadline) {
   return (dispatch) => EscrowContract.purchaseItem({
     purchaseId,
@@ -22,38 +28,52 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
     shippingDeadline,
   })
    .then((transaction) => {
-      dispatch(updatePurchaseState({state: purchaseState.PURCHASED}, purchaseId))
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemPurchased')) {
+        dispatch(createPurchaseActivity(transaction.logs[0].args))
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
+      } else {
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
    .catch((error) => {
       console.error('Could not create purchase', error)
-      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
-      dispatch(setFlashMessage("Error: Transaction failed.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
 
-// Block chain transaction
-// Seller send the code to Buyer
-// Code can be a tracking number, a digital code, a coupon
-// State of the purchase : "SHIPPED"
+/**
+ * Seller send the code to Buyer
+ * State of the purchase : "SHIPPED"
+ * @param  {String} purchaseId
+ * @param  {String} code       [Code can be a tracking number, a digital code, a coupon]
+ * @return {Promise}
+ */
 export function sendCode(purchaseId, code) {
   return (dispatch) => EscrowContract.sendShippingInformation({ purchaseId, trackingNumber: code })
     .then(transaction => {
-      dispatch(updatePurchaseState({state: purchaseState.SHIPPED}, purchaseId))
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemShipped')) {
+        dispatch(createShippingActivity(transaction.logs[0].args))
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.SHIPPED } })
+      } else {
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
     .catch(error => {
       console.error('Could not send shipping info', error)
-      dispatch(updatePurchaseState({state:  purchaseState.ERROR}, purchaseId))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
 
-// Block chain transaction
-// Buyer confirms receive the code from the Seller - Completing the transactions
-// Seller receives the money
-// State of the purchase : "COMPLETED"
+/**
+ * Buyer confirms receive the code from the Seller - Completing the transactions
+ * State of the purchase : "COMPLETED"
+ * @param  {String} purchaseId
+ * @param  {String} userReviewId
+ * @param  {String} itemReviewId
+ * @param  {Integer} userRating   [Rating 1-5]
+ * @param  {Integer} itemRating   [Rating 1-5]
+ * @return {Promise}
+ */
 export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRating, itemRating) {
   return (dispatch) => EscrowContract.confirmPurchase({
     purchaseId,
@@ -63,20 +83,21 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
     itemRating,
   })
     .then((transaction) => {
-      dispatch(updatePurchaseState({state: purchaseState.COMPLETED}, purchaseId))
-      return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'PurchaseCompleted')) {
+        dispatch(createPurchaseConfirmationActivity(transaction.logs[0].args))
+        return dispatch({type: UPDATE_PURCHASE, payload: {id: purchaseId, purchaseState: purchaseState.COMPLETED}})
+      } else {
+        dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
+
     })
     .catch(error => {
       console.error('Could not confirm purchase', error)
-      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
-      dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
       dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
 
 /**
- * Cancels the purchase
- * Block chain transaction
  * Buyer cancels his purchases (before the shipping happened) - State Purchase : BUYER_CANCELLED
  * or
  * Seller cancels his orders (before he shipped the item) - State Purchase : SELLER_CANCELLED
@@ -87,28 +108,21 @@ export function confirmPurchase(purchaseId, userReviewId, itemReviewId, userRati
 export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, canceller }) {
   return (dispatch) => EscrowContract.cancelPurchase(purchaseId)
     .then((transaction) => {
-      console.log('Cancelling purchase', { purchaseId, canceller })
-      const activityCategory = canceller === 'buyer' ? activityCategories.CANCEL_PURCHASE : activityCategories.CANCEL_SALES
-      const cancelPurchaseState = canceller === 'buyer' ? purchaseState.BUYER_CANCELLED : purchaseState.SELLER_CANCELLED
-
-      dispatch(updatePurchaseState({state: cancelPurchaseState}, purchaseId))
-      dispatch(
-        createLogActivity(
-          activityCategory,
-          Eth.toUtf8(purchaseId),
-          Eth.toUtf8(itemId),
-          '',
-          buyerId,
-          sellerId
-        )
-      )
-
-      return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
+      if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'PurchaseCancelled')) {
+        dispatch(createCancelActivity(transaction.logs[0].args))
+        var cancelPurchaseState;
+        if (transaction.logs[0].args.sender === transaction.logs[0].args.seller) {
+          cancelPurchaseState = purchaseState.SELLER_CANCELLED
+        } else {
+          cancelPurchaseState = purchaseState.BUYER_CANCELLED
+        }
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: cancelPurchaseState } })
+      } else {
+        return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
+      }
     })
     .catch((error) => {
-      console.log('Could not cancel the purchase', error)
-      dispatch(updatePurchaseState({state: purchaseState.ERROR}, purchaseId))
-      dispatch(setFlashMessage("Error: Couldn't cancel the purchase transaction.. please try again later.", 'error'))
+      console.error('Could not cancel the purchase', error)
       return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.ERROR } })
     })
 }
@@ -127,7 +141,7 @@ export function fetchPurchaseState(purchase) {
       return dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -152,7 +166,7 @@ export function fetchPurchaseTimes(purchase) {
       })
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -165,7 +179,7 @@ export function fetchUserSalesNumber(_, wallet) {
       dispatch({ type: UPDATE_USER, payload: { sales: transaction.valueOf(), wallet: wallet }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -178,7 +192,7 @@ export function fetchItemSalesNumber(itemId) {
       dispatch({ type: UPDATE_ITEM, payload: { sales: transaction.valueOf(), id: itemId }})
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -198,7 +212,7 @@ export function fetchUserRating(wallet) {
       dispatch(fetchUserReviewIds(wallet, transaction[2].valueOf()))
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -218,7 +232,7 @@ export function fetchItemRating(itemId) {
       dispatch(fetchItemReviewIds(itemId, transaction[2].valueOf()))
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
       dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
     })
 }
@@ -233,7 +247,7 @@ export function fetchItemReviewIds(itemId, numberReviews) {
           dispatch(fetchOneReview(Eth.toAscii(transaction), true))
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
           dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
         })
     }
@@ -250,32 +264,49 @@ export function fetchUserReviewIds(wallet, numberReviews) {
           dispatch(fetchOneReview(Eth.toAscii(transaction), false))
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
           dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
         })
     }
   }
 }
 
-// block chain transaction
 // Automatically cancels orders if seller hasn't shipped the items before the shipping deadlines - State of the purchase : "SELLER_SHIPPING_TIMEOUT"
 // and
 // Automatically confirms orders if buyer hasn't confirmed the reception of the item before the confirmation deadlines - State of the purchase : "BUYER_CONFIRMATION_TIMEOUT"
-export function cancelTimeoutOrders(provider) {
+export function cancelTimeoutOrders() {
   return (dispatch) => {
-    dispatch(watchShippingTimeoutEvent(provider))
-    dispatch(watchConfirmationTimeoutEvent(provider))
+    // dispatch(watchShippingTimeoutEvent(provider))
+    // dispatch(watchConfirmationTimeoutEvent(provider))
 
-    return EscrowContract.cancelTimeoutOrders()
-      .catch(error => {
-        console.log('error cancelTimeoutOrders', error)
-        dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
-      })
+    // return EscrowContract.cancelTimeoutOrders()
+    //   .catch(error => {
+    //     console.log('error cancelTimeoutOrders', error)
+    //     dispatch(setFlashMessage("Error: Couldn't confirm the purchase transaction.. please try again later.", 'error'))
+    //   })
   }
 }
 
-// block chain call
-// Fetch Total Balance of Escrow smart contract
+/**
+ * fetch Smart Contract Total Balance
+ */
 export function fetchEscrowBalance() {
   return dispatch => EscrowContract.getBalance()
+}
+
+/**
+ * fetch current_user balance in Escrow
+
+ */
+export function fetchUserBalance() {
+  return (dispatch) => {
+    EscrowContract.getUserBalance()
+      .then(transaction => {
+        //dispatch({ type: UPDATE_USER, payload: {  }})
+      })
+      .catch(error => {
+        console.error(error)
+        dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
+      })
+  }
 }
