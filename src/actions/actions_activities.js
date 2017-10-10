@@ -1,8 +1,10 @@
 import { normalize } from 'normalizr'
+import Eth from 'ethjs'
 
 import Api, { ACTIVITIES_URL } from '../services/api'
 import { activitiesNormalizr } from '../models/normalizr'
 
+import { activityCategories } from '../containers/shared/ActivityCategory'
 import { CREATE_USERS } from './actions_users'
 import { CREATE_ITEMS } from './actions_items'
 import { CREATE_PURCHASES } from './actions_purchases'
@@ -19,6 +21,64 @@ export function fetchAllActivities() {
             dispatch({ type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases })
             dispatch({ type: CREATE_ACTIVITIES, payload: normalizeRequest.entities.activities })
          })
+  }
+}
+
+export function createPurchaseActivity(log) {
+  return dispatch => {
+    const newLog = `[${log.buyer}] purchased ${Eth.toUtf8(log.purchaseId)} for ${Eth.fromWei(log.amount, 'ether')} ETH`
+    console.log('[Event - ItemPurchased] : ', newLog)
+    dispatch(createLogActivity(activityCategories.PURCHASE,
+                               Eth.toUtf8(log.purchaseId),
+                               Eth.toUtf8(log.itemId),
+                               Eth.fromWei(log.amount, 'ether'),
+                               log.buyer,
+                               log.seller))
+  }
+}
+
+export function createCancelActivity(log) {
+  return dispatch => {
+    const newLog = `[${log.sender}] cancels order ${Eth.toUtf8(log.itemId)}.`
+    console.log('[Event - CancelPurchase] : ', newLog)
+    var activityCategory
+    if (log.sender === log.seller) {
+      activityCategory = activityCategories.CANCEL_SALES
+    } else {
+      activityCategory = activityCategories.CANCEL_PURCHASE
+    }
+    dispatch(createLogActivity(activityCategory,
+                               Eth.toUtf8(log.purchaseId),
+                               Eth.toUtf8(log.itemId),
+                               Eth.fromWei(log.amount, 'ether'),
+                               log.buyer,
+                               log.seller))
+  }
+}
+
+export function createShippingActivity(log) {
+  return dispatch => {
+    const newLog = `[${log.seller}] shipped ${Eth.toUtf8(log.itemId)} - Tracking Number : ${Eth.toUtf8(log.code)}`
+    console.log('[Event - ItemShipped] : ', newLog)
+    dispatch(createLogActivity(activityCategories.SHIP_ITEM,
+                               Eth.toUtf8(log.purchaseId),
+                               Eth.toUtf8(log.itemId),
+                               Eth.toAscii(log.code),
+                               log.buyer,
+                               log.seller))
+  }
+}
+
+export function createPurchaseConfirmationActivity(log) {
+  return dispatch => {
+    const newLog = `[${log.buyer}] confirms receiving ${Eth.toUtf8(log.itemId)}. The transaction is complete.`
+    console.log('[Event - PurchaseComplete] : ', newLog)
+    dispatch(createLogActivity(activityCategories.CONFIRM_PURCHASE,
+                               Eth.toUtf8(log.purchaseId),
+                               Eth.toUtf8(log.itemId),
+                               Eth.fromWei(log.amount, 'ether'),
+                               log.buyer,
+                               log.seller))
   }
 }
 

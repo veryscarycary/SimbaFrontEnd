@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route as RouterRoute, Redirect } from 'react-router-dom'
 
-import { fetchProvider } from './actions/actions_provider'
+import EscrowContract from './services/escrow'
+import { setCurrentUser } from './actions/actions_users'
 
 // Shared Containers
 import Navigation from './containers/shared/Navigation'
@@ -66,7 +67,13 @@ const Route = ({ component: Component, auth, ...rest }) => (
 
 class App extends Component {
   componentWillMount() {
-    this.props.fetchProvider()
+    EscrowContract.accounts().then((accounts) => {
+      var current_user = { authentication_token: Auth.token, wallet: '' }
+      if (accounts[0]) {
+        current_user['wallet'] = accounts[0]
+      }
+      this.props.setCurrentUser(current_user)
+    })
   }
 
   render() {
@@ -111,4 +118,4 @@ class App extends Component {
   }
 }
 
-export default connect(() => ({}), { fetchProvider })(App)
+export default connect(null, {setCurrentUser})(App)

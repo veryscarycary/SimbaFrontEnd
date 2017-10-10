@@ -9,7 +9,7 @@ import { userReviews, user } from '../../models/selectors'
 class ReviewIndex extends Component {
   componentWillMount() {
     this.props.selectUser(this.props.match.params.user_wallet)
-    this.props.fetchUserRating(this.props.provider, this.props.match.params.user_wallet)
+    this.props.fetchUserRating(this.props.match.params.user_wallet)
   }
 
   renderReviews() {
