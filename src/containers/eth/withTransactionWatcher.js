@@ -62,7 +62,7 @@ export default function(contentLabel) {
               <div className="modal-body">
                 <div>
                   <div className="text-center">{this.state.content}</div>
-                  <br/><br/>
+                  <br/>
                   <div className="text-center">
                     <Spinner name="line-scale" color="coral" className='purchase-spinner' />
                   </div>
