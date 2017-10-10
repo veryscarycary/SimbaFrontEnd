@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { fetchEscrowBalance } from '../../actions/actions_contract'
 import { fetchPurchaseMetrics } from '../../actions/actions_purchases'
 import Eth from 'ethjs'
+import '../../style/vendor/gentelella.css'
 
 class DashboardIndex extends Component {
   constructor(props) {
@@ -16,33 +17,16 @@ class DashboardIndex extends Component {
     }
   }
   componentWillMount() {
-    if (this.props.provider.isConnected) {
-      this.props.fetchEscrowBalance(this.props.provider).then(transaction => {
-        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
+    this.props.fetchEscrowBalance().then(transaction => {
+      this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
+    })
+    this.props.fetchPurchaseMetrics().then(transaction => {
+      this.setState({
+        pendingPurchasesCount: transaction.pending,
+        pendingShippingPurchasesCount: transaction.pending_shipping,
+        completedPurchasesCount: transaction.completed
       })
-      this.props.fetchPurchaseMetrics().then(transaction => {
-        this.setState({
-          pendingPurchasesCount: transaction.pending,
-          pendingShippingPurchasesCount: transaction.pending_shipping,
-          completedPurchasesCount: transaction.completed
-        })
-      })
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.provider.isConnected && !this.props.provider.isConnected) {
-      this.props.fetchEscrowBalance(nextProps.provider).then(transaction => {
-        this.setState({escrowBalance: Eth.fromWei(transaction, 'ether').valueOf()})
-      })
-      this.props.fetchPurchaseMetrics().then(transaction => {
-        this.setState({
-          pendingPurchasesCount: transaction.pending,
-          pendingShippingPurchasesCount: transaction.pending_shipping,
-          completedPurchasesCount: transaction.completed
-        })
-      })
-    }
+    })
   }
 
   render() {
