@@ -28,7 +28,6 @@ export function purchase(purchaseId, sellerAddress, itemId, amount, shippingDead
     shippingDeadline,
   })
    .then((transaction) => {
-      console.log(transaction)
       if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'ItemPurchased')) {
         dispatch(createPurchaseActivity(transaction.logs[0].args))
         return dispatch({ type: UPDATE_PURCHASE, payload: { id: purchaseId, purchaseState: purchaseState.PURCHASED } })
@@ -199,7 +198,6 @@ export function fetchItemSalesNumber(itemId) {
 export function fetchUserRating(wallet) {
   return (dispatch) => EscrowContract.getUserReviews(wallet)
     .then(transaction => {
-      console.log('user Rating', transaction)
       let rating = 0
 
       if (transaction[0].toNumber() !== 0) {
@@ -220,7 +218,6 @@ export function fetchUserRating(wallet) {
 export function fetchItemRating(itemId) {
   return (dispatch) => EscrowContract.getItemReviews(itemId)
     .then(transaction => {
-      console.log('item Rating', transaction)
       let rating = 0
 
       if (transaction[0].toNumber() !== 0) {
@@ -243,11 +240,10 @@ export function fetchItemReviewIds(itemId, numberReviews) {
     for (var i = 0; i < numberReviews; i++) {
       EscrowContract.getItemReviewComment(itemId, i)
         .then(transaction => {
-          console.log('Item Reviews IDs', transaction)
           dispatch(fetchOneReview(Eth.toAscii(transaction), true))
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
           dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
         })
     }
@@ -261,7 +257,6 @@ export function fetchUserReviewIds(wallet, numberReviews) {
     for (var i = 0; i < numberReviews; i++) {
       EscrowContract.getUserReviewComment(wallet, i)
         .then(transaction => {
-          console.log('User Reviews IDs', transaction)
           dispatch(fetchOneReview(Eth.toAscii(transaction), false))
         })
         .catch(error => {
@@ -303,7 +298,6 @@ export function fetchUserBalance() {
   return (dispatch) => {
     EscrowContract.getUserBalance()
       .then(transaction => {
-        console.log(transaction)
         //dispatch({ type: UPDATE_USER, payload: {  }})
       })
       .catch(error => {
