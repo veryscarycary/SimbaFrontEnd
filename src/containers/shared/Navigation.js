@@ -7,6 +7,7 @@ import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
+import NotificationsMenu from '../../components/NotificationsMenu'
 
 import '../../style/navigation.css'
 
@@ -49,6 +50,13 @@ class Navigation extends Component {
               <input type="text" className="input-search" placeholder="Search in store..." />
             </div>
           </li>
+
+          <li>
+            <NotificationsMenu
+              unreadCount={2}
+            />
+          </li>
+
           {
             Auth.isLoggedIn() ? (
               <li>
@@ -57,7 +65,9 @@ class Navigation extends Component {
                      onMouseLeave={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}>
                   <a href="account-orders.html" className="account dropdown-toggle" data-toggle="dropdown">
                     <i className="ion-person"></i>
-                    { this.props.current_user.wallet }
+                    {this.props.current_user.first_name} {this.props.current_user.last_name}
+
+                    <span> ({ this.props.current_user.wallet && this.props.current_user.wallet.substring(0, 7) })</span>
                   </a>
                   <div className="dropdown-menu dropdown-menu-dark" role="menu">
                     <span className="dropdown-header">My Profile</span>

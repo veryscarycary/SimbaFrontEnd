@@ -48,6 +48,10 @@ class UserProfile extends Component {
     this.setState({[name]: value})
   }
 
+  submit(event) {
+    event.preventDefault()
+  }
+
   renderInformationForm() {
     const countryOptions = [
       {value: '', label: ' '},

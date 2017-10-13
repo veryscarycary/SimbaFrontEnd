@@ -5,6 +5,7 @@
   "dependencies": {
     "@mars/heroku-js-runtime-env": "^3.0.0",
     "axios": "^0.16.2",
+    "classnames": "^2.2.5",
     "ethjs": "^0.2.7",
     "formsy-react": "^0.19.5",
     "formsy-react-components": "^0.10.1",
