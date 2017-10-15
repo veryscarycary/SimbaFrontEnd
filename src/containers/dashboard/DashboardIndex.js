@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchEscrowBalance } from '../../actions/actions_contract'
 import { fetchPurchaseMetrics } from '../../actions/actions_purchases'
+import DashboardTile from './DashboardTile'
 import Eth from 'ethjs'
 import '../../style/vendor/gentelella.css'
 
@@ -11,9 +12,19 @@ class DashboardIndex extends Component {
 
     this.state = {
       escrowBalance: 0,
-      pendingPurchasesCount: 0,
-      pendingShippingPurchasesCount: 0,
-      completedPurchasesCount: 0
+      errorCount: 0,
+      purchasedCount: 0,
+      shippedCount: 0,
+      completedCount: 0,
+      buyerCancelledCount: 0,
+      sellerCancelledCount: 0,
+      sellerShippingTimeoutCount: 0,
+      buyerConfirmationTimeout: 0,
+      newCount: 0,
+      pendingPurchasedCount: 0,
+      pendingShippedCount: 0,
+      pendingCompletedCount: 0,
+      pendingCancelledCount: 0
     }
   }
   componentWillMount() {
@@ -22,9 +33,19 @@ class DashboardIndex extends Component {
     })
     this.props.fetchPurchaseMetrics().then(transaction => {
       this.setState({
-        pendingPurchasesCount: transaction.pending,
-        pendingShippingPurchasesCount: transaction.pending_shipping,
-        completedPurchasesCount: transaction.completed
+        errorCount: transaction.error,
+        purchasedCount: transaction.purchased,
+        shippedCount: transaction.shipped,
+        completedCount: transaction.completed,
+        buyerCancelledCount: transaction.buyer_cancelled,
+        sellerCancelledCount: transaction.seller_cancelled,
+        sellerShippingTimeoutCount: transaction.seller_shipping_timeout,
+        buyerConfirmationTimeout: transaction.buyer_confirmation_timeout,
+        newCount: transaction.new_purchase,
+        pendingPurchasedCount: transaction.pending_purchased,
+        pendingShippedCount: transaction.pending_shipped,
+        pendingCompletedCount: transaction.pending_completed,
+        pendingCancelledCount: transaction.pending_cancelled
       })
     })
   }
@@ -33,28 +54,20 @@ class DashboardIndex extends Component {
     return (
         <div className="container dashboard">
           <div className="row tile_count">
-            <div className="col-md-2 col-sm-3 col-xs-6 tile_stats_count">
-              <span className="count_top"><i className="fa fa-balance-scale"></i> Escrow Balance</span>
-              <div className="count">{this.state.escrowBalance}</div>
-              <span className="count_bottom"><i className="green">4% </i> From last Week</span>
-            </div>
-            <div className="col-md-2 col-sm-3 col-xs-6 tile_stats_count">
-              <span className="count_top"><i className="fa fa-user"></i> Users</span>
-              <div className="count">{this.state.escrowBalance}</div>
-              <span className="count_bottom"><i className="green">4% </i> From last Week</span>
-            </div>
-            <div className="col-md-2 col-sm-3 col-xs-6 tile_stats_count">
-              <span className="count_top"><i className="fa fa-user"></i> Pending Purchases</span>
-              <div className="count">{this.state.pendingPurchasesCount}</div>
-            </div>
-            <div className="col-md-2 col-sm-3 col-xs-6 tile_stats_count">
-              <span className="count_top"><i className="fa fa-user"></i>Purchases Waiting to Ship</span>
-              <div className="count">{this.state.pendingShippingPurchasesCount}</div>
-            </div>
-            <div className="col-md-2 col-sm-3 col-xs-6 tile_stats_count">
-              <span className="count_top"><i className="fa fa-user"></i> Completed Purchases</span>
-              <div className="count">{this.state.completedPurchasesCount}</div>
-            </div>
+            <DashboardTile stat={this.state.escrowBalance} title='Escrow Balance' />
+            <DashboardTile stat={this.state.newCount} title='New Purchases'/>
+            <DashboardTile stat={this.state.errorCount} title='Error'/>
+            <DashboardTile stat={this.state.purchasedCount} title='Purchased'/>
+            <DashboardTile stat={this.state.shippedCount} title='Shipped'/>
+            <DashboardTile stat={this.state.completedCount} title='Completed'/>
+            <DashboardTile stat={this.state.buyerCancelledCount} title='Buyer Cancelled'/>
+            <DashboardTile stat={this.state.sellerCancelledCount} title='Seller Cancelled'/>
+            <DashboardTile stat={this.state.sellerShippingTimeoutCount} title='Seller Shipping Timeout'/>
+            <DashboardTile stat={this.state.buyerConfirmationTimeout} title='Buyer Confirmation Timeout'/>
+            <DashboardTile stat={this.state.pendingPurchasedCount} title='Pending Purchase'/>
+            <DashboardTile stat={this.state.pendingShippedCount} title='Pending Shipped'/>
+            <DashboardTile stat={this.state.pendingCompletedCount} title='Pending  Completed'/>
+            <DashboardTile stat={this.state.pendingCancelledCount} title='Pending Cancelled'/>
           </div>
           <div className="row">
             <div className="col-md-6 col-sm-6 col-xs-12">

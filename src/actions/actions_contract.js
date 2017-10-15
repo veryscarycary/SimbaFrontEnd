@@ -135,9 +135,7 @@ export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
     .then(transaction => {
       const transactionState = transaction.valueOf()
-      if (![purchaseState.COMPLETED,purchaseState.BUYER_CANCELLED,purchaseState.SELLER_CANCELLED].includes(transactionState)) {
-        dispatch(updatePurchaseState({state: transactionState}, purchase.id))
-      }
+      dispatch(updatePurchaseState({state: transactionState}, purchase.id))
       return dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
     })
     .catch(error => {
