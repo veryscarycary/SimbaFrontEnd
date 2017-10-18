@@ -7,7 +7,7 @@ import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
-import NotificationsMenu from '../../components/NotificationsMenu'
+import NotificationsMenu from '../../containers/notifications/NotificationsMenu'
 
 import '../../style/navigation.css'
 

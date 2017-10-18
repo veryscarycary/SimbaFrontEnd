@@ -12,9 +12,7 @@ export const UPDATE_NOTIFICATION_SUCCEEDED = 'UPDATE_NOTIFICATION_SUCCEEDED'
 export const fetchNotifications = () => (dispatch) => {
   return Api.get(NOTIFICATIONS_URL)
      .then((request) => {
-      const normalizeRequest = normalize(request.data, notificationsNormalizr)
-
-      dispatch(fetchNotificationsSucceeded(normalizeRequest.entities.notifications))
+      dispatch(fetchNotificationsSucceeded(request.data))
    }).catch((error) => {
       console.error(error)
 

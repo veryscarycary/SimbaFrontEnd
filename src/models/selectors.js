@@ -200,13 +200,12 @@ export const userReviews = createSelector(
   })
 )
 
+export const getUnreadNotificationsCount = createSelector(
+  ormSelector,
+  ormCreateSelector(orm, (session) => session.Notification.filter({ read_at: null }).count())
+)
+
 export const getNotifications = createSelector(
   ormSelector,
-  ormCreateSelector(
-    orm,
-    (session) => {
-      console.log(session.Notification.all())
-      return session.Notification.all().toModelArray()
-    }
-  )
+  ormCreateSelector(orm, (session) => session.Notification.all().toModelArray())
 )
