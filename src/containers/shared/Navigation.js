@@ -51,11 +51,13 @@ class Navigation extends Component {
             </div>
           </li>
 
-          <li>
-            <NotificationsMenu
-              unreadCount={2}
-            />
-          </li>
+          {Auth.isLoggedIn() && (
+            <li>
+              <NotificationsMenu
+                unreadCount={2}
+              />
+            </li>
+          )}
 
           {
             Auth.isLoggedIn() ? (
@@ -94,14 +96,12 @@ class Navigation extends Component {
               </li>
             )
            }
-           {
-              Auth.isLoggedIn() ?
-                '' : (
-                  <li>
-                    <Link to='/users/register' className="account"> Register </Link>
-                  </li>
-                )
-           }
+
+           {!Auth.isLoggedIn() && (
+              <li>
+                <Link to='/users/register' className="account"> Register </Link>
+              </li>
+            )}
         </ul>
       </div>
     )

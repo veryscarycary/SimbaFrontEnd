@@ -199,3 +199,14 @@ export const userReviews = createSelector(
     return []
   })
 )
+
+export const getNotifications = createSelector(
+  ormSelector,
+  ormCreateSelector(
+    orm,
+    (session) => {
+      console.log(session.Notification.all())
+      return session.Notification.all().toModelArray()
+    }
+  )
+)

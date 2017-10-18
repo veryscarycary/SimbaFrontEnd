@@ -6,6 +6,7 @@ import { currentUserWalletReducer, selectedUserWalletReducer } from './reducer_u
 import selectedItemIdReducer from './reducer_items'
 import selectedPurchaseIdReducer from './reducer_purchases'
 import flashMessagesReducer from './reducer_flash_messages'
+import notificationsReducer from './reducer_notifications'
 
 const rootReducer = combineReducers({
   currentUserWallet: currentUserWalletReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   selectedItemId: selectedItemIdReducer,
   flashMessages: flashMessagesReducer,
   selectedPurchaseId: selectedPurchaseIdReducer,
+  notifications: notificationsReducer,
   orm: createReducer(orm)
 })
 

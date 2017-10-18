@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
+import { Link } from 'react-router-dom'
+import NotificationsList from '../../containers/notifications/NotificationsList'
 
 class NotificationsMenu extends Component {
   static propTypes = {
@@ -31,11 +33,7 @@ class NotificationsMenu extends Component {
           <span className="ml-1 badge badge-pill badge-danger">{this.props.unreadCount}</span>
         </a>
 
-        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a className="dropdown-item" href="#">Action</a>
-          <a className="dropdown-item" href="#">Another action</a>
-          <a className="dropdown-item" href="#">Something else here</a>
-        </div>
+        <NotificationsList />
       </div>
     )
   }

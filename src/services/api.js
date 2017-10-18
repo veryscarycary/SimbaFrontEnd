@@ -14,6 +14,7 @@ export const SIGN_IN_URL = `${ROOT_URL}/users/sign_in`
 // USERS URL
 export const USERS_URL = `${ROOT_URL}/users`
 export const MY_PROFILE_URL = `${ROOT_URL}/users/me`
+export const NOTIFICATIONS_URL = `${ROOT_URL}/notifications`
 
 // ITEMS URLS
 export const ITEMS_URL = `${ROOT_URL}/items`
