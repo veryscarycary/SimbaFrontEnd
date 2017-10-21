@@ -2,9 +2,40 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchEscrowBalance } from '../../actions/actions_contract'
 import { fetchPurchaseMetrics } from '../../actions/actions_purchases'
+import { fetchAllActivities } from '../../actions/actions_activities'
+import { activities } from '../../models/selectors'
 import DashboardTile from './DashboardTile'
+import DashboardChart from './DashboardChart'
 import Eth from 'ethjs'
 import '../../style/vendor/gentelella.css'
+
+const data = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      label: 'My First dataset',
+      fill: true,
+      lineTension: 0.1,
+      backgroundColor: 'rgba(75,192,192,0.4)',
+      borderColor: 'rgba(75,192,192,1)',
+      borderCapStyle: 'butt',
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: 'miter',
+      pointBorderColor: 'rgba(75,192,192,1)',
+      pointBackgroundColor: '#fff',
+      pointBorderWidth: 1,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+      pointHoverBorderColor: 'rgba(220,220,220,1)',
+      pointHoverBorderWidth: 2,
+      pointRadius: 1,
+      pointHitRadius: 10,
+      data: [65, 59, 80, 81, 56, 55, 40]
+    }
+  ]
+};
+
 
 class DashboardIndex extends Component {
   constructor(props) {
@@ -33,21 +64,42 @@ class DashboardIndex extends Component {
     })
     this.props.fetchPurchaseMetrics().then(transaction => {
       this.setState({
-        errorCount: transaction.error,
-        purchasedCount: transaction.purchased,
-        shippedCount: transaction.shipped,
-        completedCount: transaction.completed,
-        buyerCancelledCount: transaction.buyer_cancelled,
-        sellerCancelledCount: transaction.seller_cancelled,
-        sellerShippingTimeoutCount: transaction.seller_shipping_timeout,
-        buyerConfirmationTimeout: transaction.buyer_confirmation_timeout,
-        newCount: transaction.new_purchase,
-        pendingPurchasedCount: transaction.pending_purchased,
-        pendingShippedCount: transaction.pending_shipped,
-        pendingCompletedCount: transaction.pending_completed,
-        pendingCancelledCount: transaction.pending_cancelled
+        errorCount: transaction.purchase_stats.error,
+        purchasedCount: transaction.purchase_stats.purchased,
+        shippedCount: transaction.purchase_stats.shipped,
+        completedCount: transaction.purchase_stats.completed,
+        buyerCancelledCount: transaction.purchase_stats.buyer_cancelled,
+        sellerCancelledCount: transaction.purchase_stats.seller_cancelled,
+        sellerShippingTimeoutCount: transaction.purchase_stats.seller_shipping_timeout,
+        buyerConfirmationTimeout: transaction.purchase_stats.buyer_confirmation_timeout,
+        newCount: transaction.purchase_stats.new_purchase,
+        pendingPurchasedCount: transaction.purchase_stats.pending_purchased,
+        pendingShippedCount: transaction.purchase_stats.pending_shipped,
+        pendingCompletedCount: transaction.purchase_stats.pending_completed,
+        pendingCancelledCount: transaction.purchase_stats.pending_cancelled,
+        dailyUserStats: transaction.daily_user_registration_stats,
+        dailyItemsCreatedStats: transaction.daily_items_created_stats
       })
     })
+    this.props.fetchAllActivities()
+  }
+
+  renderActivities() {
+    let activities = this.props.activities.map((activity) => {
+      return (
+        <tr key={activity.id}>
+          <td>{ activity.created_at }</td>
+          <td>{ activity.category }</td>
+          <td>{ activity.buyer.fullname }</td>
+          <td>{ activity.seller.fullname }</td>
+          <td>{ activity.purchase.id }</td>
+          <td>{ activity.item.name }</td>
+          <td>{ activity.amount }</td>
+        </tr>
+      )
+    })
+
+    return activities
   }
 
   render() {
@@ -70,7 +122,15 @@ class DashboardIndex extends Component {
             <DashboardTile stat={this.state.pendingCancelledCount} title='Pending Cancelled'/>
           </div>
           <div className="row">
-            <div className="col-md-6 col-sm-6 col-xs-12">
+            <div className="col-md-6 col-sm-6 col-xs-6">
+              <DashboardChart data={this.state.dailyUserStats} label='Daily User Registrations' />
+            </div>
+            <div className="col-md-6 col-sm-6 col-xs-6">
+              <DashboardChart data={this.state.dailyItemsCreatedStats} label='Daily Items Created' />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-12 col-sm-12 col-xs-12">
               <div className="x_panel">
                 <div className="x_title">
                   <h2>Open Transactions</h2>
@@ -80,31 +140,17 @@ class DashboardIndex extends Component {
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Buyer</th>
+                        <th>Seller</th>
+                        <th>PurchaseId</th>
+                        <th>Item</th>
+                        <th>Amount/Code</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
+                      { this.props.activities ? this.renderActivities() : '' }
                     </tbody>
                   </table>
                 </div>
@@ -117,8 +163,8 @@ class DashboardIndex extends Component {
 }
 
 function mapStateToProps(state) {
-  return { provider: state.provider }
+  return { provider: state.provider, activities: activities(state) }
 }
 
 
-export default connect(mapStateToProps, { fetchEscrowBalance, fetchPurchaseMetrics })(DashboardIndex)
+export default connect(mapStateToProps, { fetchEscrowBalance, fetchPurchaseMetrics, fetchAllActivities })(DashboardIndex)
