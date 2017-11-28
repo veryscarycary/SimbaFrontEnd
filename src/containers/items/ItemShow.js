@@ -36,15 +36,15 @@ class ItemShow extends Component {
 
   renderItemPrice() {
     if (!this.props.item.discount || this.props.item.discount === 0) {
-      return <div className="price">{ this.props.item.price } ETH</div>
+      return <div className="price">${ this.props.item.price }</div>
     }
     const discountedPrice = this.props.item.price - this.props.item.price * (this.props.item.discount / 100)
     return (
       <div className="price">
-        { discountedPrice } ETH
+        ${ discountedPrice }
 
         <div className="compare-at-price">
-          { this.props.item.price } ETH
+          ${ this.props.item.price }
         </div>
       </div>
     )

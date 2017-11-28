@@ -36,7 +36,7 @@ class PurchaseSummary extends Component {
                 </span>
               </div>
               <div className="price float-right">
-                { this.props.item.price } ETH
+                ${ this.props.item.price }
               </div>
             </div>
           </div>
@@ -44,7 +44,7 @@ class PurchaseSummary extends Component {
             { this.renderDiscount() }
             <div className="detail clearfix">
               <p>Shipping</p>
-              <span>{ this.props.item.shipping_fee } ETH</span>
+              <span>${ this.props.item.shipping_fee }</span>
             </div>
             <div className="detail clearfix">
               <p>Taxes</p>
@@ -52,7 +52,7 @@ class PurchaseSummary extends Component {
             </div>
             <div className="total-price clearfix">
               <p>Total payment</p>
-              <span>{ this.props.finalPrice } ETH</span>
+              <span>${ this.props.finalPrice }</span>
             </div>
           </div>
         </div>

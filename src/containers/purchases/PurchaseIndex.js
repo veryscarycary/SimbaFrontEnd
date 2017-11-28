@@ -92,7 +92,7 @@ class PurchaseIndex extends Component {
               <img src={ purchase.item.picture } alt={ purchase.item.name } />
             </Link>
           </td>
-          <td>{ purchase.amount } ETH</td>
+          <td>${ purchase.amount }</td>
           <td>{ this.renderPurchaseState(purchase) }</td>
           { isActive ? this.renderPurchaseAction(purchase) : null }
         </tr>
