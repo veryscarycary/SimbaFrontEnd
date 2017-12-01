@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
+import ETHPriceConverter from '../shared/ETHPriceConverter'
+
 class PurchaseSummary extends Component {
   renderDiscount() {
     if (!this.props.item.discount || this.props.item.discount === 0) {
@@ -10,7 +12,7 @@ class PurchaseSummary extends Component {
     return (
       <div className="detail clearfix">
         <p>Discount</p>
-        <span>- { discountedPrice } ETH</span>
+        <span>- ${ discountedPrice }</span>
       </div>
     )
   }
@@ -52,7 +54,7 @@ class PurchaseSummary extends Component {
             </div>
             <div className="total-price clearfix">
               <p>Total payment</p>
-              <span>${ this.props.finalPrice }</span>
+              <span>${ this.props.finalPrice } <ETHPriceConverter price={this.props.finalPrice} /></span>
             </div>
           </div>
         </div>
