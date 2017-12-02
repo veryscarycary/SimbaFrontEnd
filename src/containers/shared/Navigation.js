@@ -128,8 +128,6 @@ class Navigation extends Component {
                   Clothes
                   <i className="ion-chevron-down"></i>
                 </a>
-                <div className="dropdown-menu" role="menu">
-                </div>
               </li>
 
               <li className={`nav-item dropdown ${this.state.isLink3Hovered ? 'show' : ''}`}
