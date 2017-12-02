@@ -48,6 +48,10 @@ class UserProfile extends Component {
     this.setState({[name]: value})
   }
 
+  submit(model) {
+
+  }
+
   renderInformationForm() {
     const countryOptions = [
       {value: '', label: ' '},
