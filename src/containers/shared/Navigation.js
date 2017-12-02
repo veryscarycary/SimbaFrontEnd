@@ -57,7 +57,7 @@ class Navigation extends Component {
                      onMouseLeave={() => this.setState({ isMyAccountHovered: !this.state.isMyAccountHovered })}>
                   <a href="account-orders.html" className="account dropdown-toggle" data-toggle="dropdown">
                     <i className="ion-person"></i>
-                    { this.props.current_user.wallet }
+                    { this.props.current_user.first_name }
                   </a>
                   <div className="dropdown-menu dropdown-menu-dark" role="menu">
                     <span className="dropdown-header">My Profile</span>
