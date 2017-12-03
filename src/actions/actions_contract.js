@@ -7,7 +7,11 @@ import { UPDATE_PURCHASE } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
-import { createPurchaseActivity, createCancelActivity, createShippingActivity, createPurchaseConfirmationActivity } from './actions_activities'
+import { createPurchaseActivity,
+         createCancelActivity,
+         createShippingActivity,
+         createPurchaseConfirmationActivity,
+         createWithdrawalActivity } from './actions_activities'
 
 /**
  * Buyer Purchase an item '_itemId' from Seller (_seller)
@@ -327,6 +331,25 @@ export function fetchUserBalance(wallet) {
       .then(transaction => {
         const balance = Eth.fromWei(transaction, 'ether')
         dispatch({ type: UPDATE_USER, payload: { wallet: wallet, escrow_balance: balance }})
+      })
+      .catch(error => {
+        console.error(error)
+        dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
+      })
+  }
+}
+
+/**
+ * withdraw a user current balance inside the smart contract to his local wallet
+ * @return {Promise}
+ */
+export function withdrawBalance() {
+  return (dispatch) => {
+    EscrowContract.withdraw()
+      .then(transaction => {
+        if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'Withdrawal')) {
+          dispatch(createWithdrawalActivity(transaction.logs[0].args))
+        }
       })
       .catch(error => {
         console.error(error)

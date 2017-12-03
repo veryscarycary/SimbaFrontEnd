@@ -4,7 +4,7 @@ import { Link, withRouter } from 'react-router-dom'
 
 import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
-import { cancelTimeoutOrders } from '../../actions/actions_contract'
+import { cancelTimeoutOrders, withdrawBalance } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
 
@@ -38,6 +38,11 @@ class Navigation extends Component {
     this.props.cancelTimeoutOrders()
   }
 
+  withdrawFunds(event) {
+    event.preventDefault()
+    this.props.withdrawBalance()
+  }
+
   renderUserBalance() {
     return (
       <div className={`dropdown ${this.state.isMyBalanceHovered ? 'show' : ''}`}
@@ -48,7 +53,7 @@ class Navigation extends Component {
           { this.props.current_user.escrow_balance } ETH
         </a>
         <div className="dropdown-menu dropdown-menu-dark" role="menu">
-          <Link className="dropdown-item" to='/users/me'>Withdraw Funds</Link>
+          <a className="dropdown-item" href="/" onClick={(e) => this.withdrawFunds(e)}>Withdraw Funds</a>
         </div>
       </div>
     )
@@ -200,5 +205,5 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, { deleteCurrentUser, cancelTimeoutOrders })(Navigation)
+  connect(mapStateToProps, { deleteCurrentUser, cancelTimeoutOrders, withdrawBalance })(Navigation)
 )
