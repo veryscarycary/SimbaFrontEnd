@@ -127,10 +127,10 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
     })
 }
 
-// Block chain transaction
-// Get Purchases State from the blockchain and sort them between two arrays
-// PENDING => PENDING,PURCHASED,SHIPPED states
-// FINALIZED => COMPLETED, CANCELLED, SELLER_SHIPPING_TIMEOUT, BUYER_CONFIRMATION_TIMEOUT, ERROR
+/**
+ * Fetch the state of a single purchase
+ * @param  {Object} purchase
+ */
 export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
     .then(transaction => {
@@ -142,9 +142,10 @@ export function fetchPurchaseState(purchase) {
     })
 }
 
-// Block chain transaction
-// Retrieve Purchases Shipping Deadlines
-// getPurchaseTimes returns (shippingDaysDeadline):
+/**
+ * Fetch purchase shipping, purchase, cancel, completion, timeout times
+ * @param  {Object} purchase
+ */
 export function fetchPurchaseTimes(purchase) {
   return (dispatch) => EscrowContract.getPurchaseTimes(purchase.id)
     .then(transaction => {
@@ -167,9 +168,11 @@ export function fetchPurchaseTimes(purchase) {
     })
 }
 
-// Block chain transaction
-// Retrieve a User total # of sales
-export function fetchUserSalesNumber(_, wallet) {
+/**
+ * Retrieve total number of sales for a seller
+ * @param  {string} wallet [user wallet address]
+ */
+export function fetchUserSalesNumber(wallet) {
   return (dispatch) => EscrowContract.getUserSalesNumber(wallet)
     .then(transaction => {
       dispatch({ type: UPDATE_USER, payload: { sales: transaction.valueOf(), wallet: wallet }})
@@ -180,8 +183,10 @@ export function fetchUserSalesNumber(_, wallet) {
     })
 }
 
-// Block chain transaction
-// Retrieve total number of sales for an Item
+/**
+ * Retrieve total number of sales for one item
+ * @param  {string} itemId [item id]
+ */
 export function fetchItemSalesNumber(itemId) {
   return (dispatch) => EscrowContract.getItemSalesNumber(itemId)
     .then(transaction => {
@@ -193,8 +198,10 @@ export function fetchItemSalesNumber(itemId) {
     })
 }
 
-// Block chain transaction
-// Retrieve a User rating and # of reviews
+/**
+ * Fetch a User rating and number of reviews
+ * @param  {string} wallet [user wallet address]
+ */
 export function fetchUserRating(wallet) {
   return (dispatch) => EscrowContract.getUserReviews(wallet)
     .then(transaction => {
@@ -213,8 +220,10 @@ export function fetchUserRating(wallet) {
     })
 }
 
-// Block chain transaction
-// Retrieve a Item rating and # of reviews
+/**
+ * Fetch One Item Rating and Number of Reviews
+ * @param  {string} itemId [Item ID]
+ */
 export function fetchItemRating(itemId) {
   return (dispatch) => EscrowContract.getItemReviews(itemId)
     .then(transaction => {
@@ -233,8 +242,11 @@ export function fetchItemRating(itemId) {
     })
 }
 
-// Block chain transaction
-// Retrieve list of Items reviews ID
+/**
+ * Retrieve lit of Items Reviews ID
+ * @param  {string} itemId        [item ID]
+ * @param  {int} numberReviews [total number of reviews]
+ */
 export function fetchItemReviewIds(itemId, numberReviews) {
   return (dispatch) => {
     for (var i = 0; i < numberReviews; i++) {
@@ -250,8 +262,12 @@ export function fetchItemReviewIds(itemId, numberReviews) {
   }
 }
 
-// Block chain transaction
-// Retrieve list of Users reviews ID
+
+/**
+ * [Revieve list of User reviews ID]
+ * @param  {string} wallet        [user wallet address]
+ * @param  {Integer} numberReviews [Total number of reviews]
+ */
 export function fetchUserReviewIds(wallet, numberReviews) {
   return (dispatch) => {
     for (var i = 0; i < numberReviews; i++) {
@@ -293,7 +309,7 @@ export function fetchEscrowBalance() {
 
 /**
  * fetch current_user balance in Escrow
-
+ * @param  {String} wallet
  */
 export function fetchUserBalance(wallet) {
   return (dispatch) => {
