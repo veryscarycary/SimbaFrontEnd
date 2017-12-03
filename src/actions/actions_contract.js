@@ -130,6 +130,7 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
 /**
  * Fetch the state of a single purchase
  * @param  {Object} purchase
+ * @return {Promise}
  */
 export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
@@ -145,6 +146,7 @@ export function fetchPurchaseState(purchase) {
 /**
  * Fetch purchase shipping, purchase, cancel, completion, timeout times
  * @param  {Object} purchase
+ * @return {Promise}
  */
 export function fetchPurchaseTimes(purchase) {
   return (dispatch) => EscrowContract.getPurchaseTimes(purchase.id)
@@ -171,6 +173,7 @@ export function fetchPurchaseTimes(purchase) {
 /**
  * Retrieve total number of sales for a seller
  * @param  {string} wallet [user wallet address]
+ * @return {Promise}
  */
 export function fetchUserSalesNumber(wallet) {
   return (dispatch) => EscrowContract.getUserSalesNumber(wallet)
@@ -186,6 +189,7 @@ export function fetchUserSalesNumber(wallet) {
 /**
  * Retrieve total number of sales for one item
  * @param  {string} itemId [item id]
+ * @return {Promise}
  */
 export function fetchItemSalesNumber(itemId) {
   return (dispatch) => EscrowContract.getItemSalesNumber(itemId)
@@ -201,6 +205,7 @@ export function fetchItemSalesNumber(itemId) {
 /**
  * Fetch a User rating and number of reviews
  * @param  {string} wallet [user wallet address]
+ * @return {Promise}
  */
 export function fetchUserRating(wallet) {
   return (dispatch) => EscrowContract.getUserReviews(wallet)
@@ -223,6 +228,7 @@ export function fetchUserRating(wallet) {
 /**
  * Fetch One Item Rating and Number of Reviews
  * @param  {string} itemId [Item ID]
+ * @return {Promise}
  */
 export function fetchItemRating(itemId) {
   return (dispatch) => EscrowContract.getItemReviews(itemId)
@@ -246,6 +252,7 @@ export function fetchItemRating(itemId) {
  * Retrieve lit of Items Reviews ID
  * @param  {string} itemId        [item ID]
  * @param  {int} numberReviews [total number of reviews]
+ * @return {Promise}
  */
 export function fetchItemReviewIds(itemId, numberReviews) {
   return (dispatch) => {
@@ -267,6 +274,7 @@ export function fetchItemReviewIds(itemId, numberReviews) {
  * [Revieve list of User reviews ID]
  * @param  {string} wallet        [user wallet address]
  * @param  {Integer} numberReviews [Total number of reviews]
+ * @return {Promise}
  */
 export function fetchUserReviewIds(wallet, numberReviews) {
   return (dispatch) => {
@@ -301,6 +309,7 @@ export function cancelTimeoutOrders() {
 
 /**
  * fetch Smart Contract Total Balance
+ * @return {Promise}
  */
 export function fetchEscrowBalance() {
   return (dispatch) =>
@@ -310,6 +319,7 @@ export function fetchEscrowBalance() {
 /**
  * fetch current_user balance in Escrow
  * @param  {String} wallet
+ * @return {Promise}
  */
 export function fetchUserBalance(wallet) {
   return (dispatch) => {
@@ -324,4 +334,3 @@ export function fetchUserBalance(wallet) {
       })
   }
 }
-
