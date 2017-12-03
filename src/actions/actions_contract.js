@@ -287,18 +287,20 @@ export function cancelTimeoutOrders() {
  * fetch Smart Contract Total Balance
  */
 export function fetchEscrowBalance() {
-  return dispatch => EscrowContract.getBalance()
+  return (dispatch) =>
+    EscrowContract.getBalance()
 }
 
 /**
  * fetch current_user balance in Escrow
 
  */
-export function fetchUserBalance() {
+export function fetchUserBalance(wallet) {
   return (dispatch) => {
-    EscrowContract.getUserBalance()
+    EscrowContract.getUserBalance(wallet)
       .then(transaction => {
-        //dispatch({ type: UPDATE_USER, payload: {  }})
+        const balance = Eth.fromWei(transaction, 'ether')
+        dispatch({ type: UPDATE_USER, payload: { wallet: wallet, escrow_balance: balance }})
       })
       .catch(error => {
         console.error(error)
