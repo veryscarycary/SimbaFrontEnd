@@ -186,6 +186,7 @@ class Navigation extends Component {
                 </ul>
               ) : (
                 <ul className="menu-right float-right">
+                  <li> { this.renderSearchBar() } </li>
                   <li><Link to='/users/sign_in' className="account"> <i className="ion-log-in"></i> Sign in </Link></li>
                 </ul>
               )
