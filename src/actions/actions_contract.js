@@ -7,7 +7,11 @@ import { UPDATE_PURCHASE, updatePurchaseState } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
-import { createPurchaseActivity, createCancelActivity, createShippingActivity, createPurchaseConfirmationActivity } from './actions_activities'
+import { createPurchaseActivity,
+         createCancelActivity,
+         createShippingActivity,
+         createPurchaseConfirmationActivity,
+         createWithdrawalActivity } from './actions_activities'
 
 /**
  * Buyer Purchase an item '_itemId' from Seller (_seller)
@@ -127,10 +131,11 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
     })
 }
 
-// Block chain transaction
-// Get Purchases State from the blockchain and sort them between two arrays
-// PENDING => PENDING,PURCHASED,SHIPPED states
-// FINALIZED => COMPLETED, CANCELLED, SELLER_SHIPPING_TIMEOUT, BUYER_CONFIRMATION_TIMEOUT, ERROR
+/**
+ * Fetch the state of a single purchase
+ * @param  {Object} purchase
+ * @return {Promise}
+ */
 export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
     .then(transaction => {
@@ -144,9 +149,11 @@ export function fetchPurchaseState(purchase) {
     })
 }
 
-// Block chain transaction
-// Retrieve Purchases Shipping Deadlines
-// getPurchaseTimes returns (shippingDaysDeadline):
+/**
+ * Fetch purchase shipping, purchase, cancel, completion, timeout times
+ * @param  {Object} purchase
+ * @return {Promise}
+ */
 export function fetchPurchaseTimes(purchase) {
   return (dispatch) => EscrowContract.getPurchaseTimes(purchase.id)
     .then(transaction => {
@@ -169,9 +176,12 @@ export function fetchPurchaseTimes(purchase) {
     })
 }
 
-// Block chain transaction
-// Retrieve a User total # of sales
-export function fetchUserSalesNumber(_, wallet) {
+/**
+ * Retrieve total number of sales for a seller
+ * @param  {string} wallet [user wallet address]
+ * @return {Promise}
+ */
+export function fetchUserSalesNumber(wallet) {
   return (dispatch) => EscrowContract.getUserSalesNumber(wallet)
     .then(transaction => {
       dispatch({ type: UPDATE_USER, payload: { sales: transaction.valueOf(), wallet: wallet }})
@@ -182,8 +192,11 @@ export function fetchUserSalesNumber(_, wallet) {
     })
 }
 
-// Block chain transaction
-// Retrieve total number of sales for an Item
+/**
+ * Retrieve total number of sales for one item
+ * @param  {string} itemId [item id]
+ * @return {Promise}
+ */
 export function fetchItemSalesNumber(itemId) {
   return (dispatch) => EscrowContract.getItemSalesNumber(itemId)
     .then(transaction => {
@@ -195,8 +208,11 @@ export function fetchItemSalesNumber(itemId) {
     })
 }
 
-// Block chain transaction
-// Retrieve a User rating and # of reviews
+/**
+ * Fetch a User rating and number of reviews
+ * @param  {string} wallet [user wallet address]
+ * @return {Promise}
+ */
 export function fetchUserRating(wallet) {
   return (dispatch) => EscrowContract.getUserReviews(wallet)
     .then(transaction => {
@@ -215,8 +231,11 @@ export function fetchUserRating(wallet) {
     })
 }
 
-// Block chain transaction
-// Retrieve a Item rating and # of reviews
+/**
+ * Fetch One Item Rating and Number of Reviews
+ * @param  {string} itemId [Item ID]
+ * @return {Promise}
+ */
 export function fetchItemRating(itemId) {
   return (dispatch) => EscrowContract.getItemReviews(itemId)
     .then(transaction => {
@@ -235,8 +254,12 @@ export function fetchItemRating(itemId) {
     })
 }
 
-// Block chain transaction
-// Retrieve list of Items reviews ID
+/**
+ * Retrieve lit of Items Reviews ID
+ * @param  {string} itemId        [item ID]
+ * @param  {int} numberReviews [total number of reviews]
+ * @return {Promise}
+ */
 export function fetchItemReviewIds(itemId, numberReviews) {
   return (dispatch) => {
     for (var i = 0; i < numberReviews; i++) {
@@ -252,8 +275,13 @@ export function fetchItemReviewIds(itemId, numberReviews) {
   }
 }
 
-// Block chain transaction
-// Retrieve list of Users reviews ID
+
+/**
+ * [Revieve list of User reviews ID]
+ * @param  {string} wallet        [user wallet address]
+ * @param  {Integer} numberReviews [Total number of reviews]
+ * @return {Promise}
+ */
 export function fetchUserReviewIds(wallet, numberReviews) {
   return (dispatch) => {
     for (var i = 0; i < numberReviews; i++) {
@@ -287,20 +315,43 @@ export function cancelTimeoutOrders() {
 
 /**
  * fetch Smart Contract Total Balance
+ * @return {Promise}
  */
 export function fetchEscrowBalance() {
-  return dispatch => EscrowContract.getBalance()
+  return (dispatch) =>
+    EscrowContract.getBalance()
 }
 
 /**
  * fetch current_user balance in Escrow
-
+ * @param  {String} wallet
+ * @return {Promise}
  */
-export function fetchUserBalance() {
+export function fetchUserBalance(wallet) {
   return (dispatch) => {
-    EscrowContract.getUserBalance()
+    EscrowContract.getUserBalance(wallet)
       .then(transaction => {
-        //dispatch({ type: UPDATE_USER, payload: {  }})
+        const balance = Eth.fromWei(transaction, 'ether')
+        dispatch({ type: UPDATE_USER, payload: { wallet: wallet, escrow_balance: balance }})
+      })
+      .catch(error => {
+        console.error(error)
+        dispatch(setFlashMessage("Error: Couldn't connect to the blockchain.. please try again later.", 'error'))
+      })
+  }
+}
+
+/**
+ * withdraw a user current balance inside the smart contract to his local wallet
+ * @return {Promise}
+ */
+export function withdrawBalance() {
+  return (dispatch) => {
+    EscrowContract.withdraw()
+      .then(transaction => {
+        if ((transaction.logs.length != 0) && (transaction.logs[0].event == 'Withdrawal')) {
+          dispatch(createWithdrawalActivity(transaction.logs[0].args))
+        }
       })
       .catch(error => {
         console.error(error)

@@ -82,6 +82,34 @@ export function createPurchaseConfirmationActivity(log) {
   }
 }
 
+/**
+ * create a withdrawal log activity
+ * @param  {Object} log [contains sender wallet & amount withdrawn]
+ * @return {Promise}
+ */
+export function createWithdrawalActivity(log) {
+  return dispatch => {
+    const newLog = `[${log.sender} withdraws ${Eth.fromWei(log.amount, 'ether')} ETH]`
+    console.log('[Event Log - Withdraw Funds] : ', newLog)
+    dispatch(createLogActivity(activityCategories.USER_WITHDRAWAL,
+                               '',
+                               '',
+                               Eth.fromWei(log.amount, 'ether'),
+                               log.sender,
+                               log.sender))
+  }
+}
+
+/**
+ * Create a log activity in database
+ * @param  {enum} category   [Log Category]
+ * @param  {string} purchaseId [id of urchase]
+ * @param  {string} itemId     [id of item]
+ * @param  {int} amount     [amount in ETH]
+ * @param  {string} buyer      [buyer wallet address]
+ * @param  {string} seller     [seller wallet address]
+ * @return {Promise}
+ */
 export function createLogActivity(category, purchaseId, itemId, amount, buyer, seller) {
   const activity_params = {
     category: category,

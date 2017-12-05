@@ -24,7 +24,7 @@ class SellerItemsIndex extends Component {
             </a>
           </td>
           <td>{item.name}</td>
-          <td>{item.price} ETH</td>
+          <td>${item.price}</td>
           <td>{item.sales} sold</td>
         </tr>
       )

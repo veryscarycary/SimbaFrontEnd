@@ -1,4 +1,5 @@
 import Api, { SIGN_UP_URL, SIGN_IN_URL, USERS_URL, MY_PROFILE_URL } from '../services/api'
+import { fetchUserBalance } from './actions_contract'
 import { setFlashMessage } from './actions_flash_messages'
 
 import Auth from '../services/auth'
@@ -15,6 +16,7 @@ export function setCurrentUser(user) {
     Auth.setToken(user['authentication_token'])
     dispatch({ type: CREATE_USER, payload: user})
     dispatch({ type: SET_CURRENT_USER, payload: user['wallet'] })
+    dispatch(fetchUserBalance(user['wallet']))
   }
 }
 

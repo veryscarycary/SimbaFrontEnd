@@ -32,17 +32,17 @@ class ItemIndex extends Component {
 
   renderDiscountPrice(item) {
     if (!item.discount || item.discount === 0) {
-      return <span className='price'>{ item.price } ETH</span>
+      return <span className='price'>${ item.price }</span>
     }
     const discountedPrice = item.price - item.price * (item.discount / 100)
     return (
       <span className="price">
         <span className="before">
-          { item.price } ETH
+          ${ item.price }
         </span>
 
         <span className="from">from </span>
-        { discountedPrice } ETH
+        ${ discountedPrice }
       </span>
     )
   }

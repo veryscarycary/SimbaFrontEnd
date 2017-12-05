@@ -50,7 +50,7 @@ class ItemNew extends Component {
           onChange={this.handleChange.bind(this)}
            />
         <Input
-          label='Price'
+          label='Price ($)'
           value={this.state.price}
           name='price'
           type='text'
@@ -64,7 +64,7 @@ class ItemNew extends Component {
           onChange={this.handleChange.bind(this)}
            />
         <Input
-          label='Shipping Fee'
+          label='Shipping Fee ($)'
           value={this.state.shipping_fee}
           name='shipping_fee'
           type='text'

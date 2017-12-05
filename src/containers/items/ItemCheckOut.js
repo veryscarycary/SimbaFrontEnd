@@ -14,7 +14,11 @@ import '../../style/checkout.css'
 
 
 class ItemCheckOut extends Component {
-  state = { finalPrice: 0.0 }
+  state = {
+    finalPrice: 0.0,
+    ethFinalPrice: 0.0,
+    rate: 400
+  }
 
   componentWillMount() {
     this.props.selectItem(this.props.match.params.item_id).then((request) => {
@@ -30,7 +34,10 @@ class ItemCheckOut extends Component {
       finalPrice = this.props.item.price - this.props.item.price * (this.props.item.discount / 100) + this.props.item.shipping_fee
     }
 
-    this.setState({finalPrice: finalPrice})
+    const ethPrice = finalPrice / this.state.rate
+
+    this.setState({ ethFinalPrice: ethPrice })
+    this.setState({ finalPrice: finalPrice })
   }
 
   purchaseItem(event) {
@@ -41,7 +48,7 @@ class ItemCheckOut extends Component {
       content: "Your order is being transmitted. Please don't close this window until it's finished.",
     })
 
-    this.props.createPurchase(this.props.item, this.state.finalPrice)
+    this.props.createPurchase(this.props.item, this.state.ethFinalPrice)
       .then(() => this.props.closeModal())
   }
 
@@ -201,7 +208,10 @@ class ItemCheckOut extends Component {
         <div className="container">
           <div className="row">
             { this.renderFormOrConfirmation() }
-            <PurchaseSummary item={this.props.item} finalPrice={this.state.finalPrice} purchase={this.props.purchase} />
+            <PurchaseSummary
+              item={this.props.item}
+              finalPrice={this.state.finalPrice}
+              purchase={this.props.purchase} />
           </div>
         </div>
       </div>
