@@ -83,6 +83,7 @@ class Navigation extends Component {
           <Link className="dropdown-item" to='/sales'>Sales History</Link>
 
           <span className="dropdown-header">Admin</span>
+          <Link className="dropdown-item" to='/admin/dashboard'>Admin</Link>
           <Link className="dropdown-item" to='/admin/activities'>Manage Activities</Link>
           <a className="dropdown-item"  href="/" onClick={(e) => this.checkTimeout(e)}>Check Timeout</a>
         </div>

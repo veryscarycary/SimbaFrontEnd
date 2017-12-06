@@ -3,7 +3,7 @@ import EscrowContract from '../services/escrow'
 
 import { purchaseState } from '../containers/shared/PurchaseState'
 import { setFlashMessage } from './actions_flash_messages'
-import { UPDATE_PURCHASE } from './actions_purchases'
+import { UPDATE_PURCHASE, updatePurchaseState } from './actions_purchases'
 import { UPDATE_ITEM } from './actions_items'
 import { UPDATE_USER } from './actions_users'
 import { fetchOneReview } from './actions_reviews'
@@ -139,6 +139,8 @@ export function cancelPurchase({ purchaseId, itemId, sellerId, buyerId, cancelle
 export function fetchPurchaseState(purchase) {
   return (dispatch) => EscrowContract.getPurchaseState(purchase.id)
     .then(transaction => {
+      const transactionState = transaction.valueOf()
+      dispatch(updatePurchaseState({state: transactionState}, purchase.id))
       return dispatch({type: UPDATE_PURCHASE, payload: { purchaseState: transaction.valueOf(), id: purchase.id }})
     })
     .catch(error => {

@@ -21,6 +21,7 @@ export const ITEMS_URL = `${ROOT_URL}/items`
 export const PURCHASES_URL = `${ROOT_URL}/purchases`
 export const BUYER_PURCHASES_URL = `${ROOT_URL}/purchases/buyer_purchases`
 export const SELLER_PURCHASES_URL = `${ROOT_URL}/purchases/seller_sales`
+export const PURCHASES_METRICS_URL = `${ROOT_URL}/purchases/metrics`
 
 // ACTIVITIES URLS
 export const ACTIVITIES_URL = `${ROOT_URL}/activities`

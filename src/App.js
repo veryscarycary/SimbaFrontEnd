@@ -39,6 +39,9 @@ import ActivityIndex from './containers/activities/ActivityIndex'
 // Reviews Containers
 import ReviewIndex from './containers/reviews/ReviewIndex'
 
+// Admin Dashboard
+import DashboardIndex from './containers/dashboard/DashboardIndex'
+
 import './App.css'
 
 import Auth from './services/auth'
@@ -105,9 +108,9 @@ class App extends Component {
             <Route auth exact path='/purchases/:purchase_id/receipt' component={PurchaseReceipt} />
 
             <Route auth exact path='/admin/activities' component={ActivityIndex} />
-
             <Route auth exact path='/items/:item_id/edit' component={ItemEdit} />
             <Route auth exact path='/my_items' component={SellerItemsIndex} />
+            <Route auth exact path='/admin/dashboard' component={DashboardIndex} />
           </section>
           <section className='footer'>
             <Footer />
