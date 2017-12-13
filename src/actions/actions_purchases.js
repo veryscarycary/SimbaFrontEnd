@@ -1,6 +1,6 @@
 import { normalize } from 'normalizr'
 
-import Api, { PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL } from '../services/api'
+import Api, { PURCHASES_URL, BUYER_PURCHASES_URL, SELLER_PURCHASES_URL, PURCHASES_METRICS_URL } from '../services/api'
 
 import { setFlashMessage } from './actions_flash_messages'
 import { purchase, fetchPurchaseState, fetchPurchaseTimes } from './actions_contract'
@@ -29,7 +29,6 @@ export function createPurchase(item, finalPrice) {
     seller_id: item.user.id,
     shipping_deadline: item.shipping_deadline
   }
-
   return dispatch => {
     return Api.post(PURCHASES_URL, params)
       .then((request) => {
@@ -42,6 +41,23 @@ export function createPurchase(item, finalPrice) {
 
         return dispatch(purchase(request.data.id, item.user.wallet, item.id, request.data.amount, item.shipping_deadline))
     })
+  }
+}
+
+export function updatePurchaseState(purchase_params, purchaseId) {
+  return dispatch => {
+    return Api.put(`${PURCHASES_URL}/${purchaseId}`, purchase_params)
+         .then((request) => {
+          const normalizeRequest = normalize(request.data, purchaseNormalizr)
+          dispatch({type: CREATE_PURCHASES, payload: normalizeRequest.entities.purchases})
+          dispatch(setFlashMessage("Purchase has been successfully updated.", 'success'))
+       }).catch((error) => {
+          if (error.request) {
+            dispatch(setFlashMessage(error.request.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Purchase couldn't be updated, please try again later.", 'error'))
+          }
+       })
   }
 }
 
@@ -87,3 +103,18 @@ export function fetchAllPurchases(isBuyer) {
   }
 }
 
+export function fetchPurchaseMetrics() {
+  return dispatch => {
+    return Api.get(PURCHASES_METRICS_URL)
+         .then((request) => {
+          return request.data
+       }).catch((error) => {
+          console.log(error)
+          if (error.response) {
+            dispatch(setFlashMessage(error.response.data.error, 'error'))
+          } else {
+            dispatch(setFlashMessage("Error: Failed to retrieve items.. please try again later.", 'error'))
+          }
+       })
+  }
+}

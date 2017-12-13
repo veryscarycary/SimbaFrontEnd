@@ -9,7 +9,6 @@ import { Helmet } from 'react-helmet'
 import './style/vendor/bootstrap.css'
 import './style/vendor/font-awesome.min.css'
 import './style/vendor/ionicons.css'
-
 import App from './App'
 import registerServiceWorker from './registerServiceWorker'
 import EscrowContract from './services/escrow'

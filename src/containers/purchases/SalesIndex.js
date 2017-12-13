@@ -83,7 +83,7 @@ class SalesIndex extends Component {
               <img src={ sale.item.picture } alt={ sale.item.name } />
             </Link>
           </td>
-          <td>{ sale.amount } ETH</td>
+          <td>${ sale.amount }</td>
           <td>{ this.renderSaleState(sale) }</td>
           { isActive ? this.renderSaleAction(sale) : null }
         </tr>

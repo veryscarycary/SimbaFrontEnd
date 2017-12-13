@@ -50,6 +50,7 @@ User.fields = {
   rating: attr(),
   number_rating: attr(),
   number_reviews: attr(),
+  escrow_balance: attr()
 }
 
 User.defaultProps = {
