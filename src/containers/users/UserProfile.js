@@ -1,14 +1,32 @@
 import React, { Component } from 'react'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { Form, Input, Textarea, Select } from 'formsy-react-components'
+import { Tabs, Tab } from 'react-bootstrap-tabs'
 
-import { getUserProfile, updateUserProfile } from '../../actions/actions_users'
+import { getUserProfile } from '../../actions/actions_users'
 import Auth from '../../services/auth'
 
 import { current_user } from '../../models/selectors'
-import UserProfile from '../../components/UserProfile/UserProfile'
 
-class UserProfileContainer extends Component {
+import '../../style/user-profile.css'
+
+class UserProfile extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      first_name: this.props.current_user.first_name,
+      last_name: this.props.current_user.last_name,
+      email: this.props.current_user.email,
+      address: this.props.current_user.address,
+      postal_code: this.props.current_user.postal_code,
+      city: this.props.current_user.city,
+      country: this.props.current_user.country,
+      us_state: this.props.current_user.us_state
+    }
+  }
+
   componentWillMount() {
     this.props.getUserProfile(Auth.wallet, true)
   }
@@ -140,26 +158,27 @@ class UserProfileContainer extends Component {
   }
 
   render() {
-    if (!this.props.currentUser.id) {
-      return null
-    }
-
     return (
-      <UserProfile
-        currentUser={this.props.currentUser}
-        onSubmit={this.handleSubmit.bind(this)}
-      />
+      <div className="account-page">
+        <div className="container">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link to="/">Home</Link>
+            </li>
+            <li className="breadcrumb-item active">My profile</li>
+          </ol>
+
+          <div className="account-wrapper">
+            { this.renderTabs() }
+          </div>
+        </div>
+      </div>
     )
   }
 }
 
-const mapStateToProps = (state) => ({
-  currentUser: current_user(state)
-})
+function mapStateToProps(state) {
+  return { current_user: current_user(state) }
+}
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  getUserProfile,
-  updateUserProfile
-}, dispatch)
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfileContainer)
+export default connect(mapStateToProps, { getUserProfile })(UserProfile)
