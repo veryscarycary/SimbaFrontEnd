@@ -93,3 +93,7 @@ export function getUserProfile(wallet, isCurrentUser) {
               })
   }
 }
+
+export function updateUserProfile() {
+
+}

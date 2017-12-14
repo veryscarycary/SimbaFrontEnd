@@ -46,6 +46,7 @@ export function createPurchase(item, finalPrice) {
 
 export function updatePurchaseState(purchase_params, purchaseId) {
   return dispatch => {
+    debugger
     return Api.put(`${PURCHASES_URL}/${purchaseId}`, purchase_params)
          .then((request) => {
           const normalizeRequest = normalize(request.data, purchaseNormalizr)

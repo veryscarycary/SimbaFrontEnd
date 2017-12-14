@@ -9,7 +9,7 @@ import { fetchSellerItems } from '../../actions/actions_items'
 
 class SellerItemsIndex extends Component {
   componentWillMount() {
-    this.props.fetchSellerItems(this.props.current_user.wallet)
+    this.props.fetchSellerItems()
   }
 
   renderItems() {

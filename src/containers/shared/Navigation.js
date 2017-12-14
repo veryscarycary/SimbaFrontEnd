@@ -7,6 +7,7 @@ import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, withdrawBalance } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
+import NotificationsMenu from '../../containers/notifications/NotificationsMenu'
 
 import '../../style/navigation.css'
 
@@ -100,6 +101,18 @@ class Navigation extends Component {
     )
   }
 
+  renderNotifications() {
+    return (
+      Auth.isLoggedIn() && (
+        <li>
+          <NotificationsMenu
+            unreadCount={2}
+          />
+        </li>
+      )
+    )
+  }
+
   renderHome() {
     return (
       <li className={`nav-item dropdown ${this.state.isLink2Hovered ? 'show' : ''}`}
@@ -182,6 +195,7 @@ class Navigation extends Component {
               Auth.isLoggedIn() ? (
                 <ul className="menu-right float-right">
                   <li> { this.renderSearchBar() } </li>
+                  <li> { this.renderNotifications() } </li>
                   <li> { this.renderUserBalance() } </li>
                   <li> { this.renderUserMenu() } </li>
                 </ul>

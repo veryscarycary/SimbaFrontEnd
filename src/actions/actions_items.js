@@ -2,6 +2,7 @@ import { normalize } from 'normalizr'
 
 import { itemsNormalizr, itemNormalizr } from '../models/normalizr'
 import Api, { ITEMS_URL, USERS_URL } from '../services/api'
+import Auth from '../services/auth'
 import { setFlashMessage } from './actions_flash_messages'
 import { fetchItemSalesNumber, fetchItemRating, fetchUserRating } from './actions_contract'
 
@@ -87,9 +88,9 @@ export function updateItem(item_params, itemId) {
   }
 }
 
-export function fetchSellerItems(wallet) {
+export function fetchSellerItems() {
   return dispatch => {
-    return Api.get(`${USERS_URL}/${wallet}/items`)
+    return Api.get(`${USERS_URL}/${Auth.wallet}/items`)
          .then((request) => {
           const normalizeRequest = normalize(request.data, itemsNormalizr)
           dispatch({type: CREATE_ITEMS, payload: normalizeRequest.entities.items})
