@@ -68,12 +68,10 @@ class NotificationsList extends Component {
 
   render() {
     return (
-      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <div>
         {this.props.notifications.map((notification) => (
           this.renderNotification(notification)
         ))}
-
-        <Link to="/notifications" className="dropdown-item" href="#">See all</Link>
       </div>
     )
   }

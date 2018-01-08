@@ -28,6 +28,7 @@ import ItemCheckOut from './containers/items/ItemCheckOut'
 // Purchase Containers
 import PurchaseIndex from './containers/purchases/PurchaseIndex'
 import SalesIndex from './containers/purchases/SalesIndex'
+import NotificationsIndex from './containers/notifications/NotificationsIndex'
 import PurchaseShipping from './containers/purchases/PurchaseShipping'
 import PurchaseCancel from './containers/purchases/PurchaseCancel'
 import PurchaseConfirm from './containers/purchases/PurchaseConfirm'
@@ -102,6 +103,7 @@ class App extends Component {
 
             <Route auth exact path='/purchases' component={PurchaseIndex} />
             <Route auth exact path='/sales' component={SalesIndex} />
+            <Route auth exact path='/notifications' component={NotificationsIndex} />
             <Route auth exact path='/purchases/:purchase_id/shipping' component={PurchaseShipping} />
             <Route auth exact path='/purchases/:purchase_id/cancel' component={PurchaseCancel} />
             <Route auth exact path='/purchases/:purchase_id/confirm' component={PurchaseConfirm} />
