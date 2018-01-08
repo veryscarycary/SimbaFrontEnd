@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
-
 import { deleteCurrentUser } from '../../actions/actions_users'
 import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, withdrawBalance } from '../../actions/actions_contract'
@@ -129,7 +128,7 @@ class Navigation extends Component {
   renderNavigationMenu() {
     return (
       <div className="section-menu clearfix">
-        <nav className="navbar navbar-expand-lg navbar-light" role="navigation">
+        <nav className="navbar navbar-expand-lg navbar-light">
           <button className="navbar-toggler" data-toggle="collapse" data-target="/navbar-collapse">
             <span className="navbar-toggler-icon"></span>
           </button>
