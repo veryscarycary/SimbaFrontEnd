@@ -5,6 +5,8 @@ import Rating from 'react-rating'
 
 import '../../style/items-collection.css'
 
+import CollectionSideBar from '../shared/CollectionSideBar'
+
 import { fetchAllItems } from '../../actions/actions_items'
 import { items } from '../../models/selectors'
 
@@ -50,7 +52,7 @@ class ItemIndex extends Component {
   renderItems() {
     let items = this.props.items.map((item) => {
       return (
-        <div key={item.id}  className="col-lg-3 col-md-4 col-sm-6 store-product">
+        <div key={item.id}  className="col-lg-4 col-md-6 store-product">
           <Link to={`/items/${item.id}`}>
             { item.discount != 0 ? <span className="flag">{ item.discount }% off</span> : '' }
             <img src={ item.picture } alt={ item.name } className="img-fluid" />
@@ -70,14 +72,69 @@ class ItemIndex extends Component {
     return items
   }
 
+  renderFilter() {
+    return (
+      <div className="container clearfix">
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item"><a href="#">Home</a></li>
+          <li className="breadcrumb-item"><a href="#">Collection for Women</a></li>
+          <li className="breadcrumb-item active">Handbags</li>
+        </ol>
+        <div className="controls">
+          <div className="sorting">
+            Sort by:
+            <select className="spacial-select">
+              <option>Best selling</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>A-Z</option>
+              <option>Z-A</option>
+              <option>Oldest to Newest</option>
+              <option>Newest to Oldest</option>
+            </select>
+          </div>
+          <div className="view">
+            <a href="collection-grid-sidebar.html" className="active">
+              <span className="icon grid-icon">
+                <span className="up-left"></span>
+                <span className="up-right"></span>
+                <span className="down-left"></span>
+                <span className="down-right"></span>
+              </span>
+              Grid
+            </a>
+            <a href="collection-list-sidebar.html">
+              <span className="icon list-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              List
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   render() {
     return (
-      <div className="featured-products">
-        <div className="container">
-          <h3>Featured products</h3>
-
-          <div className="row">
-            { this.renderItems() }
+      <div>
+        <div className="store-filters">
+          { this.renderFilter() }
+        </div>
+        <div className="collection-products">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-3">
+                <CollectionSideBar />
+              </div>
+              <div className="col-md-9">
+                <div className='row'>
+                  { this.renderItems() }
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
