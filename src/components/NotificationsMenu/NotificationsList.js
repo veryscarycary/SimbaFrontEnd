@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import TimeAgo from 'react-timeago'
 
 const NOTIFICATION_TYPE_PURCHASE = 'purchase'
 const NOTIFICATION_TYPE_SHIP = 'ship_item'
@@ -18,7 +19,7 @@ class NotificationsList extends Component {
             to={`/purchases/${notification.target.purchase.id}/shipping`}
             className="dropdown-item"
           >
-            {notification.actor.fullname} has bought something from you.
+            {notification.actor.fullname} has bought a {notification.target.purchase.item.name} <strong><TimeAgo date={notification.created_at}/></strong>.
           </Link>
         )
       case NOTIFICATION_TYPE_SHIP:
@@ -58,7 +59,7 @@ class NotificationsList extends Component {
             to={`/purchases/${notification.target.purchase.id}/confirm`}
             className="dropdown-item"
           >
-            {notification.actor.fullname} has received your item.
+            {notification.actor.fullname} has received your item. Your funds are available to be withdrawn.
           </Link>
         )
 
