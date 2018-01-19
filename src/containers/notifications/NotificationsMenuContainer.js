@@ -8,7 +8,7 @@ import { getNotifications, getUnreadNotificationsCount } from '../../models/sele
 
 import NotificationsMenu from '../../components/NotificationsMenu/NotificationsMenu'
 
-class NotifcationsMenuContainer extends Component {
+class NotificationsMenuContainer extends Component {
   componentWillMount() {
     this.props.fetchNotifications()
   }
@@ -29,4 +29,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchNotifications
 }, dispatch)
 
-export default connect(mapStateToProps, mapDispatchToProps)(NotifcationsMenuContainer)
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationsMenuContainer)

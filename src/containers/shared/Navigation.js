@@ -6,7 +6,7 @@ import { current_user } from '../../models/selectors'
 import { cancelTimeoutOrders, withdrawBalance } from '../../actions/actions_contract'
 
 import Auth from '../../services/auth'
-import NotificationsMenu from '../../containers/notifications/NotificationsMenu'
+import NotificationsMenuContainer from '../../containers/notifications/NotificationsMenuContainer'
 
 import '../../style/navigation.css'
 
@@ -104,7 +104,7 @@ class Navigation extends Component {
     return (
       Auth.isLoggedIn() && (
         <li>
-          <NotificationsMenu
+          <NotificationsMenuContainer
             unreadCount={2}
           />
         </li>
