@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-
+import Timestamp from 'react-timestamp'
 import { selectPurchase } from '../../actions/actions_purchases'
 import { purchase } from '../../models/selectors'
 
@@ -9,6 +9,10 @@ import '../../style/purchase-receipt.css'
 
 
 class PurchaseReceipt extends Component {
+  constructor(props) {
+    super(props)
+  }
+
   componentWillMount() {
     this.props.selectPurchase(this.props.match.params.purchase_id)
   }
@@ -17,20 +21,21 @@ class PurchaseReceipt extends Component {
     return (
       <div>
         <div className="intro">
-          Hi <strong>John McClane</strong>,
+          Hi <strong>{this.props.purchase.buyer.fullname}</strong>,
           <br />
-          This is the receipt for a payment of <strong>$312.00</strong> (USD) you made to Spacial Themes.
+          This is the receipt for a payment of <strong>${this.props.purchase.amount}</strong> (USD) you made to {this.props.purchase.seller.fullname}.
         </div>
 
         <div className="payment-info">
           <div className="row">
             <div className="col-md-6">
-              <span>Payment No.</span>
-              <strong>883053045</strong>
+
             </div>
             <div className="col-md-6 text-md-right">
               <span>Payment Date</span>
-              <strong>Feb 09, 2018 - 03:44 pm</strong>
+              <div>
+                <strong><Timestamp time={this.props.purchase.created_at} format='full' includeDay /></strong>
+              </div>
             </div>
           </div>
         </div>
@@ -40,30 +45,30 @@ class PurchaseReceipt extends Component {
             <div className="col-md-6">
               <span>Client</span>
               <strong>
-                John McClane
+                {this.props.purchase.buyer.fullname}
               </strong>
               <p>
-                989 5th Avenue <br />
-                New York City <br />
-                55839 <br />
-                USA <br />
+                {this.props.purchase.buyer.address} <br />
+                {this.props.purchase.buyer.us_state} <br />
+                {this.props.purchase.buyer.postal_code} <br />
+                {this.props.purchase.buyer.country} <br />
                 <a href="#">
-                  john.mcclane@gmail.com
+                  {this.props.purchase.buyer.email}
                 </a>
               </p>
             </div>
             <div className="col-md-6 text-md-right">
               <span>Payment To</span>
               <strong>
-                Spacial Themes LLC
+                {this.props.purchase.seller.fullname}
               </strong>
               <p>
-                344 9th Avenue <br />
-                San Francisco <br />
-                99383 <br />
-                USA <br />
+                {this.props.purchase.seller.address} <br />
+                {this.props.purchase.seller.us_state} <br />
+                {this.props.purchase.seller.postal_code} <br />
+                {this.props.purchase.seller.country} <br />
                 <a href="#">
-                  spacial.themes@gmail.com
+                  {this.props.purchase.seller.email}
                 </a>
               </p>
             </div>
@@ -86,35 +91,15 @@ class PurchaseReceipt extends Component {
         <div className="items">
           <div className="row item">
             <div className="col-4 desc">
-              Spacial Theme Customization
-            </div>
-            <div className="col-3 qty">
-              3
-            </div>
-            <div className="col-5 amount text-right">
-              $60.00
-            </div>
-          </div>
-          <div className="row item">
-            <div className="col-4 desc">
-              About us Page
+            <span className="name">
+              <Link to={`/items/${this.props.purchase.item.id}`}> { this.props.purchase.item.name } </Link>
+            </span>
             </div>
             <div className="col-3 qty">
               1
             </div>
             <div className="col-5 amount text-right">
-              $20.00
-            </div>
-          </div>
-          <div className="row item">
-            <div className="col-4 desc">
-              Landing Web Design
-            </div>
-            <div className="col-3 qty">
-              2
-            </div>
-            <div className="col-5 amount text-right">
-              $18.00
+              ${this.props.purchase.item.price}
             </div>
           </div>
         </div>
@@ -125,16 +110,16 @@ class PurchaseReceipt extends Component {
             Thanks a lot.
           </p>
           <div className="field">
-            Subtotal <span>$379.00</span>
+            Subtotal <span>${this.props.purchase.item.price}</span>
           </div>
           <div className="field">
-            Shipping <span>$0.00</span>
+            Shipping <span>${this.props.purchase.item.shipping_fee}</span>
           </div>
           <div className="field">
-            Discount <span>4.5%</span>
+            Discount <span>{this.props.purchase.item.discount}%</span>
           </div>
           <div className="field grand-total">
-            Total <span>$312.00</span>
+            Total <span>{this.props.purchase.amount} ETH</span>
           </div>
         </div>
 
