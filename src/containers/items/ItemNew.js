@@ -91,6 +91,7 @@ class ItemNew extends Component {
           type="text"
           onChange={this.handleChange.bind(this)}
           rows={3}
+          required
          />
         <Textarea
           label="Long Description"

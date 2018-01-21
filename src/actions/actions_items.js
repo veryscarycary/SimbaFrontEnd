@@ -62,7 +62,7 @@ export function createItem(item_params) {
           dispatch(setFlashMessage("Item has been successfully created.", 'success'))
        }).catch((error) => {
           if (error.request) {
-            dispatch(setFlashMessage(error.request.data.error, 'error'))
+            dispatch(setFlashMessage(JSON.parse(error.request.response).message, 'error'))
           } else {
             dispatch(setFlashMessage("Error: Item couldn't be created, please try again later.", 'error'))
           }

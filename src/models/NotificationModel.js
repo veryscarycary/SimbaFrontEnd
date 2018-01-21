@@ -10,6 +10,7 @@ export default class Notification extends ValidatingModel {
   static fields = {
     target: attr(),
     read_at: attr(),
+    created_at: attr(),
     notification_type: attr(),
   }
 
