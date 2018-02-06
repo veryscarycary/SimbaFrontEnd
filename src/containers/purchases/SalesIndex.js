@@ -62,13 +62,13 @@ class SalesIndex extends Component {
     }
   }
 
-  renderChat() {
+  renderChatColumn() {
     return (
-      <div>
+      <Link to={`/sales/chat`}>
         <img
           style={{height: "30px"}}
           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAuIwAALiMBeKU/dgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANJSURBVHic7d09bE5RHMfxL9VKaCQUA2JoQ4jFQG0SVoNFmQwSiU4S0rCgi62xEIlFSOhAIiQGqXgZiEoYhAGJxUuUlNZAKIrhimrSe+7znHuee/699/dJTjrc2/85Ob/nvg7ngoiIiIiIiIhUxzrgHDAEfAZ+V6iNASPATWAnMDPnXOYyAzgK/CL+xFhpd4C2PJOax6EaBljFNgjMdk1cU+bU1m890E9ylMhky/7+vV1kp2eJ/0u03D4Cs9ImrxEXmk0NqFkmC4C1aRtTk8rhLtDcgLpWtACLgeXAUs8aS8INR/7XDuwjua2v57TVFWOwVdIKnECBmLOb2p69FEiBelEgpjQBj/AMJOr7lZIaBw76/nM9t72LgG1AJ8ltX4tvp9PQF+AlcAO4BvzM2P868IaJJ/Pgeqje29q09hTYUMOcnXLUyHXKOgb0AXNr2LcKVgG3gI0Z+73wKZ4VyA5gv0/hkpsDXALmO/YZ8imcFUivT9GKWAjsdWz/7lPUFchKYLVP0QrZGrqgK5CO0J2V0IrQBV2BtIburISCz5EeDI1RIMYoEGMUiDEKxBgFYowCMUaBGKNAjFEgxigQYxSIMQrEGAVijAIxRoEYo0CMUSDGKBBjFIgxCsQYBWKMAjFGgRijQIxRIMYoEGMUiDEKxBgFYowCMUaBGKNA4hhL26BA4nibtkGBFG+YZC2UKSmQ4vXhWJpDgRTrPnDctYMCKc4AsAXHBR0aswimTHgPPCBZx/gCycIz3rqIv/LOdGhB6ZRljAIxRoEYo0CMUSDGuAIJfgdRQoXeZX0I3VkJDYcu6ArkMfAjdIcl8zB0QVcgI8CV0B2WzOmiO+wAPhH/adhiGyDSZ502A6N1DrbsbZDkSznRtAOXSa4psScjZhsBjpDxpbU86j3k5gFrqH2V68NkrwA9lTFgFw24i8nhHcky4+OxB5LHRfx+iXtiDLYKfAI5H2WkRlh7dfIM6I49iJgsBfIV2E7yWYzKshRID/Ak9iDKrtZrSH+sAVpj4Qh5ju6q/okdyDd03ZgkdiAHSN4qS0HOkH7duIq+uV64bqYO4xXQFnFcldUM3GNyGKPAupiDsqyIU0YLyZHSCbwGTpJ8dFFERKa3P7fqGl2J0iOtAAAAAElFTkSuQmCC" alt="chat" />
-      </div>
+      </Link>
     )
   }
 
@@ -96,7 +96,7 @@ class SalesIndex extends Component {
           <td>${ sale.amount }</td>
           <td>{ this.renderSaleState(sale) }</td>
           { isActive ? this.renderSaleAction(sale) : null }
-          <td>{ this.renderChat() }</td>
+          <td>{ this.renderChatColumn() }</td>
         </tr>
       )
     })
@@ -110,6 +110,7 @@ class SalesIndex extends Component {
             <th>Item</th>
             <th>Price</th>
             <th>Status</th>
+            <th>Chat</th>
             { isActive ? <th>Action</th> : null }
           </tr>
         </thead>

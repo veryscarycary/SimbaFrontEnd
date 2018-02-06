@@ -1,0 +1,42 @@
+$chat-message-background-color: #ccf5ff;
+
+@mixin caret-base($direction, $color) {
+  display: block;
+  position: absolute;
+  content: "";
+
+  border-width: 0 20px 10px 20px;
+  border-style: solid;
+  border-color: transparent;
+  border-#{$direction}-color: $color;
+}
+
+.sales-chat-window-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+
+  border: 2px solid #aaa;
+  border-radius: 3px;
+}
+
+.chat-message-container {
+  position: relative;
+  margin: 10px 20px 10px 30px;
+  padding: 10px 20px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: $chat-message-background-color;
+  &:before {
+    @include caret-base(right, #ccc);
+    left: -39px;
+    top: -1px;
+  }
+
+  &:after {
+    @include caret-base(right, $chat-message-background-color);
+    left: -35px;
+    top: 0;
+  }
+}

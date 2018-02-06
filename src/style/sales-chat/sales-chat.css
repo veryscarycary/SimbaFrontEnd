@@ -1,0 +1,35 @@
+.sales-chat-window-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  border: 2px solid #aaa;
+  border-radius: 3px; }
+
+.chat-message-container {
+  position: relative;
+  margin: 10px 20px 10px 30px;
+  padding: 10px 20px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ccf5ff; }
+  .chat-message-container:before {
+    display: block;
+    position: absolute;
+    content: "";
+    border-width: 0 20px 10px 20px;
+    border-style: solid;
+    border-color: transparent;
+    border-right-color: #ccc;
+    left: -39px;
+    top: -1px; }
+  .chat-message-container:after {
+    display: block;
+    position: absolute;
+    content: "";
+    border-width: 0 20px 10px 20px;
+    border-style: solid;
+    border-color: transparent;
+    border-right-color: #ccf5ff;
+    left: -35px;
+    top: 0; }
